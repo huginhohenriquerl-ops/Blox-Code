@@ -1,0 +1,71 @@
+<UserControl x:Class="BloxCode.UI.Pages.FastFlagsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="720" Margin="40,8,40,40">
+            <TextBlock Text="Fast Flags" Style="{StaticResource Text.H1}" />
+            <TextBlock Style="{StaticResource Text.Muted}" Margin="0,0,0,20"
+                       Text="Engine switches written to ClientSettings\ClientAppSettings.json on every launch. Roblox only honours flags on its allow-list; anything else is silently ignored." />
+
+            <!-- Fast Flag editor entry, like Bloxstrap's "Fast Flag Editor" card -->
+            <Button Style="{StaticResource Button.Base}" Background="{DynamicResource Brush.Surface}" BorderBrush="{DynamicResource Brush.Border}"
+                    Tag="{DynamicResource Brush.SurfaceAlt}" HorizontalContentAlignment="Stretch" Padding="20,16" Margin="0,0,0,14" Click="OnOpenEditor">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Right" Text="&#xE76C;" Style="{StaticResource Text.Icon}" FontSize="13" Foreground="{DynamicResource Brush.TextMuted}" />
+                    <Border DockPanel.Dock="Left" Width="40" Height="40" CornerRadius="10" Background="{DynamicResource Brush.AccentSoft}" Margin="0,0,14,0">
+                        <TextBlock Text="&#xE70F;" Style="{StaticResource Text.Icon}" Foreground="{DynamicResource Brush.Accent}" HorizontalAlignment="Center" />
+                    </Border>
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left">
+                        <TextBlock Text="Fast Flag Editor" Style="{StaticResource Text.H2}" />
+                        <TextBlock x:Name="EditorSummary" Style="{StaticResource Text.Muted}" Margin="0,2,0,0" />
+                    </StackPanel>
+                </DockPanel>
+            </Button>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="Presets" Style="{StaticResource Text.H2}" Margin="0,0,0,12" />
+
+                    <DockPanel Margin="0,4">
+                        <CheckBox x:Name="ExclusiveFullscreen" DockPanel.Dock="Right" Style="{StaticResource Toggle}" Click="OnPresetChanged" />
+                        <StackPanel>
+                            <TextBlock Text="Exclusive fullscreen" />
+                            <TextBlock Style="{StaticResource Text.Muted}" Text="Alt+Enter switches to true exclusive fullscreen instead of a borderless window." />
+                        </StackPanel>
+                    </DockPanel>
+                    <Border Style="{StaticResource Divider}" />
+
+                    <DockPanel Margin="0,4">
+                        <CheckBox x:Name="DisableScaling" DockPanel.Dock="Right" Style="{StaticResource Toggle}" Click="OnPresetChanged" />
+                        <StackPanel>
+                            <TextBlock Text="Disable DPI scaling" />
+                            <TextBlock Style="{StaticResource Text.Muted}" Text="Render at native resolution on high-DPI displays (sharper, smaller UI)." />
+                        </StackPanel>
+                    </DockPanel>
+                    <Border Style="{StaticResource Divider}" />
+
+                    <DockPanel Margin="0,4">
+                        <Border DockPanel.Dock="Right" Style="{StaticResource Segmented}" VerticalAlignment="Center">
+                            <StackPanel x:Name="MsaaSegments" Orientation="Horizontal" />
+                        </Border>
+                        <StackPanel>
+                            <TextBlock Text="Anti-aliasing (MSAA)" />
+                            <TextBlock Style="{StaticResource Text.Muted}" Text="Force a sample count." />
+                        </StackPanel>
+                    </DockPanel>
+                    <Border Style="{StaticResource Divider}" />
+
+                    <DockPanel Margin="0,4">
+                        <Border DockPanel.Dock="Right" Style="{StaticResource Segmented}" VerticalAlignment="Center">
+                            <StackPanel x:Name="TextureSegments" Orientation="Horizontal" />
+                        </Border>
+                        <StackPanel>
+                            <TextBlock Text="Texture quality" />
+                            <TextBlock Style="{StaticResource Text.Muted}" Text="Override Roblox's automatic choice." />
+                        </StackPanel>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

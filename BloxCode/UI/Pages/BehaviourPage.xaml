@@ -1,0 +1,89 @@
+<UserControl x:Class="BloxCode.UI.Pages.BehaviourPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="720" Margin="40,8,40,40">
+            <TextBlock Text="Behaviour" Style="{StaticResource Text.H1}" />
+            <TextBlock Style="{StaticResource Text.Muted}" Margin="0,0,0,20" Text="How Blox Code updates and launches Roblox." />
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <DockPanel Margin="0,4">
+                        <TextBox x:Name="ChannelBox" DockPanel.Dock="Right" Width="180" Style="{StaticResource Input}" FontFamily="{StaticResource Font.Mono}"
+                                 Tag="production" TextChanged="OnChannelChanged" VerticalAlignment="Center" />
+                        <StackPanel Margin="0,0,16,0">
+                            <TextBlock Text="Roblox channel" />
+                            <TextBlock Style="{StaticResource Text.Muted}" Text="Stay on production unless you know you need another one. Unknown channels fall back to production." />
+                        </StackPanel>
+                    </DockPanel>
+                    <Border Style="{StaticResource Divider}" />
+                    <DockPanel Margin="0,4">
+                        <CheckBox x:Name="Cleanup" DockPanel.Dock="Right" Style="{StaticResource Toggle}" Click="OnToggle" />
+                        <StackPanel>
+                            <TextBlock Text="Clean up old versions" />
+                            <TextBlock Style="{StaticResource Text.Muted}" Text="Delete previous Roblox versions and stale downloads after an update." />
+                        </StackPanel>
+                    </DockPanel>
+                    <Border Style="{StaticResource Divider}" />
+                    <DockPanel Margin="0,4">
+                        <CheckBox x:Name="Confirm" DockPanel.Dock="Right" Style="{StaticResource Toggle}" Click="OnToggle" />
+                        <StackPanel>
+                            <TextBlock Text="Ask before launching" />
+                            <TextBlock Style="{StaticResource Text.Muted}" Text="Confirm when a website or shortcut asks Blox Code to start Roblox." />
+                        </StackPanel>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <DockPanel Margin="0,4">
+                        <Button x:Name="RegisterButton" DockPanel.Dock="Right" Style="{StaticResource Button.Secondary}" Content="Open links with Blox Code" Click="OnRegister" VerticalAlignment="Center" />
+                        <StackPanel Margin="0,0,16,0">
+                            <TextBlock Text="Default Roblox launcher" />
+                            <TextBlock x:Name="HandlerText" Style="{StaticResource Text.Muted}" />
+                        </StackPanel>
+                    </DockPanel>
+                    <Border Style="{StaticResource Divider}" />
+                    <DockPanel Margin="0,4">
+                        <Button DockPanel.Dock="Right" Style="{StaticResource Button.Secondary}" Content="Reinstall next launch" Click="OnForceReinstall" VerticalAlignment="Center" />
+                        <StackPanel Margin="0,0,16,0">
+                            <TextBlock Text="Repair Roblox" />
+                            <TextBlock x:Name="ReinstallText" Style="{StaticResource Text.Muted}" Text="Re-download and re-extract every package (cached files are re-verified)." />
+                        </StackPanel>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <DockPanel Margin="0,4">
+                        <CheckBox x:Name="AutoUpdate" DockPanel.Dock="Right" Style="{StaticResource Toggle}" Click="OnToggle" />
+                        <StackPanel Margin="0,0,16,0">
+                            <TextBlock Text="Update Blox Code automatically" />
+                            <TextBlock Style="{StaticResource Text.Muted}" Text="Every time it starts, Blox Code checks for a new release and reinstalls itself before carrying on." />
+                        </StackPanel>
+                    </DockPanel>
+                    <Border Style="{StaticResource Divider}" />
+                    <DockPanel Margin="0,4">
+                        <Button x:Name="CheckUpdatesButton" DockPanel.Dock="Right" Style="{StaticResource Button.Secondary}" Content="Check now" Click="OnCheckUpdates" VerticalAlignment="Center" />
+                        <StackPanel Margin="0,0,16,0">
+                            <TextBlock x:Name="UpdateTitle" Text="Blox Code updates" />
+                            <TextBlock x:Name="UpdateText" Style="{StaticResource Text.Muted}" />
+                        </StackPanel>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}" BorderBrush="{DynamicResource Brush.Danger}">
+                <DockPanel>
+                    <Button x:Name="UninstallButton" DockPanel.Dock="Right" Style="{StaticResource Button.Danger}" Content="Uninstall" Click="OnUninstall" VerticalAlignment="Center" />
+                    <StackPanel Margin="0,0,16,0">
+                        <TextBlock Text="Uninstall Blox Code" Foreground="{DynamicResource Brush.Danger}" />
+                        <TextBlock Style="{StaticResource Text.Muted}" Text="Removes shortcuts, registry entries and everything under %LocalAppData%\BloxCode." />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,36 @@
+<UserControl x:Class="BloxCode.UI.Pages.AboutPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:BloxCode.UI">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="720" Margin="40,8,40,40">
+            <StackPanel HorizontalAlignment="Center" Margin="0,24,0,28">
+                <ui:ClawdMascot x:Name="Mascot" Unit="9" HorizontalAlignment="Center" Cursor="Hand" MouseLeftButtonUp="OnPoke"
+                                Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" ToolTip="Hi, I'm Clawd" />
+                <TextBlock Text="Blox Code" Style="{StaticResource Text.Display}" HorizontalAlignment="Center" Margin="0,16,0,2" />
+                <TextBlock x:Name="VersionText" Style="{StaticResource Text.Mono}" HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource Text.Body}">
+                        A Roblox bootstrapper dressed like the Claude desktop app, starring Clawd from Claude Code.
+                        Its update and launch flow was reverse-engineered from Bloxstrap with REA and rewritten from scratch.
+                    </TextBlock>
+                    <TextBlock Style="{StaticResource Text.Muted}" Margin="0,12,0,0">
+                        Blox Code is a fan project and isn't affiliated with Roblox Corporation, Anthropic or the Bloxstrap team.
+                        Bloxstrap is MIT-licensed — thank you to its contributors.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <WrapPanel>
+                    <Button Style="{StaticResource Button.Secondary}" Content="Open install folder" Click="OnOpenBase" Margin="0,0,8,0" />
+                    <Button Style="{StaticResource Button.Secondary}" Content="Open logs" Click="OnOpenLogs" Margin="0,0,8,0" />
+                    <Button Style="{StaticResource Button.Ghost}" Content="Bloxstrap on GitHub" Click="OnBloxstrap" />
+                </WrapPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,41 @@
+<UserControl x:Class="BloxCode.UI.Pages.ModsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="720" Margin="40,8,40,40">
+            <TextBlock Text="Mods" Style="{StaticResource Text.H1}" />
+            <TextBlock Style="{StaticResource Text.Muted}" Margin="0,0,0,20"
+                       Text="Anything in the Modifications folder is copied over Roblox's files right before launch, mirroring Roblox's own layout (for example content\sounds\oof.ogg). Replaced files are backed up, so deleting a mod restores the original." />
+
+            <Border Style="{StaticResource Card}">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Style="{StaticResource Button.Ghost}" Content="Refresh" Click="OnRefresh" Margin="0,0,6,0" />
+                        <Button Style="{StaticResource Button.Primary}" Content="Open folder" Click="OnOpenFolder" />
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Modifications folder" Style="{StaticResource Text.H2}" />
+                        <TextBlock x:Name="FolderPath" Style="{StaticResource Text.Mono}" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock x:Name="CountText" Style="{StaticResource Text.H2}" Margin="0,0,0,10" />
+                    <ItemsControl x:Name="ModList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="0,3">
+                                    <TextBlock Text="✻" FontFamily="{StaticResource Font.Symbols}" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,8,0" />
+                                    <TextBlock Text="{Binding}" FontFamily="{StaticResource Font.Mono}" FontSize="12.5" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock x:Name="EmptyText" Style="{StaticResource Text.Muted}" Text="No mods yet — drop files into the folder and they'll show up here." />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

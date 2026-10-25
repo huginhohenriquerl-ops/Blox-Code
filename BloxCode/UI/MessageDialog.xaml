@@ -1,0 +1,25 @@
+<Window x:Class="BloxCode.UI.MessageDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:BloxCode.UI"
+        Style="{StaticResource Window.Claude}"
+        Title="Blox Code" Width="420" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen" ShowInTaskbar="True">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" GlassFrameThickness="0,0,0,1" ResizeBorderThickness="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+    <Border Padding="24,22,24,18" MouseLeftButtonDown="OnDrag" Background="{DynamicResource Brush.Bg}">
+        <StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <ui:ClawdMascot x:Name="Mascot" Unit="2" VerticalAlignment="Center" Margin="0,0,12,0"
+                                Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" />
+                <TextBlock x:Name="TitleText" Style="{StaticResource Text.H1}" FontSize="21" Margin="0" VerticalAlignment="Center" TextWrapping="Wrap" />
+            </StackPanel>
+            <TextBlock x:Name="MessageText" Style="{StaticResource Text.Body}" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0">
+                <Button x:Name="SecondaryButton" Style="{StaticResource Button.Ghost}" Margin="0,0,8,0" Click="OnSecondary" IsCancel="True" />
+                <Button x:Name="PrimaryButton" Style="{StaticResource Button.Primary}" Click="OnPrimary" IsDefault="True" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

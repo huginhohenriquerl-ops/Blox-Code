@@ -1,0 +1,49 @@
+<UserControl x:Class="BloxCode.UI.Pages.AppearancePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:BloxCode.UI">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="720" Margin="40,8,40,40">
+            <TextBlock Text="Appearance" Style="{StaticResource Text.H1}" />
+            <TextBlock Style="{StaticResource Text.Muted}" Margin="0,0,0,20" Text="Warm paper or late-night charcoal — same clay accent either way." />
+
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <DockPanel Margin="0,4">
+                        <Border DockPanel.Dock="Right" Style="{StaticResource Segmented}" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton x:Name="ThemeSystem" Style="{StaticResource Segment}" GroupName="Theme" Content="System" Checked="OnThemeChanged" />
+                                <RadioButton x:Name="ThemeLight" Style="{StaticResource Segment}" GroupName="Theme" Content="Light" Checked="OnThemeChanged" />
+                                <RadioButton x:Name="ThemeDark" Style="{StaticResource Segment}" GroupName="Theme" Content="Dark" Checked="OnThemeChanged" />
+                            </StackPanel>
+                        </Border>
+                        <StackPanel>
+                            <TextBlock Text="Theme" />
+                            <TextBlock Style="{StaticResource Text.Muted}" Text="System follows Windows' app mode." />
+                        </StackPanel>
+                    </DockPanel>
+                    <Border Style="{StaticResource Divider}" />
+                    <DockPanel Margin="0,4">
+                        <CheckBox x:Name="Animate" DockPanel.Dock="Right" Style="{StaticResource Toggle}" Click="OnAnimateChanged" />
+                        <StackPanel>
+                            <TextBlock Text="Animate Clawd" />
+                            <TextBlock Style="{StaticResource Text.Muted}" Text="Walking, blinking and the little victory hop. Turn off for a calmer screen." />
+                        </StackPanel>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Button.Secondary}" Content="Preview launch screen" VerticalAlignment="Center" Click="OnPreview" />
+                    <ui:ClawdMascot x:Name="Mascot" DockPanel.Dock="Left" Unit="4" Mood="Walk" Margin="0,0,20,0" VerticalAlignment="Center"
+                                    Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" />
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Launch screen" Style="{StaticResource Text.H2}" />
+                        <TextBlock Style="{StaticResource Text.Muted}" Text="Clawd walks the progress bar while Roblox downloads. The preview fakes a download and launches nothing." />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
