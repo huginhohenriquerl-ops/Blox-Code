@@ -101,13 +101,30 @@ public partial class BootstrapperWindow : Window
     {
         // Only one bootstrapper at a time; a second launch waits and then finds Roblox up to date.
         using var gate = new Semaphore(1, 1, "BloxCode-Bootstrapper");
-        bool entered = await Task.Run(() => gate.WaitOne(TimeSpan.FromMinutes(3)));
+        bool entered = gate.WaitOne(0);
+        if (!entered)
+        {
+            OnProgress(new BootstrapProgress(BootstrapPhase.Connecting, "Waiting for another Blox Code launch to finish"));
+            entered = await Task.Run(() => gate.WaitOne(TimeSpan.FromMinutes(3)));
+        }
 
         try
         {
             var progress = new Progress<BootstrapProgress>(OnProgress);
             var bootstrapper = new Bootstrapper(App.Http, _launch!, progress);
-            await Task.Run(() => bootstrapper.RunAsync(_cts.Token));
+            try
+            {
+                await Task.Run(() => bootstrapper.RunAsync(_cts.Token));
+            }
+            finally
+            {
+                // Let a queued launch start now rather than after our closing animation.
+                if (entered)
+                {
+                    gate.Release();
+                    entered = false;
+                }
+            }
 
             VersionText.Text = $"{Store.State.Channel} · {bootstrapper.VersionGuid}";
             Succeed(_launch!.NoLaunch ? "Roblox is up to date" : "Roblox is running");

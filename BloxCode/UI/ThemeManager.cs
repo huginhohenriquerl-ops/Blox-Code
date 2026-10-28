@@ -35,6 +35,26 @@ public static class ThemeManager
             ApplyChrome(window);
     }
 
+    private static bool _following;
+
+    /// <summary>When the theme is "System", re-apply it as soon as Windows switches light/dark.</summary>
+    public static void FollowSystemTheme()
+    {
+        if (_following) return;
+        _following = true;
+
+        SystemEvents.UserPreferenceChanged += (_, e) =>
+        {
+            if (e.Category != UserPreferenceCategory.General)
+                return;
+            Application.Current?.Dispatcher.BeginInvoke(() =>
+            {
+                if (Store.Settings.Theme == AppTheme.System && SystemPrefersDark() != IsDark)
+                    Apply(AppTheme.System);
+            });
+        };
+    }
+
     private static bool SystemPrefersDark()
     {
         using var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");

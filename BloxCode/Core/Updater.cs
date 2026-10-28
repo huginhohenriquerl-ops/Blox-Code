@@ -91,18 +91,25 @@ public static class Updater
         Directory.CreateDirectory(UpdatesFolder);
         string path = Path.Combine(UpdatesFolder, $"BloxCode-{info.Version}.exe");
 
-        using (var response = await http.GetAsync(info.DownloadUrl, HttpCompletionOption.ResponseHeadersRead, ct))
+        // Same idle watchdog as package downloads: HttpClient.Timeout doesn't cover the body.
+        using var stall = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        stall.CancelAfter(TimeSpan.FromSeconds(30));
+
+        long expectedSize;
+        using (var response = await http.GetAsync(info.DownloadUrl, HttpCompletionOption.ResponseHeadersRead, stall.Token))
         {
             response.EnsureSuccessStatusCode();
             long total = response.Content.Headers.ContentLength ?? info.Size;
-            await using var source = await response.Content.ReadAsStreamAsync(ct);
+            expectedSize = total;
+            await using var source = await response.Content.ReadAsStreamAsync(stall.Token);
             await using var file = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None, 1 << 16, true);
 
             var buffer = new byte[1 << 16];
             long read = 0, reported = 0;
             int n;
-            while ((n = await source.ReadAsync(buffer, ct)) > 0)
+            while ((n = await source.ReadAsync(buffer, stall.Token)) > 0)
             {
+                stall.CancelAfter(TimeSpan.FromSeconds(30));
                 await file.WriteAsync(buffer.AsMemory(0, n), ct);
                 read += n;
                 if (read - reported >= 1 << 18)
@@ -112,6 +119,12 @@ public static class Updater
                 }
             }
             progress.Report((read, total));
+        }
+
+        if (expectedSize > 0 && new FileInfo(path).Length != expectedSize)
+        {
+            File.Delete(path);
+            throw new InvalidDataException("The update download was cut short.");
         }
 
         if (info.Sha256 is { } expected)
@@ -167,7 +180,7 @@ public static class Updater
                     File.Copy(Paths.Process, Paths.Application, overwrite: true);
                     break;
                 }
-                catch (IOException) when (attempt < 10)
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException && attempt < 10)
                 {
                     Logger.Info(ident, "Waiting for write permissions to update");
                     Thread.Sleep(500);
@@ -190,12 +203,20 @@ public static class Updater
                 mutex.ReleaseMutex();
         }
 
+        RunInstalled(forwardArgs);
+        return true;
+    }
+
+    /// <summary>Starts the installed copy with the original arguments, skipping its update check.</summary>
+    public static void RunInstalled(IEnumerable<string> forwardArgs)
+    {
+        if (!File.Exists(Paths.Application))
+            return;
         var psi = new ProcessStartInfo(Paths.Application) { UseShellExecute = false, WorkingDirectory = Paths.Base };
         psi.ArgumentList.Add("-noupdate");
         foreach (string arg in forwardArgs)
             psi.ArgumentList.Add(arg);
         Process.Start(psi);
-        return true;
     }
 
     /// <summary>Deletes leftover downloads once we're no longer running from that folder.</summary>

@@ -114,8 +114,9 @@ public static class Installer
 
         Logger.Info(ident, "Removing install folder after exit");
 
-        // The running exe can't delete itself, so let cmd wait for us to exit first.
-        Process.Start(new ProcessStartInfo("cmd.exe", $"/c timeout 5 && rmdir /S /Q \"{Paths.Base}\"")
+        // The running exe can't delete itself, so let cmd wait for us to exit first. `timeout` refuses
+        // to run without a console (and `&&` would then skip the delete), so ping is the delay.
+        Process.Start(new ProcessStartInfo("cmd.exe", $"/c ping -n 6 127.0.0.1 >nul & rmdir /S /Q \"{Paths.Base}\"")
         {
             CreateNoWindow = true,
             UseShellExecute = false,

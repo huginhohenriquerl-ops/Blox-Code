@@ -11,7 +11,7 @@ using BloxCode.Core;
 namespace BloxCode.UI.Pages;
 
 /// <summary>One editable row. The page owns validation because duplicates need the whole list.</summary>
-public sealed class FlagEntry(string name, string value, Action<FlagEntry> changed) : INotifyPropertyChanged
+public sealed class FlagEntry(string name, string value, Action<FlagEntry> changed, Action selectionChanged) : INotifyPropertyChanged
 {
     private string _name = name, _value = value;
     private bool _isChecked;
@@ -43,7 +43,14 @@ public sealed class FlagEntry(string name, string value, Action<FlagEntry> chang
     public bool IsChecked
     {
         get => _isChecked;
-        set { _isChecked = value; Raise(nameof(IsChecked)); changed(this); }
+        set
+        {
+            if (_isChecked == value) return;
+            _isChecked = value;
+            Raise(nameof(IsChecked));
+            // Selection is UI-only: no need to revalidate or save the whole list.
+            selectionChanged();
+        }
     }
 
     public FlagKind Kind => FastFlagValidator.KindOf(Name);
@@ -83,7 +90,7 @@ public partial class FastFlagEditorPage : UserControl
         InitializeComponent();
 
         foreach (var (name, value) in Store.Settings.FastFlags.OrderBy(f => f.Key, StringComparer.OrdinalIgnoreCase))
-            _entries.Add(new FlagEntry(name, value, OnEntryChanged));
+            _entries.Add(NewEntry(name, value));
 
         _view = CollectionViewSource.GetDefaultView(_entries);
         _view.Filter = Matches;
@@ -110,6 +117,11 @@ public partial class FastFlagEditorPage : UserControl
 
     private IEnumerable<FlagEntry> Visible => _view.Cast<FlagEntry>();
 
+    private FlagEntry NewEntry(string name, string value) => new(name, value, OnEntryChanged, () =>
+    {
+        if (!_bulk) RefreshChrome();
+    });
+
     private void OnEntryChanged(FlagEntry entry)
     {
         if (_bulk) return;
@@ -121,11 +133,12 @@ public partial class FastFlagEditorPage : UserControl
     /// <summary>Recomputes every row's errors (duplicates depend on the whole list) and refreshes bindings.</summary>
     private void Revalidate()
     {
-        var counts = _entries.GroupBy(e => e.Name, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.Count());
+        // The first row with a name owns it; only later copies are flagged, so the original keeps saving.
+        var seen = new HashSet<string>(StringComparer.Ordinal);
         foreach (var entry in _entries)
         {
             entry.NameError = FastFlagValidator.ValidateName(entry.Name)
-                              ?? (counts[entry.Name] > 1 ? "an entry for this flag name already exists." : null);
+                              ?? (!seen.Add(entry.Name) ? "an entry for this flag name already exists." : null);
             if (entry.NameError is not null && entry.NameError.Length > 0)
                 entry.NameError = char.ToLowerInvariant(entry.NameError[0]) + entry.NameError[1..];
             entry.ValueError = entry.NameError is null ? FastFlagValidator.ValidateValue(entry.Name, entry.Value) : null;
@@ -193,7 +206,7 @@ public partial class FastFlagEditorPage : UserControl
             }
             else
             {
-                last = new FlagEntry(name, value, OnEntryChanged);
+                last = NewEntry(name, value);
                 _entries.Add(last);
             }
         }

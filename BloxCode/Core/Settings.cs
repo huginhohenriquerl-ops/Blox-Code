@@ -36,6 +36,9 @@ public static class Store
         Converters = { new JsonStringEnumConverter() },
     };
 
+    // The bootstrapper saves state from a worker thread while the UI may save settings.
+    private static readonly object Sync = new();
+
     public static Settings Settings { get; private set; } = new();
     public static State State { get; private set; } = new();
 
@@ -43,6 +46,12 @@ public static class Store
     {
         Settings = Read<Settings>(Paths.SettingsFile) ?? new Settings();
         State = Read<State>(Paths.StateFile) ?? new State();
+
+        // Hand-edited or older files can carry explicit nulls; never let them reach the rest of the app.
+        Settings.FastFlags ??= new();
+        Settings.Channel = string.IsNullOrWhiteSpace(Settings.Channel) ? Deployment.DefaultChannel : Settings.Channel.Trim();
+        State.PackageHashes ??= new();
+        State.ModManifest ??= new();
     }
 
     public static void SaveSettings() => Write(Paths.SettingsFile, Settings);
@@ -50,28 +59,37 @@ public static class Store
 
     private static T? Read<T>(string path) where T : class
     {
+        if (!File.Exists(path))
+            return null;
         try
         {
-            if (File.Exists(path))
-                return JsonSerializer.Deserialize<T>(File.ReadAllText(path), Options);
+            return JsonSerializer.Deserialize<T>(File.ReadAllText(path), Options);
         }
         catch (Exception ex)
         {
+            // Keep the broken file for the user instead of silently overwriting it with defaults.
             Logger.Error("Store::Read", ex);
+            try { File.Copy(path, path + ".corrupt", overwrite: true); } catch { }
+            return null;
         }
-        return null;
     }
 
     private static void Write<T>(string path, T value)
     {
-        try
+        lock (Sync)
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-            File.WriteAllText(path, JsonSerializer.Serialize(value, Options));
-        }
-        catch (Exception ex)
-        {
-            Logger.Error("Store::Write", ex);
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+                // Write a sibling file and swap it in, so a crash mid-write can't leave half a JSON file.
+                string temp = path + ".tmp";
+                File.WriteAllText(temp, JsonSerializer.Serialize(value, Options));
+                File.Move(temp, path, overwrite: true);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Store::Write", ex);
+            }
         }
     }
 }

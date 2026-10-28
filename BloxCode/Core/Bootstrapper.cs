@@ -22,6 +22,9 @@ public sealed partial class Bootstrapper(HttpClient http, LaunchSettings launch,
     private const string WebView2ClientKey = @"SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}";
     private const string OriginalsFolder = ".bloxcode-originals";
 
+    // A download that delivers nothing for this long is treated as dead and retried.
+    private static readonly TimeSpan StallTimeout = TimeSpan.FromSeconds(30);
+
     private const string AppSettingsXml =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
         "<Settings>\r\n" +
@@ -111,17 +114,29 @@ public sealed partial class Bootstrapper(HttpClient http, LaunchSettings launch,
         const string ident = "Bootstrapper::InstallVersion";
         Report(BootstrapPhase.Checking, "Reading package manifest");
 
-        string manifestText = await http.GetStringAsync(Deployment.GetLocation($"/{versionGuid}-rbxPkgManifest.txt"), ct);
+        string manifestText;
+        using (var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct))
+        {
+            timeout.CancelAfter(TimeSpan.FromSeconds(30));
+            manifestText = await http.GetStringAsync(Deployment.GetLocation($"/{versionGuid}-rbxPkgManifest.txt"), timeout.Token);
+        }
         var packages = PackageManifest.Parse(manifestText)
             .Where(p => PackageManifest.PlayerDirectoryMap.ContainsKey(p.Name))
             .ToList();
+        if (!packages.Any(p => p.Name == "RobloxApp.zip"))
+            throw new InvalidDataException($"The package manifest for {versionGuid} has no RobloxApp.zip");
         Logger.Info(ident, $"{packages.Count} packages for {versionGuid}");
 
         if (Directory.Exists(versionDir))
+        {
+            // Wiping a folder Roblox is running from fails halfway and leaves a broken install.
+            if (IsRobloxRunningFrom(versionDir))
+                throw new IOException("Roblox is still open from this version. Close Roblox and try again.");
             Directory.Delete(versionDir, recursive: true);
+        }
         Directory.CreateDirectory(versionDir);
 
-        long total = packages.Sum(p => p.PackedSize), done = 0;
+        long total = Math.Max(1, packages.Sum(p => p.PackedSize)), done = 0;
 
         foreach (var package in packages)
         {
@@ -172,17 +187,23 @@ public sealed partial class Bootstrapper(HttpClient http, LaunchSettings launch,
         {
             try
             {
-                using (var response = await http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, ct))
+                // HttpClient.Timeout stops counting once headers arrive, so a body that stalls would
+                // hang forever; this token is pushed forward on every chunk and fires on silence.
+                using var stall = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                stall.CancelAfter(StallTimeout);
+
+                using (var response = await http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, stall.Token))
                 {
                     response.EnsureSuccessStatusCode();
-                    await using var source = await response.Content.ReadAsStreamAsync(ct);
+                    await using var source = await response.Content.ReadAsStreamAsync(stall.Token);
                     await using var file = new FileStream(package.DownloadPath, FileMode.Create, FileAccess.Write, FileShare.None, 1 << 16, true);
 
                     var buffer = new byte[1 << 16];
                     long read = 0, reported = 0;
                     int n;
-                    while ((n = await source.ReadAsync(buffer, ct)) > 0)
+                    while ((n = await source.ReadAsync(buffer, stall.Token)) > 0)
                     {
+                        stall.CancelAfter(StallTimeout);
                         await file.WriteAsync(buffer.AsMemory(0, n), ct);
                         read += n;
                         // Every chunk would flood the dispatcher; a quarter megabyte is smooth enough.
@@ -202,18 +223,24 @@ public sealed partial class Bootstrapper(HttpClient http, LaunchSettings launch,
                 Logger.Info(ident, $"Downloaded {package.Name}");
                 return;
             }
-            catch (Exception ex) when (attempt < 3 && !ct.IsCancellationRequested)
+            catch (Exception ex) when (!ct.IsCancellationRequested)
             {
-                Logger.Warn(ident, $"Attempt {attempt} for {package.Name} failed: {ex.Message}");
                 TryDelete(package.DownloadPath);
-                await Task.Delay(TimeSpan.FromSeconds(attempt), ct);
+                string reason = ex is OperationCanceledException ? $"no data for {StallTimeout.TotalSeconds:0}s" : ex.Message;
+                if (attempt >= 3)
+                    throw new HttpRequestException($"Couldn't download {package.Name} after 3 attempts ({reason})", ex);
+
+                Logger.Warn(ident, $"Attempt {attempt} for {package.Name} failed: {reason}");
+                await Task.Delay(TimeSpan.FromSeconds(attempt * 2), ct);
             }
         }
     }
 
     private static void ExtractPackage(Package package, string versionDir)
     {
-        string root = Path.GetFullPath(Path.Combine(versionDir, PackageManifest.PlayerDirectoryMap[package.Name]));
+        // Trailing separator so "...\version-ab" can't be matched by a sibling like "...\version-abc".
+        string root = Path.TrimEndingDirectorySeparator(
+            Path.GetFullPath(Path.Combine(versionDir, PackageManifest.PlayerDirectoryMap[package.Name]))) + Path.DirectorySeparatorChar;
         using var zip = ZipFile.OpenRead(package.DownloadPath);
 
         foreach (var entry in zip.Entries)
@@ -279,41 +306,63 @@ public sealed partial class Bootstrapper(HttpClient http, LaunchSettings launch,
                 .ToList()
             : new List<string>();
 
+        // A mod that can't be written (say, Roblox has the file open) is skipped and retried next
+        // launch instead of failing the whole launch. The manifest only records what really happened.
+        var applied = new List<string>();
+
         foreach (string rel in state.ModManifest.Except(mods, StringComparer.OrdinalIgnoreCase).ToList())
         {
             string target = Path.Combine(versionDir, rel), backup = Path.Combine(originals, rel);
-            if (File.Exists(backup))
+            try
             {
-                File.Copy(backup, target, overwrite: true);
-                File.Delete(backup);
+                if (File.Exists(backup))
+                {
+                    File.Copy(backup, target, overwrite: true);
+                    File.Delete(backup);
+                }
+                else if (File.Exists(target))
+                {
+                    File.Delete(target);
+                }
+                Logger.Info(ident, $"Removed mod {rel}");
             }
-            else
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
-                TryDelete(target);
+                Logger.Warn(ident, $"Couldn't remove mod {rel}, will retry: {ex.Message}");
+                applied.Add(rel);
             }
-            Logger.Info(ident, $"Removed mod {rel}");
         }
 
         foreach (string rel in mods)
         {
             string source = Path.Combine(Paths.Modifications, rel);
             string target = Path.Combine(versionDir, rel), backup = Path.Combine(originals, rel);
-
-            if (File.Exists(target) && !File.Exists(backup) && !state.ModManifest.Contains(rel, StringComparer.OrdinalIgnoreCase))
+            try
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(backup)!);
-                File.Copy(target, backup);
+                if (File.Exists(target) && !File.Exists(backup) && !state.ModManifest.Contains(rel, StringComparer.OrdinalIgnoreCase))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(backup)!);
+                    File.Copy(target, backup);
+                }
+
+                if (!File.Exists(target) || new FileInfo(target).Length != new FileInfo(source).Length || Md5Of(target) != Md5Of(source))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+                    File.Copy(source, target, overwrite: true);
+                    Logger.Info(ident, $"Applied mod {rel}");
+                }
+                applied.Add(rel);
             }
-
-            if (!File.Exists(target) || Md5Of(target) != Md5Of(source))
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(target)!);
-                File.Copy(source, target, overwrite: true);
-                Logger.Info(ident, $"Applied mod {rel}");
+                Logger.Warn(ident, $"Couldn't apply mod {rel}, will retry: {ex.Message}");
+                // Keep it tracked if an earlier launch did apply it, so removal still restores the original.
+                if (state.ModManifest.Contains(rel, StringComparer.OrdinalIgnoreCase))
+                    applied.Add(rel);
             }
         }
 
-        state.ModManifest = mods;
+        state.ModManifest = applied;
     }
 
     private static void WriteFastFlags(string versionDir)
@@ -335,6 +384,27 @@ public sealed partial class Bootstrapper(HttpClient http, LaunchSettings launch,
 
         using var process = Process.Start(psi) ?? throw new InvalidOperationException("Roblox did not start");
         Logger.Info("Bootstrapper::StartRoblox", $"Started Roblox (PID {process.Id})");
+    }
+
+    private static bool IsRobloxRunningFrom(string versionDir)
+    {
+        string dir = Path.TrimEndingDirectorySeparator(Path.GetFullPath(versionDir)) + Path.DirectorySeparatorChar;
+        foreach (var process in Process.GetProcessesByName(Path.GetFileNameWithoutExtension(PlayerExecutable)))
+        {
+            using (process)
+            {
+                try
+                {
+                    if (process.MainModule?.FileName?.StartsWith(dir, StringComparison.OrdinalIgnoreCase) == true)
+                        return true;
+                }
+                catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
+                {
+                    // Exited meanwhile, or not ours to inspect.
+                }
+            }
+        }
+        return false;
     }
 
     private static void CleanupOldVersions(string keep)

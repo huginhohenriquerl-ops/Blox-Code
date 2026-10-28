@@ -35,6 +35,10 @@ public static class Deployment
     // /versionStudio on every mirror returns this frozen value, which makes it a cheap health probe.
     private const string VersionStudioProbe = "version-012732894899482c";
 
+    // The shared HttpClient allows 10 minutes for big downloads; these small calls must fail fast.
+    private static readonly TimeSpan ProbeTimeout = TimeSpan.FromSeconds(8);
+    private static readonly TimeSpan InfoTimeout = TimeSpan.FromSeconds(15);
+
     public static string BaseUrl { get; private set; } = Mirrors[0];
 
     public static string GetLocation(string resource) => $"{BaseUrl}/channel/common{resource}";
@@ -45,6 +49,10 @@ public static class Deployment
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
         var pending = Mirrors.Select(m => TestConnection(http, m, cts.Token)).ToList();
         var errors = new List<Exception>();
+
+        // Losing probes keep running after we pick a winner; observe their faults so they aren't left unobserved.
+        foreach (var probe in pending)
+            _ = probe.ContinueWith(t => _ = t.Exception, TaskContinuationOptions.OnlyOnFaulted);
 
         while (pending.Count > 0)
         {
@@ -69,7 +77,17 @@ public static class Deployment
 
     private static async Task<string> TestConnection(HttpClient http, string mirror, CancellationToken ct)
     {
-        string body = await http.GetStringAsync($"{mirror}/versionStudio", ct);
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        timeout.CancelAfter(ProbeTimeout);
+        string body;
+        try
+        {
+            body = await http.GetStringAsync($"{mirror}/versionStudio", timeout.Token);
+        }
+        catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+        {
+            throw new TimeoutException($"{mirror} did not answer within {ProbeTimeout.TotalSeconds:0}s");
+        }
         if (body.Trim() != VersionStudioProbe)
             throw new InvalidDataException($"{mirror}/versionStudio returned an unexpected body");
         return mirror;
@@ -83,28 +101,37 @@ public static class Deployment
             ? $"/v2/client-version/{BinaryType}"
             : $"/v2/client-version/{BinaryType}/channel/{channel}";
         HttpStatusCode? lastStatus = null;
+        Exception? lastError = null;
 
         foreach (var host in new[] { "https://clientsettingscdn.roblox.com", "https://clientsettings.roblox.com" })
         {
             try
             {
-                using var response = await http.GetAsync(host + path, ct);
+                using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                timeout.CancelAfter(InfoTimeout);
+                using var response = await http.GetAsync(host + path, timeout.Token);
                 lastStatus = response.StatusCode;
                 if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden or HttpStatusCode.NotFound)
                     throw new InvalidChannelException(channel, response.StatusCode);
                 response.EnsureSuccessStatusCode();
 
-                var info = await response.Content.ReadFromJsonAsync<ClientVersion>(ct)
-                    ?? throw new InvalidDataException("Empty client-version response");
+                var info = await response.Content.ReadFromJsonAsync<ClientVersion>(timeout.Token);
+                if (info is null || !info.VersionGuid.StartsWith("version-", StringComparison.Ordinal))
+                    throw new InvalidDataException("Unexpected client-version response");
                 Logger.Info(ident, $"{channel}: {info.Version} ({info.VersionGuid}) via {host}");
                 return info;
             }
-            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException && !ct.IsCancellationRequested)
+            catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException or InvalidDataException
+                                       && !ct.IsCancellationRequested)
             {
+                lastError = ex;
                 Logger.Warn(ident, $"{host} failed: {ex.Message}");
             }
         }
 
+        // Only a real HTTP answer means the channel is bad; otherwise we simply couldn't reach Roblox.
+        if (lastStatus is null || (int)lastStatus >= 500)
+            throw new HttpRequestException($"Couldn't get the latest Roblox version ({lastError?.Message ?? "no response"})", lastError);
         throw new InvalidChannelException(channel, lastStatus);
     }
 }

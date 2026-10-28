@@ -25,16 +25,37 @@ public partial class App : Application
 
         DispatcherUnhandledException += OnUnhandledException;
 
+        try
+        {
+            await StartAsync(e.Args);
+        }
+        catch (Exception ex)
+        {
+            // Nothing is on screen yet and ShutdownMode is explicit: without this the process would
+            // linger invisibly forever.
+            Logger.Error("App::OnStartup", ex);
+            MessageDialog.Show(null, "Blox Code couldn't start", $"{ex.Message}\n\nLog: {Logger.FilePath}");
+            Shutdown(1);
+        }
+    }
+
+    private async Task StartAsync(string[] args)
+    {
         Store.Load();
         ThemeManager.Apply(Store.Settings.Theme);
+        ThemeManager.FollowSystemTheme();
 
-        var launch = LaunchSettings.Parse(e.Args);
+        var launch = LaunchSettings.Parse(args);
 
         if (launch.Upgrade)
         {
             // We are the new version, started from Temp\Updates: swap ourselves in and hand over.
             if (!Updater.ApplyUpgrade(launch.ForwardArgs))
-                MessageDialog.Show(null, "Update didn't finish", $"Blox Code couldn't replace its installed copy. It will try again next time.\n\nLog: {Logger.FilePath}");
+            {
+                MessageDialog.Show(null, "Update didn't finish", $"Blox Code couldn't replace its installed copy, so it'll keep using the current version and try again next time.\n\nLog: {Logger.FilePath}");
+                // Still do what the user originally asked for (e.g. join the game) with the old copy.
+                Updater.RunInstalled(launch.ForwardArgs);
+            }
             Shutdown();
             return;
         }
@@ -70,12 +91,53 @@ public partial class App : Application
                 break;
 
             default:
+                // One menu at a time: two would overwrite each other's settings. Bring the open one forward.
+                _menuLock = new Mutex(true, "BloxCode-Menu", out bool first);
+                if (!first)
+                {
+                    Logger.Info("App::Start", "Found an already existing menu window");
+                    FocusOtherInstance();
+                    Shutdown();
+                    return;
+                }
                 new MainWindow().Show();
                 break;
         }
 
         ShutdownMode = ShutdownMode.OnLastWindowClose;
     }
+
+    private static Mutex? _menuLock;
+
+    protected override void OnExit(ExitEventArgs e)
+    {
+        _menuLock?.Dispose();
+        base.OnExit(e);
+    }
+
+    private static void FocusOtherInstance()
+    {
+        using var current = System.Diagnostics.Process.GetCurrentProcess();
+        foreach (var process in System.Diagnostics.Process.GetProcessesByName(current.ProcessName))
+        {
+            using (process)
+            {
+                if (process.Id == current.Id || process.MainWindowHandle == IntPtr.Zero)
+                    continue;
+                ShowWindow(process.MainWindowHandle, SW_RESTORE);
+                SetForegroundWindow(process.MainWindowHandle);
+                return;
+            }
+        }
+    }
+
+    private const int SW_RESTORE = 9;
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
     /// <summary>
     /// Every start of the installed copy asks the release feed for something newer. The check is
@@ -114,5 +176,9 @@ public partial class App : Application
         Logger.Error("App::OnUnhandledException", e.Exception);
         e.Handled = true;
         MessageDialog.Show(null, "Something went wrong", e.Exception.Message + $"\n\nLog: {Logger.FilePath}");
+
+        // If the failure took the only window with it, don't leave a headless process behind.
+        if (!Windows.OfType<Window>().Any(w => w.IsVisible))
+            Shutdown(1);
     }
 }
