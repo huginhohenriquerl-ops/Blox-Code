@@ -140,8 +140,22 @@ public partial class AddFlagDialog : Window
     private void OnLoadFile(object sender, RoutedEventArgs e)
     {
         var picker = new OpenFileDialog { Filter = "JSON files|*.json|All files|*.*", Title = "Import Fast Flags" };
-        if (picker.ShowDialog(this) == true)
+        if (picker.ShowDialog(this) != true)
+            return;
+        try
+        {
+            // A real flag config is a few KB; refuse something huge that would freeze the editor.
+            if (new FileInfo(picker.FileName).Length > 2 * 1024 * 1024)
+            {
+                SetHint(JsonHint, "That file is too big to be a Fast Flags config (over 2 MB).", "");
+                return;
+            }
             JsonBox.Text = File.ReadAllText(picker.FileName);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            SetHint(JsonHint, $"Couldn't read that file: {ex.Message}", "");
+        }
     }
 
     // ===== Shared =====

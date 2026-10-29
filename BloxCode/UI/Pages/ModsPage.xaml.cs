@@ -31,5 +31,5 @@ public partial class ModsPage : UserControl
     private void OnRefresh(object sender, RoutedEventArgs e) => Refresh();
 
     private void OnOpenFolder(object sender, RoutedEventArgs e) =>
-        Process.Start(new ProcessStartInfo(Paths.Modifications) { UseShellExecute = true });
+        Shell.Open(Paths.Modifications, Window.GetWindow(this));
 }

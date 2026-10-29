@@ -269,8 +269,8 @@ public partial class FastFlagEditorPage : UserControl
 
     private void OnExport(object sender, RoutedEventArgs e)
     {
-        Clipboard.SetText(JsonSerializer.Serialize(Store.Settings.FastFlags, new JsonSerializerOptions { WriteIndented = true }));
-        ShowToast("Copied to clipboard.");
+        string json = JsonSerializer.Serialize(Store.Settings.FastFlags, new JsonSerializerOptions { WriteIndented = true });
+        ShowToast(Shell.TryCopy(json) ? "Copied to clipboard." : "The clipboard is busy — try again.");
     }
 
     private void OnSearchChanged(object sender, TextChangedEventArgs e)
@@ -289,5 +289,5 @@ public partial class FastFlagEditorPage : UserControl
     private void OnBack(object sender, RoutedEventArgs e) => _window.ShowPage(new FastFlagsPage(_window));
 
     private void OnAllowlistLink(object sender, RoutedEventArgs e) =>
-        Process.Start(new ProcessStartInfo(AllowlistUrl) { UseShellExecute = true });
+        Shell.Open(AllowlistUrl, Window.GetWindow(this));
 }

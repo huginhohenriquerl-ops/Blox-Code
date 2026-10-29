@@ -27,6 +27,8 @@ com o REA MCP e reescrito do zero em C#/WPF — veja [docs/REVERSE_ENGINEERING.m
   com o Clawd andando em cima da barra de progresso, trabalhando ao extrair e pulando no final.
 - Tema Sistema / Claro / Escuro.
 
+O que mudou em cada versão está no [log de atualizações](CHANGELOG.md).
+
 ## Rodar e compilar
 
 Requer o .NET SDK 10.

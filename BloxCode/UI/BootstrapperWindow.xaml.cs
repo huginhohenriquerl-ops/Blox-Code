@@ -310,7 +310,7 @@ public partial class BootstrapperWindow : Window
     private void OnOpenLog(object sender, RoutedEventArgs e)
     {
         if (Logger.FilePath is not null)
-            Process.Start(new ProcessStartInfo(Logger.FilePath) { UseShellExecute = true });
+            Shell.Open(Logger.FilePath, this);
     }
 
     private void OnKeyDown(object sender, KeyEventArgs e)

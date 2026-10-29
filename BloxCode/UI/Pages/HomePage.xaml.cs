@@ -50,7 +50,7 @@ public partial class HomePage : UserControl
             Banner.Visibility = Visibility.Visible;
             BannerTitle.Text = $"✻ Updated to v{_updatedNotice}";
             BannerText.Text = "Blox Code reinstalled itself with the latest release.";
-            BannerButton.Content = "Got it";
+            BannerButton.Content = Updater.Repository is null ? "Got it" : "What's new";
             DesktopShortcut.Visibility = DesktopShortcutLabel.Visibility = Visibility.Collapsed;
         }
         else if (!Installer.IsInstalled)
@@ -85,6 +85,8 @@ public partial class HomePage : UserControl
     {
         if (_updatedNotice is not null)
         {
+            if (Updater.Repository is { } repo)
+                Shell.Open($"https://github.com/{repo}/releases/tag/v{_updatedNotice}", _window);
             DesktopShortcut.Visibility = DesktopShortcutLabel.Visibility = Visibility.Visible;
             _updatedNotice = null;
             Banner.Visibility = Visibility.Collapsed;
@@ -154,7 +156,7 @@ public partial class HomePage : UserControl
     private void OnFastFlags(object sender, RoutedEventArgs e) => _window.Navigate("FastFlags");
 
     private void OnModsFolder(object sender, RoutedEventArgs e) =>
-        Process.Start(new ProcessStartInfo(Paths.Modifications) { UseShellExecute = true });
+        Shell.Open(Paths.Modifications, _window);
 
     private void OnReinstall(object sender, RoutedEventArgs e)
     {

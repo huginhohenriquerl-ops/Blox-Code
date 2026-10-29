@@ -35,6 +35,9 @@ public sealed partial class Bootstrapper(HttpClient http, LaunchSettings launch,
     [GeneratedRegex("channel:([a-zA-Z0-9-_]+)", RegexOptions.IgnoreCase)]
     private static partial Regex ChannelArgRegex();
 
+    [GeneratedRegex("^[a-z0-9_-]{1,64}$")]
+    private static partial Regex ValidChannelRegex();
+
     public string? VersionGuid { get; private set; }
 
     public async Task RunAsync(CancellationToken ct)
@@ -87,10 +90,14 @@ public sealed partial class Bootstrapper(HttpClient http, LaunchSettings launch,
 
     private async Task<(string Channel, ClientVersion Info)> ResolveVersion(CancellationToken ct)
     {
-        string channel = launch.Channel ?? ChannelFromArgs() ?? Store.Settings.Channel;
-        if (string.IsNullOrWhiteSpace(channel))
+        string channel = (launch.Channel ?? ChannelFromArgs() ?? Store.Settings.Channel ?? "").Trim().ToLowerInvariant();
+        // The channel ends up in a URL path; anything but a plain name (spaces, slashes) is a typo.
+        if (!ValidChannelRegex().IsMatch(channel))
+        {
+            if (channel.Length > 0)
+                Logger.Warn("Bootstrapper::ResolveVersion", $"Ignoring invalid channel '{channel}'");
             channel = Deployment.DefaultChannel;
-        channel = channel.ToLowerInvariant();
+        }
 
         try
         {
@@ -272,8 +279,20 @@ public sealed partial class Bootstrapper(HttpClient http, LaunchSettings launch,
 
         Report(BootstrapPhase.Installing, "Installing WebView2 runtime");
         using var process = Process.Start(new ProcessStartInfo(installer, "/silent /install") { UseShellExecute = false });
-        if (process is not null)
-            await process.WaitForExitAsync(ct);
+        if (process is null)
+            return;
+
+        // A stuck installer must not hold the launch hostage; Roblox can still start without it.
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        timeout.CancelAfter(TimeSpan.FromMinutes(3));
+        try
+        {
+            await process.WaitForExitAsync(timeout.Token);
+        }
+        catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+        {
+            Logger.Warn(ident, "WebView2 installer didn't finish within 3 minutes; continuing without waiting");
+        }
     }
 
     private static bool IsWebView2Installed()
@@ -379,8 +398,10 @@ public sealed partial class Bootstrapper(HttpClient http, LaunchSettings launch,
         {
             WorkingDirectory = versionDir,
             UseShellExecute = false,
-            Arguments = launch.RobloxArgs,
         };
+        // One argument, quoted if needed: a link with a space or quote can't split into several.
+        if (launch.RobloxArgs.Length > 0)
+            psi.ArgumentList.Add(launch.RobloxArgs);
 
         using var process = Process.Start(psi) ?? throw new InvalidOperationException("Roblox did not start");
         Logger.Info("Bootstrapper::StartRoblox", $"Started Roblox (PID {process.Id})");

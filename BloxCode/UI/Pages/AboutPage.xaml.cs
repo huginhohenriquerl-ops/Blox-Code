@@ -22,7 +22,7 @@ public partial class AboutPage : UserControl
         Mascot.Mood = ClawdMood.Idle;
     }
 
-    private static void Open(string target) => Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
+    private void Open(string target) => Shell.Open(target, Window.GetWindow(this));
 
     private void OnOpenBase(object sender, RoutedEventArgs e) => Open(Paths.Base);
     private void OnOpenLogs(object sender, RoutedEventArgs e) => Open(Paths.Logs);

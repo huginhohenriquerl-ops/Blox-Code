@@ -61,10 +61,11 @@ public static class Installer
             key.SetValue("NoRepair", 1, RegistryValueKind.DWord);
         }
 
-        ShellLink.Create(StartMenuShortcut, Paths.Application, "", "Blox Code settings");
-        ShellLink.Create(PlayShortcut, Paths.Application, "-player", "Play Roblox with Blox Code");
+        // A shortcut failing (locked file, odd shell setup) shouldn't leave a half-done install.
+        TryShortcut(StartMenuShortcut, "", "Blox Code settings");
+        TryShortcut(PlayShortcut, "-player", "Play Roblox with Blox Code");
         if (desktopShortcut)
-            ShellLink.Create(DesktopShortcut, Paths.Application, "", "Blox Code");
+            TryShortcut(DesktopShortcut, "", "Blox Code");
 
         File.WriteAllText(Path.Combine(Paths.Modifications, "README.txt"),
             "Files placed here are copied over the Roblox installation every launch.\r\n" +
@@ -72,6 +73,18 @@ public static class Installer
             "Delete a file to restore the original.\r\n");
 
         Logger.Info(ident, "Installation finished");
+    }
+
+    private static void TryShortcut(string lnkPath, string arguments, string description)
+    {
+        try
+        {
+            ShellLink.Create(lnkPath, Paths.Application, arguments, description);
+        }
+        catch (Exception ex)
+        {
+            Logger.Warn("Installer::TryShortcut", $"Couldn't create {lnkPath}: {ex.Message}");
+        }
     }
 
     /// <summary>After a self-update: keep Apps &amp; Features showing the right version.</summary>

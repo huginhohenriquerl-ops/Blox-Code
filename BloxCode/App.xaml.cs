@@ -19,14 +19,21 @@ public partial class App : Application
         // Start-up dialogs must not count as "the last window" and end the app early.
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-        Paths.EnsureCreated();
-        Logger.Initialize();
-        Logger.Info("App::OnStartup", $"Blox Code {Version} - args: {string.Join(' ', e.Args)}");
-
+        // Hooked first, so even a failure creating the data folder is caught and logged.
         DispatcherUnhandledException += OnUnhandledException;
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+            Logger.Error("App::UnhandledException", args.ExceptionObject as Exception ?? new Exception(args.ExceptionObject?.ToString()));
+        TaskScheduler.UnobservedTaskException += (_, args) =>
+        {
+            Logger.Error("App::UnobservedTaskException", args.Exception);
+            args.SetObserved();
+        };
 
         try
         {
+            Paths.EnsureCreated();
+            Logger.Initialize();
+            Logger.Info("App::OnStartup", $"Blox Code {Version} - args: {string.Join(' ', e.Args)}");
             await StartAsync(e.Args);
         }
         catch (Exception ex)
@@ -108,6 +115,7 @@ public partial class App : Application
     }
 
     private static Mutex? _menuLock;
+    private bool _reportingError;
 
     protected override void OnExit(ExitEventArgs e)
     {
@@ -163,7 +171,12 @@ public partial class App : Application
 
     private static HttpClient CreateHttpClient()
     {
-        var http = new HttpClient(new SocketsHttpHandler { AutomaticDecompression = System.Net.DecompressionMethods.All })
+        var http = new HttpClient(new SocketsHttpHandler
+        {
+            AutomaticDecompression = System.Net.DecompressionMethods.All,
+            // Fail fast on a host that never accepts the connection instead of waiting on the OS (~21 s).
+            ConnectTimeout = TimeSpan.FromSeconds(10),
+        })
         {
             Timeout = TimeSpan.FromMinutes(10),
         };
@@ -175,7 +188,23 @@ public partial class App : Application
     {
         Logger.Error("App::OnUnhandledException", e.Exception);
         e.Handled = true;
-        MessageDialog.Show(null, "Something went wrong", e.Exception.Message + $"\n\nLog: {Logger.FilePath}");
+
+        // If showing the dialog itself fails, don't recurse into this handler forever.
+        if (_reportingError)
+            return;
+        _reportingError = true;
+        try
+        {
+            MessageDialog.Show(null, "Something went wrong", e.Exception.Message + $"\n\nLog: {Logger.FilePath}");
+        }
+        catch (Exception dialogError)
+        {
+            Logger.Error("App::OnUnhandledException", dialogError);
+        }
+        finally
+        {
+            _reportingError = false;
+        }
 
         // If the failure took the only window with it, don't leave a headless process behind.
         if (!Windows.OfType<Window>().Any(w => w.IsVisible))
