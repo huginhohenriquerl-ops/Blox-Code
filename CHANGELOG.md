@@ -9,6 +9,10 @@ O Blox Code agora roda no Linux, nas distros baseadas no **Arch** (Arch, CachyOS
 Manjaro) e no **Debian/Ubuntu** (Ubuntu, Linux Mint, Pop!_OS, Zorin, Debian). Vem num único arquivo,
 o `BloxCode-x86_64.AppImage`, com o mesmo tema do Claude desktop e o Bit.
 
+> **Primeira versão para Linux.** O AppImage passa nos testes automáticos no Ubuntu, no Debian e no
+> Arch, mas jogar de verdade pelo Sober ainda está sendo testado num PC real. Se algo não funcionar,
+> use **Behaviour → Export diagnostics** e abra uma issue com o zip.
+
 ### Como funciona no Linux
 
 - **Via Sober.** O Roblox para Windows não roda mais no Wine (o anti-cheat bloqueia), então o
