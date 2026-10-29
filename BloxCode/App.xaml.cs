@@ -51,6 +51,8 @@ public partial class App : Application
         Store.Load();
         ThemeManager.Apply(Store.Settings.Theme);
         ThemeManager.FollowSystemTheme();
+        // After a self-update the Apps & Features entry must show the new version.
+        Updater.AfterUpgrade = Installer.RefreshAfterUpgrade;
 
         var launch = LaunchSettings.Parse(args);
 

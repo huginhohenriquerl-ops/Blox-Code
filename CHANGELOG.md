@@ -3,6 +3,12 @@
 Todas as versões do Blox Code, da mais nova para a mais antiga. Quem tem o Blox Code instalado
 recebe cada versão automaticamente na próxima vez que abrir.
 
+## 1.1.1 — Versão certa em Aplicativos
+
+- **Windows:** depois de se atualizar sozinho para a 1.1.0, o Blox Code continuava aparecendo como
+  1.0.3 em Configurações → Aplicativos (o programa em si já era o novo). Agora a versão mostrada
+  acompanha cada atualização. Nada muda no Linux.
+
 ## 1.1.0 — Blox Code no Linux
 
 O Blox Code agora roda no Linux, nas distros baseadas no **Arch** (Arch, CachyOS, EndeavourOS,
