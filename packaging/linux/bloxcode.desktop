@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Blox Code
+GenericName=Roblox Launcher
+Comment=Play Roblox through Sober, with Fast Flags and mods
+Exec=bloxcode %u
+Icon=bloxcode
+Terminal=false
+Categories=Game;
+Keywords=roblox;sober;fastflags;mods;
+StartupWMClass=bloxcode

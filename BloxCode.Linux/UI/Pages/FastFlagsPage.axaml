@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:BloxCode.Linux.UI"
+             x:Class="BloxCode.Linux.UI.Pages.FastFlagsPage">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="720" Margin="40,8,40,40">
+            <TextBlock Text="Fast Flags" Classes="h1" />
+            <TextBlock Classes="muted" Margin="0,0,0,20"
+                       Text="Fast Flags tweak how Roblox renders. Blox Code writes them into Sober's config.json as soon as you change them, so they apply however you start Roblox." />
+
+            <Border Classes="card">
+                <StackPanel>
+                    <TextBlock Text="Anti-aliasing (MSAA)" Classes="h2" />
+                    <TextBlock Classes="muted" Margin="0,3,0,10" Text="Smooths jagged edges. Higher costs more GPU time." />
+                    <Border Classes="segmented">
+                        <StackPanel x:Name="MsaaSegments" Orientation="Horizontal" />
+                    </Border>
+
+                    <Border Classes="divider" />
+
+                    <TextBlock Text="Texture quality" Classes="h2" />
+                    <TextBlock Classes="muted" Margin="0,3,0,10" Text="Forces a texture level instead of Roblox's automatic choice. Lower helps on GPUs with 2 GB of memory or less." />
+                    <Border Classes="segmented">
+                        <StackPanel x:Name="TextureSegments" Orientation="Horizontal" />
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- Entry to the editor, like Bloxstrap's "Fast Flag Editor" button -->
+            <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="0" Click="OnOpenEditor" CornerRadius="14">
+                <Border Classes="card" Margin="0">
+                    <DockPanel>
+                        <ui:IconView DockPanel.Dock="Right" Data="{StaticResource Icon.Back}" Width="16" Height="16" RenderTransform="rotate(180deg)" />
+                        <StackPanel>
+                            <TextBlock Text="Fast Flag Editor" Classes="h2" />
+                            <TextBlock x:Name="EditorSummary" Classes="muted" Margin="0,3,0,0" />
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+            </Button>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

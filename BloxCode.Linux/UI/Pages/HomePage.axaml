@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:BloxCode.Linux.UI"
+             x:Class="BloxCode.Linux.UI.Pages.HomePage">
+    <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Auto">
+        <Grid x:Name="Layout" MaxWidth="700" Margin="40,0,40,0" RowDefinitions="Auto,*,Auto,2*">
+            <!-- Things that need doing: Sober, the install, the link handler, NVIDIA -->
+            <StackPanel x:Name="Banners" Margin="0,8,0,0" />
+
+            <StackPanel Grid.Row="2">
+                <!-- Greeting -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,26">
+                    <ui:BitMascot x:Name="Mascot" Unit="2.6" VerticalAlignment="Center" Margin="0,0,18,4"
+                                  Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" />
+                    <TextBlock x:Name="Greeting" Classes="display" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <!-- Composer -->
+                <Border Background="{DynamicResource Brush.Surface}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1"
+                        CornerRadius="18" Padding="18,14,12,12" BoxShadow="0 4 24 0 #14000000">
+                    <StackPanel>
+                        <TextBox x:Name="Composer" Classes="bare" Watermark="Paste a Roblox game link or place ID…"
+                                 KeyDown="OnComposerKeyDown" TextChanged="OnComposerChanged" />
+                        <DockPanel Margin="0,14,0,0">
+                            <Button x:Name="SendButton" DockPanel.Dock="Right" Classes="primary send" Click="OnSend" ToolTip.Tip="Launch">
+                                <ui:IconView Data="{StaticResource Icon.Up}" Width="16" Height="16" StrokeThickness="2" />
+                            </Button>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Border CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Border}" Padding="8,3" Margin="0,0,8,0">
+                                    <TextBlock Text="sober" Classes="mono" />
+                                </Border>
+                                <TextBlock x:Name="ComposerHint" Classes="muted" VerticalAlignment="Center" Text="Enter to launch · empty opens the Roblox app" />
+                            </StackPanel>
+                        </DockPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Suggestion chips -->
+                <WrapPanel HorizontalAlignment="Center" Margin="0,16,0,0">
+                    <Button Classes="chip" Click="OnOpenRoblox">
+                        <StackPanel Orientation="Horizontal" Spacing="7"><ui:IconView Data="{StaticResource Icon.Play}" Width="13" Height="13" /><TextBlock Text="Open Roblox" /></StackPanel>
+                    </Button>
+                    <Button Classes="chip" Click="OnFastFlags">
+                        <StackPanel Orientation="Horizontal" Spacing="7"><ui:IconView Data="{StaticResource Icon.Flag}" Width="13" Height="13" /><TextBlock Text="Fast Flags" /></StackPanel>
+                    </Button>
+                    <Button Classes="chip" Click="OnMods">
+                        <StackPanel Orientation="Horizontal" Spacing="7"><ui:IconView Data="{StaticResource Icon.Box}" Width="13" Height="13" /><TextBlock Text="Mods" /></StackPanel>
+                    </Button>
+                    <Button Classes="chip" Click="OnSober">
+                        <StackPanel Orientation="Horizontal" Spacing="7"><ui:IconView Data="{StaticResource Icon.Sober}" Width="13" Height="13" /><TextBlock Text="Sober settings" /></StackPanel>
+                    </Button>
+                </WrapPanel>
+
+                <TextBlock x:Name="StatusLine" Classes="mono" HorizontalAlignment="Center" Margin="0,22,0,0" />
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

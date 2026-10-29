@@ -1,0 +1,130 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:BloxCode.Linux.UI"
+             xmlns:pages="clr-namespace:BloxCode.Linux.UI.Pages"
+             x:Class="BloxCode.Linux.UI.Pages.FastFlagEditorPage">
+    <Grid MaxWidth="900" Margin="40,0,40,24" RowDefinitions="Auto,Auto,Auto,*,Auto">
+        <!-- Header -->
+        <StackPanel>
+            <Button HorizontalAlignment="Left" Padding="8,5" Margin="-8,0,0,4" Click="OnBack">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <ui:IconView Data="{StaticResource Icon.Back}" Width="14" Height="14" />
+                    <TextBlock Text="Fast Flags" />
+                </StackPanel>
+            </Button>
+            <TextBlock Text="Fast Flag Editor" Classes="h1" />
+            <TextBlock Classes="muted" Text="Manage your own Fast Flags. Changes save as you go and go straight into Sober's config.json (booleans and numbers as real JSON values)." />
+        </StackPanel>
+
+        <!-- Allow-list notice (Bloxstrap shows the same warning) -->
+        <Border Grid.Row="1" Background="{DynamicResource Brush.AccentSoft}" CornerRadius="10" Padding="14,10" Margin="0,14,0,0">
+            <DockPanel>
+                <ui:IconView DockPanel.Dock="Left" Data="{StaticResource Icon.Info}" Foreground="{DynamicResource Brush.Accent}" Margin="0,1,10,0" VerticalAlignment="Top" />
+                <WrapPanel>
+                    <TextBlock Classes="muted" Foreground="{DynamicResource Brush.TextSecondary}" Margin="0,0,6,0"
+                               Text="Roblox only reads Fast Flags on its allow-list (in Sober too), so most custom flags have no effect." />
+                    <Button Classes="link" Content="Read the announcement" FontSize="12.5" Click="OnAllowlistLink" />
+                </WrapPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Toolbar -->
+        <DockPanel Grid.Row="2" Margin="0,16,0,10">
+            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="8">
+                <Button Classes="primary" Click="OnAddNew">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <ui:IconView Data="{StaticResource Icon.Plus}" Width="14" Height="14" StrokeThickness="2" />
+                        <TextBlock Text="Add new" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="DeleteButton" Classes="secondary" Click="OnDeleteSelected" IsEnabled="False">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <ui:IconView Data="{StaticResource Icon.Trash}" Width="14" Height="14" />
+                        <TextBlock x:Name="DeleteText" Text="Delete selected" />
+                    </StackPanel>
+                </Button>
+                <Button Click="OnExport" ToolTip.Tip="Copy every flag as JSON">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <ui:IconView Data="{StaticResource Icon.Copy}" Width="14" Height="14" />
+                        <TextBlock Text="Export JSON" />
+                    </StackPanel>
+                </Button>
+                <TextBlock x:Name="Toast" Classes="muted ok" VerticalAlignment="Center" Margin="2,0,0,0" />
+            </StackPanel>
+            <TextBox x:Name="SearchBox" Width="220" HorizontalAlignment="Right" Watermark="Search flags…" TextChanged="OnSearchChanged" />
+        </DockPanel>
+
+        <!-- List -->
+        <Border Grid.Row="3" Background="{DynamicResource Brush.Surface}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1" CornerRadius="14" ClipToBounds="True">
+            <Grid RowDefinitions="Auto,*">
+                <!-- Column headers -->
+                <Border BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1" Padding="14,10,14,10">
+                    <Grid ColumnDefinitions="30,3*,2*,96,40">
+                        <CheckBox x:Name="SelectAll" Theme="{StaticResource Check}" Click="OnSelectAll" ToolTip.Tip="Select all shown" />
+                        <TextBlock Grid.Column="1" Text="Name" Classes="section" Margin="2,0,0,0" />
+                        <TextBlock Grid.Column="2" Text="Value" Classes="section" Margin="10,0,0,0" />
+                        <TextBlock Grid.Column="3" Text="Type" Classes="section" Margin="10,0,0,0" />
+                    </Grid>
+                </Border>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="FlagList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="pages:FlagEntry">
+                                <Border Classes="row" Classes.selected="{Binding IsChecked}" Padding="14,6"
+                                        BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1">
+                                    <Grid ColumnDefinitions="30,3*,2*,96,40" RowDefinitions="Auto,Auto">
+                                        <CheckBox Theme="{StaticResource Check}" IsChecked="{Binding IsChecked}" />
+
+                                        <TextBox Grid.Column="1" Classes="mono" Padding="8,5"
+                                                 Text="{Binding Name, UpdateSourceTrigger=LostFocus}" Watermark="FFlagName" />
+
+                                        <!-- Value: a switch for booleans, a text box for everything else -->
+                                        <Panel Grid.Column="2" Margin="10,0,0,0">
+                                            <TextBox Classes="mono" Padding="8,5" IsVisible="{Binding !IsBool}"
+                                                     Text="{Binding Value, UpdateSourceTrigger=LostFocus}" Watermark="value" />
+                                            <StackPanel Orientation="Horizontal" IsVisible="{Binding IsBool}" Margin="2,0,0,0">
+                                                <CheckBox Theme="{StaticResource Toggle}" IsChecked="{Binding BoolValue}" />
+                                                <TextBlock Text="{Binding Value}" FontFamily="{StaticResource Font.Mono}" FontSize="12.5" Margin="10,0,0,0" VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </Panel>
+
+                                        <Border Grid.Column="3" Classes="badge" Margin="10,0,0,0">
+                                            <TextBlock Text="{Binding KindText}" FontSize="11.5" Foreground="{DynamicResource Brush.TextSecondary}" />
+                                        </Border>
+
+                                        <Button Grid.Column="4" Padding="8,6" HorizontalAlignment="Right" Click="OnDeleteRow" ToolTip.Tip="Delete">
+                                            <ui:IconView Data="{StaticResource Icon.Trash}" Width="14" Height="14" />
+                                        </Button>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" Text="{Binding Error}" Classes="muted error"
+                                                   Margin="2,4,0,0" IsVisible="{Binding HasError}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <!-- Empty state -->
+                <StackPanel x:Name="EmptyState" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,40">
+                    <ui:BitMascot x:Name="EmptyMascot" Unit="3" HorizontalAlignment="Center"
+                                  Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" />
+                    <TextBlock x:Name="EmptyTitle" Text="No custom flags yet" Classes="h2" HorizontalAlignment="Center" Margin="0,14,0,4" />
+                    <TextBlock x:Name="EmptyText" Classes="muted" HorizontalAlignment="Center" TextAlignment="Center"
+                               Text="Add one by name, or paste a whole JSON config." />
+                    <Button x:Name="EmptyButton" Classes="secondary" Content="Add new" HorizontalAlignment="Center" Margin="0,14,0,0" Click="OnAddNew" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <DockPanel Grid.Row="4" Margin="4,10,0,0">
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                <TextBlock Text="Show preset flags" Classes="muted" VerticalAlignment="Center" Margin="0,0,10,0" />
+                <CheckBox x:Name="ShowPresets" Theme="{StaticResource Toggle}" Click="OnShowPresetsChanged"
+                          ToolTip.Tip="Flags managed by the toggles on the Fast Flags page" />
+            </StackPanel>
+            <TextBlock x:Name="Summary" Classes="mono" VerticalAlignment="Center" />
+        </DockPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:BloxCode.Linux.UI"
+             x:Class="BloxCode.Linux.UI.Pages.AppearancePage">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="720" Margin="40,8,40,40">
+            <TextBlock Text="Appearance" Classes="h1" />
+            <TextBlock Classes="muted" Margin="0,0,0,20" Text="How Blox Code looks. System follows your desktop's light or dark setting." />
+
+            <Border Classes="card">
+                <StackPanel>
+                    <TextBlock Text="Theme" Classes="h2" Margin="0,0,0,10" />
+                    <Border Classes="segmented">
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton x:Name="ThemeSystem" Theme="{StaticResource Segment}" GroupName="theme" Content="System" IsCheckedChanged="OnThemeChanged" />
+                            <RadioButton x:Name="ThemeLight" Theme="{StaticResource Segment}" GroupName="theme" Content="Light" IsCheckedChanged="OnThemeChanged" />
+                            <RadioButton x:Name="ThemeDark" Theme="{StaticResource Segment}" GroupName="theme" Content="Dark" IsCheckedChanged="OnThemeChanged" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <Border Classes="card">
+                <DockPanel>
+                    <ui:BitMascot x:Name="Mascot" DockPanel.Dock="Left" Unit="3" Margin="0,0,20,0" VerticalAlignment="Center"
+                                  Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" />
+                    <StackPanel VerticalAlignment="Center">
+                        <DockPanel>
+                            <CheckBox x:Name="AnimateMascot" DockPanel.Dock="Right" Theme="{StaticResource Toggle}" IsCheckedChanged="OnAnimateChanged" />
+                            <StackPanel>
+                                <TextBlock Text="Animate Bit" Classes="h2" />
+                                <TextBlock Classes="muted" Margin="0,2,0,0" Text="Bit breathes, blinks, walks the progress bar and hops when Roblox starts." />
+                            </StackPanel>
+                        </DockPanel>
+                        <Button Classes="secondary" Content="Preview the launch screen" HorizontalAlignment="Left" Margin="0,14,0,0" Click="OnPreview" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

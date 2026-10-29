@@ -7,10 +7,6 @@ using Microsoft.Win32;
 
 namespace BloxCode.Core;
 
-public enum BootstrapPhase { Connecting, Checking, Downloading, Installing, Launching, Done }
-
-public sealed record BootstrapProgress(BootstrapPhase Phase, string Status, double? Fraction = null, string? Detail = null);
-
 /// <summary>
 /// Keeps the Roblox player up to date and launches it. The flow mirrors what was recovered from
 /// Bloxstrap.Bootstrapper: pick a mirror, resolve the channel's latest version, download packages

@@ -1,0 +1,23 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:BloxCode.Linux.UI"
+        x:Class="BloxCode.Linux.UI.MessageDialog"
+        Title="Blox Code" Width="440" SizeToContent="Height" CanResize="False"
+        SystemDecorations="None" WindowStartupLocation="CenterScreen" ShowInTaskbar="True">
+    <Border Classes="frame">
+        <StackPanel x:Name="Body" Margin="24,22,24,18">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <ui:BitMascot x:Name="Mascot" Unit="1.6" VerticalAlignment="Center" Margin="0,0,12,0"
+                              Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" />
+                <TextBlock x:Name="TitleText" Classes="h1" FontSize="21" Margin="0" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="320" />
+            </StackPanel>
+            <SelectableTextBlock x:Name="MessageText" FontSize="14" TextWrapping="Wrap" LineHeight="21"
+                                 Foreground="{DynamicResource Brush.TextSecondary}" />
+            <StackPanel x:Name="Commands" Margin="0,8,0,0" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0" Spacing="8">
+                <Button x:Name="SecondaryButton" Click="OnSecondary" IsCancel="True" />
+                <Button x:Name="PrimaryButton" Classes="primary" Click="OnPrimary" IsDefault="True" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

@@ -1,0 +1,72 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:BloxCode.Linux.UI"
+        x:Class="BloxCode.Linux.UI.Pages.AddFlagDialog"
+        Title="Add Fast Flag" Width="540" SizeToContent="Height" CanResize="False"
+        SystemDecorations="None" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <Border Classes="frame">
+        <StackPanel>
+            <DockPanel x:Name="TitleBar" Height="48" Margin="24,0,0,0" Background="Transparent">
+                <Button DockPanel.Dock="Right" Classes="caption close" Click="OnCancel" VerticalAlignment="Top">
+                    <ui:IconView Data="{StaticResource Icon.Close}" Width="14" Height="14" StrokeThickness="1.4" />
+                </Button>
+                <TextBlock Text="Add Fast Flag" FontFamily="{StaticResource Font.Serif}" FontSize="20" VerticalAlignment="Center" />
+            </DockPanel>
+
+            <StackPanel Margin="24,4,24,20">
+                <Border Classes="segmented" Margin="0,0,0,16">
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton x:Name="SingleTab" Theme="{StaticResource Segment}" GroupName="AddMode" Content="Add single" IsChecked="True" IsCheckedChanged="OnTabChanged" />
+                        <RadioButton x:Name="ImportTab" Theme="{StaticResource Segment}" GroupName="AddMode" Content="Import JSON" IsCheckedChanged="OnTabChanged" />
+                    </StackPanel>
+                </Border>
+
+                <!-- ===== Add single ===== -->
+                <StackPanel x:Name="SinglePanel">
+                    <TextBlock Text="Name" Classes="h2" FontSize="13" Margin="0,0,0,6" />
+                    <TextBox x:Name="NameBox" Classes="mono" Watermark="e.g. FFlagDebugGraphicsPreferVulkan" TextChanged="OnNameChanged" />
+
+                    <!-- Quick prefixes: one click starts the name with the right type -->
+                    <WrapPanel x:Name="PrefixChips" Margin="0,8,0,0" />
+
+                    <TextBlock x:Name="NameHint" Classes="muted" Margin="0,6,0,0" />
+
+                    <TextBlock Text="Value" Classes="h2" FontSize="13" Margin="0,16,0,6" />
+                    <Border x:Name="BoolValueHost" Classes="segmented" IsVisible="False">
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton x:Name="ValueTrue" Theme="{StaticResource Segment}" GroupName="BoolValue" Content="True" IsChecked="True" IsCheckedChanged="OnValueToggled" />
+                            <RadioButton x:Name="ValueFalse" Theme="{StaticResource Segment}" GroupName="BoolValue" Content="False" IsCheckedChanged="OnValueToggled" />
+                        </StackPanel>
+                    </Border>
+                    <TextBox x:Name="ValueBox" Classes="mono" Watermark="value" TextChanged="OnNameChanged" />
+                    <TextBlock x:Name="ValueHint" Classes="muted" Margin="0,6,0,0" />
+                </StackPanel>
+
+                <!-- ===== Import JSON ===== -->
+                <StackPanel x:Name="ImportPanel" IsVisible="False">
+                    <DockPanel Margin="0,0,0,6">
+                        <Button DockPanel.Dock="Right" Padding="8,4" Click="OnLoadFile">
+                            <StackPanel Orientation="Horizontal" Spacing="7">
+                                <ui:IconView Data="{StaticResource Icon.File}" Width="14" Height="14" />
+                                <TextBlock Text="Open .json file…" />
+                            </StackPanel>
+                        </Button>
+                        <TextBlock Text="Paste your flags" Classes="h2" FontSize="13" VerticalAlignment="Center" />
+                    </DockPanel>
+                    <TextBox x:Name="JsonBox" Classes="mono" Height="220" AcceptsReturn="True" AcceptsTab="True" TextWrapping="NoWrap"
+                             VerticalContentAlignment="Top"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                             Watermark="{}{ &quot;FFlagDebugGraphicsPreferVulkan&quot;: &quot;True&quot;, &quot;DFIntTaskSchedulerTargetFps&quot;: 144 }"
+                             TextChanged="OnJsonChanged" />
+                    <TextBlock x:Name="JsonHint" Classes="muted" Margin="0,6,0,0"
+                               Text="A Sober config.json, a ClientAppSettings.json, a Bloxstrap export or just a few &quot;Name&quot;: value lines." />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0" Spacing="8">
+                    <Button Content="Cancel" Click="OnCancel" />
+                    <Button x:Name="ConfirmButton" Classes="primary" Content="Add flag" Click="OnConfirm" IsEnabled="False" />
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

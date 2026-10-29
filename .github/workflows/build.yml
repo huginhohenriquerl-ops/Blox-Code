@@ -1,0 +1,124 @@
+# Builds Blox Code for Windows (WPF exe) and Linux (AppImage), tests the AppImage on the distro
+# families we support, and on a v* tag publishes both files as the GitHub release the updaters read.
+name: Build
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: '1'
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Publish BloxCode.exe
+        run: dotnet publish BloxCode/BloxCode.csproj -c Release -o dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: dist/BloxCode.exe
+          if-no-files-found: error
+
+  linux:
+    # Built on the oldest supported base (Ubuntu 22.04) so the AppImage runs on everything newer.
+    runs-on: ubuntu-latest
+    container: ubuntu:22.04
+    env:
+      DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: '1'
+    steps:
+      - name: Build tools
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            ca-certificates curl file git desktop-file-utils \
+            xvfb xauth libx11-6 libice6 libsm6 libfontconfig1 libxrandr2 libxi6 libxcursor1 libgl1 fonts-dejavu-core
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Build the AppImage
+        run: bash packaging/linux/build-appimage.sh
+      - name: Self-test (headless)
+        run: APPIMAGE_EXTRACT_AND_RUN=1 dist/BloxCode-x86_64.AppImage --self-test
+      - name: UI smoke test
+        run: APPIMAGE_EXTRACT_AND_RUN=1 timeout 120 xvfb-run -a dist/BloxCode-x86_64.AppImage --self-test --ui
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: dist/BloxCode-x86_64.AppImage
+          if-no-files-found: error
+
+  distros:
+    # The same AppImage on the newest Debian/Ubuntu and on Arch (CachyOS's base).
+    needs: linux
+    runs-on: ubuntu-latest
+    container: ${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ['ubuntu:24.04', 'debian:12', 'archlinux:latest']
+    steps:
+      - name: Display libraries for the UI test
+        run: |
+          if command -v pacman >/dev/null; then
+            pacman -Syu --noconfirm --needed xorg-server-xvfb xorg-xauth libx11 libice libsm fontconfig libxrandr libxi libxcursor mesa ttf-dejavu
+          else
+            apt-get update
+            DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+              xvfb xauth libx11-6 libice6 libsm6 libfontconfig1 libxrandr2 libxi6 libxcursor1 libgl1 fonts-dejavu-core
+          fi
+      - uses: actions/download-artifact@v4
+        with:
+          name: linux
+      - name: Self-test (headless)
+        run: |
+          chmod +x BloxCode-x86_64.AppImage
+          APPIMAGE_EXTRACT_AND_RUN=1 ./BloxCode-x86_64.AppImage --self-test
+      - name: UI smoke test
+        run: APPIMAGE_EXTRACT_AND_RUN=1 timeout 120 xvfb-run -a ./BloxCode-x86_64.AppImage --self-test --ui
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [windows, linux, distros]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Release notes from CHANGELOG.md
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v v="$version" '
+            $0 ~ "^## " v "( |$)" { found = 1; title = $0; sub(/^## [^ ]+ *(— )?/, "", title); print title > "title.txt"; next }
+            found && /^## / { exit }
+            found { print }
+          ' CHANGELOG.md > notes.md
+          test -s notes.md || { echo "CHANGELOG.md has no section for $version"; exit 1; }
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="$GITHUB_REF_NAME"
+          [ -s title.txt ] && title="$GITHUB_REF_NAME — $(cat title.txt)"
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" dist/BloxCode.exe dist/BloxCode-x86_64.AppImage --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" dist/BloxCode.exe dist/BloxCode-x86_64.AppImage --title "$title" --notes-file notes.md
+          fi

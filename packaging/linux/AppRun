@@ -1,0 +1,6 @@
+#!/bin/sh
+# Starts Blox Code from inside the AppImage. Nothing is added to LD_LIBRARY_PATH (the .NET build is
+# self-contained), so the programs Blox Code starts — flatpak, xdg-open, xdg-mime — see the system
+# exactly as usual.
+HERE="$(dirname "$(readlink -f "$0")")"
+exec "$HERE/usr/bin/BloxCode" "$@"

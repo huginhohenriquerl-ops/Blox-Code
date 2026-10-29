@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="BloxCode.Linux.UI.Pages.BehaviourPage">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="720" Margin="40,8,40,40">
+            <TextBlock Text="Behaviour" Classes="h1" />
+            <TextBlock Classes="muted" Margin="0,0,0,20" Text="How Blox Code starts Roblox, keeps itself updated and fits into your desktop." />
+
+            <Border Classes="card">
+                <StackPanel>
+                    <DockPanel>
+                        <CheckBox x:Name="ConfirmLaunches" DockPanel.Dock="Right" Theme="{StaticResource Toggle}" IsCheckedChanged="OnToggle" />
+                        <StackPanel>
+                            <TextBlock Text="Ask before launching from a link" Classes="h2" FontWeight="Normal" />
+                            <TextBlock Classes="muted" Margin="0,2,0,0" Text="A confirmation when a website or app opens a roblox:// link." />
+                        </StackPanel>
+                    </DockPanel>
+
+                    <Border Classes="divider" />
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="10">
+                            <Button x:Name="CheckNowButton" Content="Check now" Click="OnCheckNow" />
+                            <CheckBox x:Name="AutoUpdate" Theme="{StaticResource Toggle}" IsCheckedChanged="OnToggle" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="Update Blox Code automatically" Classes="h2" FontWeight="Normal" />
+                            <TextBlock x:Name="UpdateText" Classes="muted" Margin="0,2,0,0" Text="Each start checks GitHub for a newer AppImage and installs it. Sober updates Roblox on its own." />
+                        </StackPanel>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Classes="card">
+                <StackPanel>
+                    <TextBlock Text="Desktop" Classes="h2" />
+                    <TextBlock x:Name="InstallText" Classes="muted" Margin="0,3,0,12" />
+                    <WrapPanel>
+                        <Button x:Name="RegisterButton" Classes="secondary" Content="Open roblox:// links with Blox Code" Margin="0,0,8,8" Click="OnRegister" />
+                        <Button x:Name="ReinstallButton" Classes="secondary" Content="Reinstall" Margin="0,0,8,8" Click="OnReinstall" />
+                        <Button x:Name="UninstallButton" Classes="danger" Content="Uninstall Blox Code" Margin="0,0,8,8" Click="OnUninstall" />
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Classes="card">
+                <StackPanel>
+                    <TextBlock Text="When something goes wrong" Classes="h2" />
+                    <TextBlock Classes="muted" Margin="0,3,0,12"
+                               Text="Export a zip with versions (distro, Flatpak, Sober, NVIDIA driver), Blox Code's and Sober's settings and recent logs to send to whoever is helping you. No passwords or Roblox account data." />
+                    <WrapPanel>
+                        <Button Classes="secondary" Content="Export diagnostics" Margin="0,0,8,8" Click="OnExportDiagnostics" />
+                        <Button Content="Open logs" Margin="0,0,8,8" Click="OnOpenLogs" />
+                    </WrapPanel>
+                    <TextBlock x:Name="DiagnosticsText" Classes="mono" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

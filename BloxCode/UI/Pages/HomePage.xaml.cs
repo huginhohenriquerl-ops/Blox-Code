@@ -116,23 +116,9 @@ public partial class HomePage : UserControl
         _window.RefreshFooter();
     }
 
-    /// <summary>Turns a game URL / place ID / roblox URI into launch args; null when unrecognised.</summary>
-    private static string? ToLaunchArgs(string input)
-    {
-        input = input.Trim();
-        if (input.Length == 0)
-            return "";
-        if (input.StartsWith("roblox:", StringComparison.OrdinalIgnoreCase) || input.StartsWith("roblox-player:", StringComparison.OrdinalIgnoreCase))
-            return input;
-
-        var match = Regex.Match(input, @"roblox\.com/(?:[a-z]{2}/)?games/(\d+)", RegexOptions.IgnoreCase);
-        string? placeId = match.Success ? match.Groups[1].Value : Regex.IsMatch(input, @"^\d+$") ? input : null;
-        return placeId is null ? null : $"roblox://experiences/start?placeId={placeId}";
-    }
-
     private void OnComposerChanged(object sender, TextChangedEventArgs e)
     {
-        bool valid = ToLaunchArgs(Composer.Text) is not null;
+        bool valid = RobloxLink.ToLaunchArgs(Composer.Text) is not null;
         SendButton.IsEnabled = valid;
         ComposerHint.Text = Composer.Text.Trim().Length == 0
             ? "Enter to launch · empty opens the Roblox app"
@@ -147,7 +133,7 @@ public partial class HomePage : UserControl
 
     private void OnSend(object sender, RoutedEventArgs e)
     {
-        if (ToLaunchArgs(Composer.Text) is { } args)
+        if (RobloxLink.ToLaunchArgs(Composer.Text) is { } args)
             _window.LaunchRoblox(args);
     }
 

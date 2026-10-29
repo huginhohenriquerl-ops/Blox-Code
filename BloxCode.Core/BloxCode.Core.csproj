@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Platform-neutral pieces shared by the WPF app (Windows) and the Avalonia app (Linux):
+       settings, logging, Fast Flag rules, launch arguments and the self-updater. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>BloxCode.Core</RootNamespace>
+    <AssemblyName>BloxCode.Core</AssemblyName>
+  </PropertyGroup>
+
+</Project>

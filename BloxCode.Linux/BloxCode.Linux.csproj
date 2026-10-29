@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Blox Code for Linux: an Avalonia front end for Sober. It also runs on Windows, which is only
+       for development (pair it with BLOXCODE_LAYOUT=xdg and a scratch HOME). -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>BloxCode</AssemblyName>
+    <RootNamespace>BloxCode.Linux</RootNamespace>
+    <Description>A Claude-themed Roblox launcher for Sober</Description>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <!-- No libicu dependency: the AppImage then runs on any glibc distro without extra packages. -->
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <ApplicationIcon>..\BloxCode\Resources\BloxCode.ico</ApplicationIcon>
+    <!-- Pages take their window in the constructor; nothing loads them by URI. -->
+    <NoWarn>$(NoWarn);AVLN3001</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.22" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BloxCode.Core\BloxCode.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+  <!-- `dotnet publish -c Release` -> a self-contained folder that packaging/linux/build-appimage.sh
+       turns into BloxCode-x86_64.AppImage. A folder, not a single file: nothing to extract at start. -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+</Project>

@@ -1,4 +1,5 @@
-// Renders Bit, the Blox Code mascot, into BloxCode/Resources/BloxCode.ico (+ docs/icon.png).
+// Renders Bit, the Blox Code mascot, into BloxCode/Resources/BloxCode.ico (+ docs/icon.png and
+// the Linux PNGs in BloxCode.Linux/Assets).
 // Usage: node tools/make-icon.js
 const fs = require('fs'), path = require('path'), zlib = require('zlib');
 
@@ -84,3 +85,11 @@ fs.mkdirSync(out, { recursive: true });
 fs.writeFileSync(path.join(out, 'BloxCode.ico'), Buffer.concat([header, ...dir, ...images]));
 fs.writeFileSync(path.join(__dirname, '..', 'docs', 'icon.png'), images[images.length - 1]);
 console.log('wrote', path.join(out, 'BloxCode.ico'));
+
+// Linux: the hicolor theme and the window icon take plain PNGs.
+const linux = path.join(__dirname, '..', 'BloxCode.Linux', 'Assets');
+fs.mkdirSync(linux, { recursive: true });
+for (const size of [48, 64, 128, 256]) {
+  fs.writeFileSync(path.join(linux, `bloxcode-${size}.png`), images[sizes.indexOf(size)]);
+}
+console.log('wrote', linux);

@@ -1,0 +1,121 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="BloxCode.Linux.App"
+             Name="Blox Code"
+             RequestedThemeVariant="Default">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <!-- Claude desktop, light: warm ivory paper, ink text, clay accent (same values as the WPF app) -->
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="Brush.Bg" Color="#FAF9F5" />
+                    <SolidColorBrush x:Key="Brush.Sidebar" Color="#F3F1EA" />
+                    <SolidColorBrush x:Key="Brush.Surface" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="Brush.SurfaceAlt" Color="#F0EEE6" />
+                    <SolidColorBrush x:Key="Brush.Hover" Color="#E9E6DC" />
+                    <SolidColorBrush x:Key="Brush.Selected" Color="#E4E1D6" />
+                    <SolidColorBrush x:Key="Brush.Border" Color="#E0DDD2" />
+                    <SolidColorBrush x:Key="Brush.BorderStrong" Color="#CFCBBE" />
+                    <SolidColorBrush x:Key="Brush.Text" Color="#141413" />
+                    <SolidColorBrush x:Key="Brush.TextSecondary" Color="#3D3D3A" />
+                    <SolidColorBrush x:Key="Brush.TextMuted" Color="#73726C" />
+                    <SolidColorBrush x:Key="Brush.Accent" Color="#D97757" />
+                    <SolidColorBrush x:Key="Brush.AccentHover" Color="#C6613F" />
+                    <SolidColorBrush x:Key="Brush.AccentSoft" Color="#F6E3DA" />
+                    <SolidColorBrush x:Key="Brush.OnAccent" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="Brush.Danger" Color="#B5403A" />
+                    <SolidColorBrush x:Key="Brush.Success" Color="#4E7A4A" />
+                    <SolidColorBrush x:Key="Brush.Warning" Color="#9A6A12" />
+                    <SolidColorBrush x:Key="Brush.Mascot" Color="#D77757" />
+                    <SolidColorBrush x:Key="Brush.MascotEye" Color="#1A1918" />
+
+                    <!-- Fluent controls (text boxes, scroll bars, tooltips) pick these up -->
+                    <SolidColorBrush x:Key="TextControlBackground" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="TextControlBorderBrush" Color="#CFCBBE" />
+                    <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#B9B4A5" />
+                    <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="#D97757" />
+                    <SolidColorBrush x:Key="TextControlForeground" Color="#141413" />
+                    <SolidColorBrush x:Key="TextControlForegroundPointerOver" Color="#141413" />
+                    <SolidColorBrush x:Key="TextControlForegroundFocused" Color="#141413" />
+                    <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="#73726C" />
+                    <SolidColorBrush x:Key="TextControlPlaceholderForegroundPointerOver" Color="#73726C" />
+                    <SolidColorBrush x:Key="TextControlPlaceholderForegroundFocused" Color="#73726C" />
+                    <SolidColorBrush x:Key="TextControlSelectionHighlightColor" Color="#F0B9A3" />
+                    <SolidColorBrush x:Key="ToolTipBackground" Color="#141413" />
+                    <SolidColorBrush x:Key="ToolTipForeground" Color="#FAF9F5" />
+                    <SolidColorBrush x:Key="ToolTipBorderBrush" Color="#141413" />
+                    <SolidColorBrush x:Key="ListBoxItemBackgroundPointerOver" Color="#F0EEE6" />
+                    <SolidColorBrush x:Key="ListBoxItemBackgroundSelected" Color="#F6E3DA" />
+                    <SolidColorBrush x:Key="ListBoxItemBackgroundSelectedPointerOver" Color="#F2D8CB" />
+                    <SolidColorBrush x:Key="ListBoxItemBackgroundPressed" Color="#E9E6DC" />
+                    <SolidColorBrush x:Key="ListBoxItemBackgroundSelectedPressed" Color="#F2D8CB" />
+                </ResourceDictionary>
+
+                <!-- Claude desktop, dark: charcoal with warm greys, same clay accent -->
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="Brush.Bg" Color="#262624" />
+                    <SolidColorBrush x:Key="Brush.Sidebar" Color="#1F1E1D" />
+                    <SolidColorBrush x:Key="Brush.Surface" Color="#30302E" />
+                    <SolidColorBrush x:Key="Brush.SurfaceAlt" Color="#2B2A27" />
+                    <SolidColorBrush x:Key="Brush.Hover" Color="#3A3935" />
+                    <SolidColorBrush x:Key="Brush.Selected" Color="#3F3E3A" />
+                    <SolidColorBrush x:Key="Brush.Border" Color="#3E3D38" />
+                    <SolidColorBrush x:Key="Brush.BorderStrong" Color="#54524C" />
+                    <SolidColorBrush x:Key="Brush.Text" Color="#FAF9F5" />
+                    <SolidColorBrush x:Key="Brush.TextSecondary" Color="#DEDCD1" />
+                    <SolidColorBrush x:Key="Brush.TextMuted" Color="#9C9A92" />
+                    <SolidColorBrush x:Key="Brush.Accent" Color="#D97757" />
+                    <SolidColorBrush x:Key="Brush.AccentHover" Color="#E38B6C" />
+                    <SolidColorBrush x:Key="Brush.AccentSoft" Color="#4A3229" />
+                    <SolidColorBrush x:Key="Brush.OnAccent" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="Brush.Danger" Color="#E07A70" />
+                    <SolidColorBrush x:Key="Brush.Success" Color="#8DBF86" />
+                    <SolidColorBrush x:Key="Brush.Warning" Color="#E2B65C" />
+                    <SolidColorBrush x:Key="Brush.Mascot" Color="#D77757" />
+                    <SolidColorBrush x:Key="Brush.MascotEye" Color="#1A1918" />
+
+                    <SolidColorBrush x:Key="TextControlBackground" Color="#30302E" />
+                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#30302E" />
+                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#30302E" />
+                    <SolidColorBrush x:Key="TextControlBorderBrush" Color="#54524C" />
+                    <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#6A675F" />
+                    <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="#D97757" />
+                    <SolidColorBrush x:Key="TextControlForeground" Color="#FAF9F5" />
+                    <SolidColorBrush x:Key="TextControlForegroundPointerOver" Color="#FAF9F5" />
+                    <SolidColorBrush x:Key="TextControlForegroundFocused" Color="#FAF9F5" />
+                    <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="#9C9A92" />
+                    <SolidColorBrush x:Key="TextControlPlaceholderForegroundPointerOver" Color="#9C9A92" />
+                    <SolidColorBrush x:Key="TextControlPlaceholderForegroundFocused" Color="#9C9A92" />
+                    <SolidColorBrush x:Key="TextControlSelectionHighlightColor" Color="#8A4A33" />
+                    <SolidColorBrush x:Key="ToolTipBackground" Color="#FAF9F5" />
+                    <SolidColorBrush x:Key="ToolTipForeground" Color="#262624" />
+                    <SolidColorBrush x:Key="ToolTipBorderBrush" Color="#FAF9F5" />
+                    <SolidColorBrush x:Key="ListBoxItemBackgroundPointerOver" Color="#3A3935" />
+                    <SolidColorBrush x:Key="ListBoxItemBackgroundSelected" Color="#4A3229" />
+                    <SolidColorBrush x:Key="ListBoxItemBackgroundSelectedPointerOver" Color="#55392E" />
+                    <SolidColorBrush x:Key="ListBoxItemBackgroundPressed" Color="#3F3E3A" />
+                    <SolidColorBrush x:Key="ListBoxItemBackgroundSelectedPressed" Color="#55392E" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+
+            <Color x:Key="SystemAccentColor">#D97757</Color>
+            <Color x:Key="SystemAccentColorDark1">#C6613F</Color>
+            <Color x:Key="SystemAccentColorDark2">#B05538</Color>
+            <Color x:Key="SystemAccentColorDark3">#8A4A33</Color>
+            <Color x:Key="SystemAccentColorLight1">#E38B6C</Color>
+            <Color x:Key="SystemAccentColorLight2">#EBA387</Color>
+            <Color x:Key="SystemAccentColorLight3">#F0B9A3</Color>
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://BloxCode/UI/Themes/Controls.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://BloxCode/UI/Themes/Styles.axaml" />
+    </Application.Styles>
+</Application>

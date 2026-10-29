@@ -1,0 +1,171 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Base look shared by every Blox Code window -->
+    <Style Selector="Window">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
+        <Setter Property="FontFamily" Value="{StaticResource Font.Sans}" />
+        <Setter Property="FontSize" Value="13.5" />
+        <Setter Property="Icon" Value="/Assets/bloxcode-256.png" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+    </Style>
+
+    <!-- Chromeless windows draw their own frame so they stay visible on any desktop -->
+    <Style Selector="Border.frame">
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.BorderStrong}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg}" />
+    </Style>
+
+    <!-- ===== Text ===== -->
+    <Style Selector="TextBlock.display">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Serif}" />
+        <Setter Property="FontSize" Value="36" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
+    </Style>
+    <Style Selector="TextBlock.h1">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Serif}" />
+        <Setter Property="FontSize" Value="26" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
+        <Setter Property="Margin" Value="0,0,0,6" />
+    </Style>
+    <Style Selector="TextBlock.h2">
+        <Setter Property="FontSize" Value="14.5" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
+    </Style>
+    <Style Selector="TextBlock.body">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+        <Setter Property="LineHeight" Value="21" />
+    </Style>
+    <Style Selector="TextBlock.muted">
+        <Setter Property="FontSize" Value="12.5" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextMuted}" />
+    </Style>
+    <Style Selector="TextBlock.mono">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Mono}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextMuted}" />
+    </Style>
+    <Style Selector="TextBlock.section">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextMuted}" />
+        <Setter Property="Margin" Value="12,18,0,6" />
+    </Style>
+    <Style Selector="TextBlock.error">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
+    </Style>
+    <Style Selector="TextBlock.ok">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
+    </Style>
+
+    <!-- ===== Containers ===== -->
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Large}" />
+        <Setter Property="Padding" Value="20,16" />
+        <Setter Property="Margin" Value="0,0,0,14" />
+    </Style>
+    <Style Selector="Border.banner">
+        <Setter Property="Background" Value="{DynamicResource Brush.AccentSoft}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="Border.divider">
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="Margin" Value="0,12" />
+    </Style>
+    <Style Selector="Border.segmented">
+        <Setter Property="Background" Value="{DynamicResource Brush.SurfaceAlt}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Medium}" />
+        <Setter Property="Padding" Value="3" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+    </Style>
+    <!-- Small pill, e.g. a flag's type -->
+    <Style Selector="Border.badge">
+        <Setter Property="Background" Value="{DynamicResource Brush.SurfaceAlt}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Padding" Value="8,2" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <!-- A copyable shell command -->
+    <Style Selector="Border.command">
+        <Setter Property="Background" Value="{DynamicResource Brush.SurfaceAlt}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Medium}" />
+        <Setter Property="Padding" Value="10,4,4,4" />
+        <Setter Property="Margin" Value="0,6,0,0" />
+    </Style>
+
+    <!-- Editor rows: hover and selection tints -->
+    <Style Selector="Border.row">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Border.row:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Brush.SurfaceAlt}" />
+    </Style>
+    <Style Selector="Border.row.selected">
+        <Setter Property="Background" Value="{DynamicResource Brush.AccentSoft}" />
+    </Style>
+
+    <!-- ===== Inputs ===== -->
+    <Style Selector="TextBox">
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Medium}" />
+        <Setter Property="Padding" Value="9,6" />
+        <Setter Property="FontSize" Value="13.5" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource TextControlSelectionHighlightColor}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Brush.Text}" />
+    </Style>
+    <Style Selector="TextBox.mono">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Mono}" />
+        <Setter Property="FontSize" Value="12.5" />
+    </Style>
+    <!-- Borderless variant used inside the composer card -->
+    <Style Selector="TextBox.bare">
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="2,4" />
+        <Setter Property="FontSize" Value="15.5" />
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="TextBox.bare:pointerover /template/ Border#PART_BorderElement, TextBox.bare:focus /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="TextBox.bare /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <Style Selector="ProgressBar">
+        <Setter Property="Height" Value="6" />
+        <Setter Property="MinHeight" Value="6" />
+        <Setter Property="CornerRadius" Value="3" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.SurfaceAlt}" />
+    </Style>
+    <Style Selector="ProgressBar.failed">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
+    </Style>
+
+    <Style Selector="ListBox">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBoxItem">
+        <Setter Property="Padding" Value="10,6" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Small}" />
+    </Style>
+</Styles>

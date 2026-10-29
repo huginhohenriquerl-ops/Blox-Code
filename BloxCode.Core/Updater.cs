@@ -31,7 +31,16 @@ public static class Updater
 
     public static Version Current { get; } = Trim(typeof(Updater).Assembly.GetName().Version ?? new Version(1, 0, 0));
 
-    public static string UpdatesFolder => Path.Combine(Path.GetTempPath(), "BloxCode", "Updates");
+    // Linux keeps downloads out of /tmp, which some systems mount noexec (the update has to run from there).
+    public static string UpdatesFolder => Path.Combine(Paths.Cache, Paths.IsXdg ? "updates" : "Updates");
+
+    /// <summary>The release asset this platform runs: the WPF exe on Windows, the AppImage on Linux.</summary>
+    public static string AssetName => OperatingSystem.IsWindows() ? "BloxCode.exe" : "BloxCode-x86_64.AppImage";
+
+    private static string AssetExtension => Path.GetExtension(AssetName);
+
+    /// <summary>Platform work after the installed copy was replaced (Windows: the Apps &amp; Features entry).</summary>
+    public static Action? AfterUpgrade { get; set; }
 
     /// <summary>Returns the newer release, or null when already current.</summary>
     public static async Task<UpdateInfo?> CheckAsync(HttpClient http, CancellationToken ct)
@@ -62,12 +71,12 @@ public static class Updater
         }
 
         var assets = root.GetProperty("assets").EnumerateArray().ToList();
-        var asset = assets.FirstOrDefault(a => a.GetProperty("name").GetString()?.Equals("BloxCode.exe", StringComparison.OrdinalIgnoreCase) == true);
+        var asset = assets.FirstOrDefault(a => a.GetProperty("name").GetString()?.Equals(AssetName, StringComparison.OrdinalIgnoreCase) == true);
         if (asset.ValueKind == JsonValueKind.Undefined)
-            asset = assets.FirstOrDefault(a => a.GetProperty("name").GetString()?.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) == true);
+            asset = assets.FirstOrDefault(a => a.GetProperty("name").GetString()?.EndsWith(AssetExtension, StringComparison.OrdinalIgnoreCase) == true);
         if (asset.ValueKind == JsonValueKind.Undefined)
         {
-            Logger.Warn(ident, $"Release {tag} has no .exe asset");
+            Logger.Warn(ident, $"Release {tag} has no {AssetExtension} asset");
             return null;
         }
 
@@ -89,7 +98,7 @@ public static class Updater
     public static async Task<string> DownloadAsync(HttpClient http, UpdateInfo info, IProgress<(long Done, long Total)> progress, CancellationToken ct)
     {
         Directory.CreateDirectory(UpdatesFolder);
-        string path = Path.Combine(UpdatesFolder, $"BloxCode-{info.Version}.exe");
+        string path = Path.Combine(UpdatesFolder, $"BloxCode-{info.Version}{AssetExtension}");
 
         // Same idle watchdog as package downloads: HttpClient.Timeout doesn't cover the body.
         using var stall = CancellationTokenSource.CreateLinkedTokenSource(ct);
@@ -138,6 +147,7 @@ public static class Updater
             }
         }
 
+        Paths.MakeExecutable(path);
         Logger.Info("Updater::Download", $"Downloaded {info.Tag} to {path}");
         return path;
     }
@@ -177,7 +187,7 @@ public static class Updater
             {
                 try
                 {
-                    File.Copy(Paths.Process, Paths.Application, overwrite: true);
+                    Paths.InstallExecutable(Paths.Process, Paths.Application);
                     break;
                 }
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException && attempt < 10)
@@ -187,7 +197,7 @@ public static class Updater
                 }
             }
 
-            Installer.RefreshAfterUpgrade();
+            AfterUpgrade?.Invoke();
             Store.State.JustUpdatedTo = Current.ToString();
             Store.SaveState();
             Logger.Info(ident, $"Upgraded installed copy to {Current}");
@@ -222,7 +232,7 @@ public static class Updater
     /// <summary>Deletes leftover downloads once we're no longer running from that folder.</summary>
     public static void CleanupUpdatesFolder()
     {
-        if (!Directory.Exists(UpdatesFolder) || Paths.Process.StartsWith(UpdatesFolder, StringComparison.OrdinalIgnoreCase))
+        if (!Directory.Exists(UpdatesFolder) || Paths.Process.StartsWith(UpdatesFolder, Paths.PathComparison))
             return;
         foreach (string file in Directory.EnumerateFiles(UpdatesFolder))
         {

@@ -1,0 +1,91 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:BloxCode.Linux.UI"
+        x:Class="BloxCode.Linux.UI.MainWindow"
+        Title="Blox Code" Width="1040" Height="680" MinWidth="820" MinHeight="540"
+        SystemDecorations="None" WindowStartupLocation="CenterScreen">
+    <Border Classes="frame" x:Name="Frame">
+        <Panel x:Name="Root">
+            <Grid ColumnDefinitions="264,*">
+                <!-- ===== Sidebar (the conversation list in Claude desktop) ===== -->
+                <Border Background="{DynamicResource Brush.Sidebar}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
+                    <DockPanel Margin="12,0,12,12">
+                        <!-- Brand (also the drag handle for the window) -->
+                        <StackPanel x:Name="Brand" DockPanel.Dock="Top" Orientation="Horizontal" Height="56" Margin="6,0,0,0" Background="Transparent">
+                            <ui:BitMascot x:Name="BrandMascot" Unit="1.5" VerticalAlignment="Center" Margin="0,0,10,0"
+                                          Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" />
+                            <TextBlock Text="Blox Code" FontFamily="{StaticResource Font.Serif}" FontSize="20" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <!-- "New chat" -> "Play Roblox" -->
+                        <Button DockPanel.Dock="Top" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="8,7" Click="OnPlay">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Width="26" Height="26" CornerRadius="13" Background="{DynamicResource Brush.Accent}" Margin="0,0,10,0">
+                                    <ui:IconView Data="{StaticResource Icon.Play}" Filled="True" Width="12" Height="12" Foreground="White" Margin="2,0,0,0" />
+                                </Border>
+                                <TextBlock Text="Play Roblox" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Accent}" VerticalAlignment="Center" FontSize="14" />
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Footer: the account chip, here showing install state -->
+                        <Border DockPanel.Dock="Bottom" CornerRadius="10" Padding="10,8" Margin="0,8,0,0" BorderThickness="1"
+                                BorderBrush="{DynamicResource Brush.Border}" Background="{DynamicResource Brush.Bg}">
+                            <DockPanel>
+                                <Border Width="32" Height="32" CornerRadius="16" Background="{DynamicResource Brush.Selected}" Margin="0,0,10,0">
+                                    <TextBlock Text="B" FontFamily="{StaticResource Font.Serif}" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock x:Name="FooterTitle" Text="Blox Code" FontWeight="SemiBold" FontSize="13" />
+                                    <TextBlock x:Name="FooterSubtitle" Classes="muted" FontSize="11.5" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+
+                        <StackPanel x:Name="Nav">
+                            <TextBlock Text="Settings" Classes="section" />
+                            <RadioButton x:Name="NavHome" Theme="{StaticResource NavItem}" Tag="Home" IsCheckedChanged="OnNavigate">
+                                <StackPanel Orientation="Horizontal" Spacing="12"><ui:IconView Data="{StaticResource Icon.Home}" /><TextBlock Text="Home" /></StackPanel>
+                            </RadioButton>
+                            <RadioButton Theme="{StaticResource NavItem}" Tag="FastFlags" IsCheckedChanged="OnNavigate">
+                                <StackPanel Orientation="Horizontal" Spacing="12"><ui:IconView Data="{StaticResource Icon.Flag}" /><TextBlock Text="Fast Flags" /></StackPanel>
+                            </RadioButton>
+                            <RadioButton Theme="{StaticResource NavItem}" Tag="Mods" IsCheckedChanged="OnNavigate">
+                                <StackPanel Orientation="Horizontal" Spacing="12"><ui:IconView Data="{StaticResource Icon.Box}" /><TextBlock Text="Mods" /></StackPanel>
+                            </RadioButton>
+                            <RadioButton Theme="{StaticResource NavItem}" Tag="Sober" IsCheckedChanged="OnNavigate">
+                                <StackPanel Orientation="Horizontal" Spacing="12"><ui:IconView Data="{StaticResource Icon.Sober}" /><TextBlock Text="Sober" /></StackPanel>
+                            </RadioButton>
+                            <RadioButton Theme="{StaticResource NavItem}" Tag="Appearance" IsCheckedChanged="OnNavigate">
+                                <StackPanel Orientation="Horizontal" Spacing="12"><ui:IconView Data="{StaticResource Icon.Palette}" /><TextBlock Text="Appearance" /></StackPanel>
+                            </RadioButton>
+                            <RadioButton Theme="{StaticResource NavItem}" Tag="Behaviour" IsCheckedChanged="OnNavigate">
+                                <StackPanel Orientation="Horizontal" Spacing="12"><ui:IconView Data="{StaticResource Icon.Sliders}" /><TextBlock Text="Behaviour" /></StackPanel>
+                            </RadioButton>
+                            <RadioButton Theme="{StaticResource NavItem}" Tag="About" IsCheckedChanged="OnNavigate">
+                                <StackPanel Orientation="Horizontal" Spacing="12"><ui:IconView Data="{StaticResource Icon.Info}" /><TextBlock Text="About" /></StackPanel>
+                            </RadioButton>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <!-- ===== Main area ===== -->
+                <Grid Grid.Column="1" RowDefinitions="44,*">
+                    <Border x:Name="TitleBar" Background="Transparent" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                        <Button Classes="caption" Click="OnMinimize" ToolTip.Tip="Minimize">
+                            <ui:IconView Data="{StaticResource Icon.Minimize}" Width="14" Height="14" StrokeThickness="1.3" />
+                        </Button>
+                        <Button x:Name="MaximizeButton" Classes="caption" Click="OnMaximize" ToolTip.Tip="Maximize">
+                            <ui:IconView x:Name="MaximizeIcon" Data="{StaticResource Icon.Maximize}" Width="14" Height="14" StrokeThickness="1.3" />
+                        </Button>
+                        <Button Classes="caption close" Click="OnClose" ToolTip.Tip="Close">
+                            <ui:IconView Data="{StaticResource Icon.Close}" Width="14" Height="14" StrokeThickness="1.3" />
+                        </Button>
+                    </StackPanel>
+
+                    <ContentControl x:Name="PageHost" Grid.Row="1" Focusable="False" />
+                </Grid>
+            </Grid>
+        </Panel>
+    </Border>
+</Window>

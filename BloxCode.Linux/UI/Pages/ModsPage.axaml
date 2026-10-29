@@ -1,0 +1,92 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:BloxCode.Linux.UI"
+             xmlns:pages="clr-namespace:BloxCode.Linux.UI.Pages"
+             x:Class="BloxCode.Linux.UI.Pages.ModsPage">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="760" Margin="40,8,40,40">
+            <TextBlock Text="Mods" Classes="h1" />
+            <TextBlock Classes="muted" Margin="0,0,0,20"
+                       Text="Replace Roblox's cursors, sounds, fonts and textures. Pick a file below and give Blox Code your version; it goes into Sober's asset overlay right away. Removing a mod brings the original back." />
+
+            <!-- Roblox's own files, from the APK Sober downloaded -->
+            <Border Classes="card">
+                <StackPanel>
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Click="OnReloadAssets" ToolTip.Tip="Read Roblox's files again">
+                            <ui:IconView Data="{StaticResource Icon.Refresh}" Width="14" Height="14" />
+                        </Button>
+                        <StackPanel>
+                            <TextBlock Text="Roblox's files" Classes="h2" />
+                            <TextBlock x:Name="AssetStatus" Classes="muted" Margin="0,3,0,0" Text="Reading Roblox's files…" />
+                        </StackPanel>
+                    </DockPanel>
+
+                    <DockPanel Margin="0,12,0,8">
+                        <TextBox x:Name="AssetSearch" DockPanel.Dock="Right" Width="220" Watermark="Search files…" TextChanged="OnAssetSearch" />
+                        <WrapPanel x:Name="CategoryChips" VerticalAlignment="Center" />
+                    </DockPanel>
+
+                    <Border BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1" CornerRadius="10" Height="300" ClipToBounds="True">
+                        <ListBox x:Name="AssetList" SelectionMode="Single" SelectionChanged="OnAssetSelected">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="pages:AssetRow">
+                                    <DockPanel>
+                                        <TextBlock DockPanel.Dock="Right" Text="{Binding SizeText}" Classes="mono" VerticalAlignment="Center" Margin="10,0,0,0" />
+                                        <Border DockPanel.Dock="Right" Classes="badge" IsVisible="{Binding IsModded}" Margin="10,0,0,0"
+                                                Background="{DynamicResource Brush.AccentSoft}" BorderBrush="Transparent">
+                                            <TextBlock Text="modded" FontSize="11" Foreground="{DynamicResource Brush.Accent}" />
+                                        </Border>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" FontFamily="{StaticResource Font.Mono}" FontSize="12.5" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Text="{Binding Folder}" Classes="mono" FontSize="11" TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Border>
+
+                    <DockPanel Margin="0,10,0,0">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6">
+                            <Button x:Name="RestoreButton" Classes="secondary" Content="Restore original" IsEnabled="False" Click="OnRestoreSelected" />
+                            <Button x:Name="ReplaceButton" Classes="primary" Content="Replace with file…" IsEnabled="False" Click="OnReplace" />
+                        </StackPanel>
+                        <TextBlock x:Name="SelectedText" Classes="mono" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="Pick a file to replace" />
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- What's applied now -->
+            <Border Classes="card">
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,10">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6">
+                            <Button Content="Open folder" Click="OnOpenFolder" />
+                            <Button x:Name="RemoveAllButton" Classes="danger" Content="Remove all" Click="OnRemoveAll" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock x:Name="CountText" Classes="h2" />
+                            <TextBlock x:Name="FolderPath" Classes="mono" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                    </DockPanel>
+                    <ItemsControl x:Name="ModList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <DockPanel Margin="0,2">
+                                    <Button DockPanel.Dock="Right" Padding="8,4" Click="OnRemoveMod" Tag="{Binding}" ToolTip.Tip="Remove this mod">
+                                        <ui:IconView Data="{StaticResource Icon.Trash}" Width="13" Height="13" />
+                                    </Button>
+                                    <TextBlock Text="■" FontSize="9" VerticalAlignment="Center" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,8,0" />
+                                    <TextBlock Text="{Binding}" FontFamily="{StaticResource Font.Mono}" FontSize="12.5" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                </DockPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock x:Name="EmptyText" Classes="muted" Text="No mods yet — replace a file above, or drop files into the folder with the same layout." />
+                    <TextBlock x:Name="SyncText" Classes="muted" Margin="0,8,0,0" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

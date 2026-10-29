@@ -20,7 +20,7 @@ public sealed class InvalidChannelException(string channel, HttpStatusCode? stat
 /// </summary>
 public static class Deployment
 {
-    public const string DefaultChannel = "production";
+    public const string DefaultChannel = Settings.DefaultChannel;
     public const string BinaryType = "WindowsPlayer";
 
     private static readonly string[] Mirrors =

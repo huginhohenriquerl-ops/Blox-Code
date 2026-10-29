@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:BloxCode.Linux.UI"
+             x:Class="BloxCode.Linux.UI.Pages.AboutPage">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="620" Margin="40,24,40,40">
+            <ui:BitMascot x:Name="Mascot" Unit="6.5" HorizontalAlignment="Center" Cursor="Hand"
+                          Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" PointerPressed="OnPoke" />
+            <TextBlock Text="Blox Code" Classes="display" HorizontalAlignment="Center" Margin="0,8,0,0" />
+            <TextBlock x:Name="VersionText" Classes="mono" HorizontalAlignment="Center" Margin="0,6,0,22" />
+
+            <Border Classes="card">
+                <StackPanel Spacing="10">
+                    <TextBlock Classes="body" Text="Meet Bit: a building block with a terminal for a face. Blox Code is a Roblox launcher with the look of Claude desktop." />
+                    <TextBlock Classes="body" Text="On Linux, Roblox runs through Sober (org.vinegarhq.Sober), which runs the Android version of Roblox natively. Blox Code installs and configures Sober, writes your Fast Flags and mods into it and opens roblox:// links. Sober is made by the VinegarHQ team; Blox Code isn't affiliated with them." />
+                    <TextBlock Classes="muted" Text="Fan project — no affiliation with Roblox Corporation, Anthropic, Bloxstrap or VinegarHQ. MIT licensed." />
+                </StackPanel>
+            </Border>
+
+            <WrapPanel HorizontalAlignment="Center">
+                <Button Classes="chip" Content="GitHub" Click="OnRepo" />
+                <Button Classes="chip" Content="What's new" Click="OnChangelog" />
+                <Button Classes="chip" Content="Sober" Click="OnSober" />
+            </WrapPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

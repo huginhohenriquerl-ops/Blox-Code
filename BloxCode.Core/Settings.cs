@@ -7,8 +7,10 @@ public enum AppTheme { System, Light, Dark }
 
 public sealed class Settings
 {
+    public const string DefaultChannel = "production";
+
     public AppTheme Theme { get; set; } = AppTheme.System;
-    public string Channel { get; set; } = Deployment.DefaultChannel;
+    public string Channel { get; set; } = DefaultChannel;
     public bool AnimateMascot { get; set; } = true;
     public bool CleanupOldVersions { get; set; } = true;
     public bool ConfirmLaunches { get; set; }
@@ -21,11 +23,16 @@ public sealed class State
     public string? VersionGuid { get; set; }
     public string? Channel { get; set; }
     public Dictionary<string, string> PackageHashes { get; set; } = new();
-    /// <summary>Relative paths (inside the version folder) currently overwritten by a mod.</summary>
+    /// <summary>
+    /// Relative paths currently overwritten by a mod: inside the version folder on Windows, inside
+    /// Sober's asset_overlay on Linux.
+    /// </summary>
     public List<string> ModManifest { get; set; } = new();
     public bool ForceReinstall { get; set; }
     /// <summary>Set by the upgrade step so the next menu can say "updated to vX" once.</summary>
     public string? JustUpdatedTo { get; set; }
+    /// <summary>Linux: Sober's own fflags were pulled into FastFlags once, so the first sync can't drop them.</summary>
+    public bool SoberFlagsImported { get; set; }
 }
 
 public static class Store
@@ -42,6 +49,9 @@ public static class Store
     public static Settings Settings { get; private set; } = new();
     public static State State { get; private set; } = new();
 
+    /// <summary>Raised after the settings reach the disk; the Linux app pushes Fast Flags to Sober from here.</summary>
+    public static event Action? SettingsSaved;
+
     public static void Load()
     {
         Settings = Read<Settings>(Paths.SettingsFile) ?? new Settings();
@@ -49,12 +59,17 @@ public static class Store
 
         // Hand-edited or older files can carry explicit nulls; never let them reach the rest of the app.
         Settings.FastFlags ??= new();
-        Settings.Channel = string.IsNullOrWhiteSpace(Settings.Channel) ? Deployment.DefaultChannel : Settings.Channel.Trim();
+        Settings.Channel = string.IsNullOrWhiteSpace(Settings.Channel) ? Settings.DefaultChannel : Settings.Channel.Trim();
         State.PackageHashes ??= new();
         State.ModManifest ??= new();
     }
 
-    public static void SaveSettings() => Write(Paths.SettingsFile, Settings);
+    public static void SaveSettings()
+    {
+        if (Write(Paths.SettingsFile, Settings))
+            SettingsSaved?.Invoke();
+    }
+
     public static void SaveState() => Write(Paths.StateFile, State);
 
     private static T? Read<T>(string path) where T : class
@@ -74,7 +89,7 @@ public static class Store
         }
     }
 
-    private static void Write<T>(string path, T value)
+    private static bool Write<T>(string path, T value)
     {
         lock (Sync)
         {
@@ -85,10 +100,12 @@ public static class Store
                 string temp = path + ".tmp";
                 File.WriteAllText(temp, JsonSerializer.Serialize(value, Options));
                 File.Move(temp, path, overwrite: true);
+                return true;
             }
             catch (Exception ex)
             {
                 Logger.Error("Store::Write", ex);
+                return false;
             }
         }
     }

@@ -1,0 +1,52 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:BloxCode.Linux.UI"
+        x:Class="BloxCode.Linux.UI.LaunchWindow"
+        Title="Blox Code" Width="520" Height="280" CanResize="False"
+        SystemDecorations="None" WindowStartupLocation="CenterScreen">
+    <Border Classes="frame">
+        <Grid RowDefinitions="44,*,Auto,56">
+            <!-- Title bar -->
+            <DockPanel x:Name="TitleBar" Background="Transparent" Margin="18,0,0,0">
+                <Button DockPanel.Dock="Right" Classes="caption close" Click="OnCancel" ToolTip.Tip="Cancel" VerticalAlignment="Top">
+                    <ui:IconView Data="{StaticResource Icon.Close}" Width="14" Height="14" StrokeThickness="1.4" />
+                </Button>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <ui:BitMascot Unit="0.9" IsAnimated="False" Margin="0,0,8,2" VerticalAlignment="Center"
+                                  Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" />
+                    <TextBlock Text="Blox Code" FontFamily="{StaticResource Font.Serif}" FontSize="15" VerticalAlignment="Center" />
+                </StackPanel>
+            </DockPanel>
+
+            <!-- Stage: Bit walks along the progress bar -->
+            <Canvas x:Name="Stage" Grid.Row="1" Margin="36,0,36,0" Height="78" VerticalAlignment="Bottom" ClipToBounds="False">
+                <ui:BitMascot x:Name="Mascot" Unit="3.5" Mood="Walk" Canvas.Bottom="0" Canvas.Left="0"
+                              Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" />
+            </Canvas>
+
+            <StackPanel Grid.Row="2" Margin="36,6,36,0">
+                <ProgressBar x:Name="Progress" Minimum="0" Maximum="1" Value="0" />
+
+                <!-- Status line: "▖ Doing the thing… (12s · esc to cancel)" -->
+                <DockPanel Margin="0,16,0,0">
+                    <Panel DockPanel.Dock="Left" Width="20" VerticalAlignment="Center">
+                        <ui:BlockSpinner x:Name="Spinner" FontSize="16" FontFamily="{StaticResource Font.Mono}" Foreground="{DynamicResource Brush.Accent}" />
+                        <TextBlock x:Name="ResultGlyph" FontSize="15" IsVisible="False" />
+                    </Panel>
+                    <TextBlock x:Name="StatusText" FontSize="15" Text="Waking up Bit…" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                </DockPanel>
+                <TextBlock x:Name="DetailText" Classes="mono" Margin="20,5,0,0" Text="(0s · esc to cancel)" TextWrapping="Wrap" MaxHeight="48" />
+            </StackPanel>
+
+            <!-- Footer -->
+            <DockPanel Grid.Row="3" Margin="36,0,22,0">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" Spacing="6">
+                    <Button x:Name="LogButton" Content="Open log" IsVisible="False" Click="OnOpenLog" />
+                    <Button x:Name="MenuButton" Content="Open Blox Code" Classes="primary" IsVisible="False" Click="OnOpenMenu" />
+                    <Button x:Name="CancelButton" Classes="secondary" Content="Cancel" Click="OnCancel" />
+                </StackPanel>
+                <TextBlock x:Name="VersionText" Classes="mono" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+            </DockPanel>
+        </Grid>
+    </Border>
+</Window>

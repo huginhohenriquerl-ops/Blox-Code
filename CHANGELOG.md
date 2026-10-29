@@ -3,6 +3,67 @@
 Todas as versões do Blox Code, da mais nova para a mais antiga. Quem tem o Blox Code instalado
 recebe cada versão automaticamente na próxima vez que abrir.
 
+## 1.1.0 — Blox Code no Linux
+
+O Blox Code agora roda no Linux, nas distros baseadas no **Arch** (Arch, CachyOS, EndeavourOS,
+Manjaro) e no **Debian/Ubuntu** (Ubuntu, Linux Mint, Pop!_OS, Zorin, Debian). Vem num único arquivo,
+o `BloxCode-x86_64.AppImage`, com o mesmo tema do Claude desktop e o Bit.
+
+### Como funciona no Linux
+
+- **Via Sober.** O Roblox para Windows não roda mais no Wine (o anti-cheat bloqueia), então o
+  caminho no Linux é o [Sober](https://sober.vinegarhq.org/), que roda a versão Android do Roblox
+  nativamente. O Sober baixa e atualiza o Roblox sozinho; o Blox Code cuida do resto.
+- **Instala o Sober para você.** Se ele faltar, a tela inicial mostra **Install Sober**: o Blox Code
+  adiciona o Flathub e instala o Sober só para o seu usuário, sem pedir senha, com o Bit andando na
+  barra de progresso. Se faltar o próprio Flatpak, aparece o comando certo para a sua distro
+  (`pacman` ou `apt`) com um botão de copiar. O Blox Code nunca roda `sudo` sozinho.
+- **Links do navegador.** Instalado, o Blox Code entra no menu de aplicativos e passa a abrir os links
+  `roblox://`: aplica suas Fast Flags e mods e entrega o link ao Sober.
+
+### O que dá para fazer
+
+- **Fast Flags:** o mesmo editor do Windows (busca, validação, chave para booleanas, Import JSON,
+  Export JSON). As flags vão direto para o `config.json` do Sober assim que você muda, como valores
+  JSON de verdade (`true`, `144`), então valem até se você abrir o Sober direto. As flags que você já
+  tinha colocado no Sober são importadas na primeira vez, não apagadas. Presets de anti-aliasing e
+  qualidade de textura.
+- **Mods com a lista dos arquivos do Roblox:** a tela Mods lê o pacote do Roblox que o Sober baixou e
+  lista cursores, sons, fontes e texturas, com busca e filtros. Escolha um arquivo, clique em
+  **Replace with file…** e ele vai para o lugar certo do `asset_overlay` do Sober na hora.
+  **Restore original** desfaz. Se você já tinha colocado um arquivo no overlay na mão, ele é guardado
+  e volta quando o mod sai.
+- **Configurações do Sober explicadas:** qualidade gráfica (Quality, Balanced, Performance), OpenGL
+  ou Vulkan, HiDPI, GameMode, fechar ao sair do jogo, localização do servidor, Discord e controles,
+  cada uma com uma frase dizendo para que serve.
+- **Restaurar o Sober:** volta o `config.json` do backup que o Blox Code faz antes da primeira mudança,
+  reseta o Sober para o padrão ou tira todos os mods do Blox Code de dentro dele.
+- **Aviso de NVIDIA:** se o driver da NVIDIA não bate com a extensão GL do Flatpak (o motivo mais
+  comum do Sober rodar sem a placa de vídeo), a tela inicial avisa e mostra `flatpak update`.
+- **Exportar diagnóstico:** em Behaviour, um `.zip` com versões (distro, Flatpak, Sober, driver),
+  configurações e logs para mandar a quem estiver ajudando. Sem senhas nem dados da conta do Roblox.
+
+### Robustez
+
+- O `config.json` do Sober é gravado num arquivo temporário, validado e trocado de uma vez: um JSON
+  quebrado impediria o Sober de abrir. As chaves que o Blox Code não conhece ficam intactas. Se o
+  arquivo já estiver quebrado, o Blox Code não mexe nele e explica o que fazer.
+- A saída do Sober vai para `sober.log`, e não para o Blox Code, então fechar o Blox Code nunca
+  derruba o jogo. Se o Sober fechar logo ao abrir, a tela de launch mostra o erro.
+- A atualização automática troca o AppImage sem estragar a cópia que está rodando, e baixa para
+  `~/.cache` (o `/tmp` pode não deixar executar programas em algumas distros).
+- Uma janela de menu e um launch por vez, como no Windows.
+- O AppImage é testado automaticamente a cada versão no Ubuntu 22.04 e 24.04, no Debian 12 e no Arch,
+  com um autoteste (`BloxCode-x86_64.AppImage --self-test`) que roda numa pasta temporária, sem mexer
+  nas suas configurações.
+
+### Windows
+
+- Nada muda no uso. Por dentro, a parte comum (configurações, Fast Flags, atualizador) virou uma
+  biblioteca compartilhada com a versão Linux.
+- As versões agora são compiladas e publicadas pelo GitHub Actions, com o `.exe` e o `.AppImage` no
+  mesmo release.
+
 ## 1.0.3 — Conheça o Bit
 
 O Blox Code ganhou um mascote próprio. O **Bit** substitui o Clawd, que era o mascote do Claude Code

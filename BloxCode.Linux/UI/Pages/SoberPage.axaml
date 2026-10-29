@@ -1,0 +1,129 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="BloxCode.Linux.UI.Pages.SoberPage">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="720" Margin="40,8,40,40">
+            <TextBlock Text="Sober" Classes="h1" />
+            <TextBlock Classes="muted" Margin="0,0,0,20"
+                       Text="Sober runs Roblox on Linux and keeps it updated. These are its own settings, explained; Blox Code saves them straight into Sober's config.json and they apply the next time Roblox starts." />
+
+            <Border x:Name="ErrorCard" Classes="card banner" IsVisible="False">
+                <StackPanel>
+                    <TextBlock Text="Sober's settings file can't be read" Classes="h2" />
+                    <TextBlock x:Name="ErrorText" Classes="muted" Margin="0,3,0,0" />
+                </StackPanel>
+            </Border>
+
+            <StackPanel x:Name="Options">
+                <Border Classes="card">
+                    <StackPanel>
+                        <TextBlock Text="Graphics" Classes="h2" />
+                        <TextBlock Classes="muted" Margin="0,3,0,10" Text="Quality looks like Roblox on a desktop. Performance lowers detail and texture quality for more frames — a good pick for older or 2 GB GPUs." />
+                        <Border Classes="segmented">
+                            <StackPanel x:Name="GraphicsSegments" Orientation="Horizontal" />
+                        </Border>
+
+                        <Border Classes="divider" />
+                        <DockPanel>
+                            <CheckBox x:Name="UseOpenGl" DockPanel.Dock="Right" Theme="{StaticResource Toggle}" Tag="use_opengl" />
+                            <StackPanel>
+                                <TextBlock Text="Use OpenGL instead of Vulkan" Classes="h2" FontWeight="Normal" />
+                                <TextBlock Classes="muted" Margin="0,2,0,0" Text="Try this if Roblox crashes, shows a black screen or reports &quot;OutOfMemory&quot;." />
+                            </StackPanel>
+                        </DockPanel>
+
+                        <Border Classes="divider" />
+                        <DockPanel>
+                            <CheckBox x:Name="HiDpi" DockPanel.Dock="Right" Theme="{StaticResource Toggle}" Tag="enable_hidpi" />
+                            <StackPanel>
+                                <TextBlock Text="Sharp on high-resolution screens" Classes="h2" FontWeight="Normal" />
+                                <TextBlock Classes="muted" Margin="0,2,0,0" Text="Scales the game to your screen's pixel density (HiDPI). Leave off on regular 1080p monitors." />
+                            </StackPanel>
+                        </DockPanel>
+
+                        <Border Classes="divider" />
+                        <DockPanel>
+                            <CheckBox x:Name="GameMode" DockPanel.Dock="Right" Theme="{StaticResource Toggle}" Tag="enable_gamemode" />
+                            <StackPanel>
+                                <TextBlock Text="GameMode" Classes="h2" FontWeight="Normal" />
+                                <TextBlock Classes="muted" Margin="0,2,0,0" Text="Lets Feral GameMode boost performance while you play, when it's installed." />
+                            </StackPanel>
+                        </DockPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="card">
+                    <StackPanel>
+                        <DockPanel>
+                            <CheckBox x:Name="CloseOnLeave" DockPanel.Dock="Right" Theme="{StaticResource Toggle}" Tag="close_on_leave" />
+                            <StackPanel>
+                                <TextBlock Text="Close when leaving a game" Classes="h2" FontWeight="Normal" />
+                                <TextBlock Classes="muted" Margin="0,2,0,0" Text="Off keeps Sober open on the Roblox home screen after a game." />
+                            </StackPanel>
+                        </DockPanel>
+
+                        <Border Classes="divider" />
+                        <DockPanel>
+                            <CheckBox x:Name="ServerLocation" DockPanel.Dock="Right" Theme="{StaticResource Toggle}" Tag="server_location_indicator_enabled" />
+                            <StackPanel>
+                                <TextBlock Text="Show the server location" Classes="h2" FontWeight="Normal" />
+                                <TextBlock Classes="muted" Margin="0,2,0,0" Text="A short popup with where the game server is when you join." />
+                            </StackPanel>
+                        </DockPanel>
+
+                        <Border Classes="divider" />
+                        <DockPanel>
+                            <CheckBox x:Name="Discord" DockPanel.Dock="Right" Theme="{StaticResource Toggle}" Tag="discord_rpc_enabled" />
+                            <StackPanel>
+                                <TextBlock Text="Discord activity" Classes="h2" FontWeight="Normal" />
+                                <TextBlock Classes="muted" Margin="0,2,0,0" Text="Shows the game you're playing on your Discord profile." />
+                            </StackPanel>
+                        </DockPanel>
+
+                        <Border Classes="divider" />
+                        <DockPanel>
+                            <CheckBox x:Name="DiscordJoin" DockPanel.Dock="Right" Theme="{StaticResource Toggle}" Tag="discord_rpc_show_join_button" />
+                            <StackPanel>
+                                <TextBlock Text="Discord join button" Classes="h2" FontWeight="Normal" />
+                                <TextBlock Classes="muted" Margin="0,2,0,0" Text="Lets friends join your game from your Discord profile." />
+                            </StackPanel>
+                        </DockPanel>
+
+                        <Border Classes="divider" />
+                        <DockPanel>
+                            <CheckBox x:Name="Gamepad" DockPanel.Dock="Right" Theme="{StaticResource Toggle}" Tag="allow_gamepad_permission" />
+                            <StackPanel>
+                                <TextBlock Text="Controllers" Classes="h2" FontWeight="Normal" />
+                                <TextBlock Classes="muted" Margin="0,2,0,0" Text="Lets Roblox use gamepads." />
+                            </StackPanel>
+                        </DockPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <Border Classes="card">
+                <StackPanel>
+                    <TextBlock Text="Restore" Classes="h2" />
+                    <TextBlock x:Name="RestoreText" Classes="muted" Margin="0,3,0,12" />
+                    <WrapPanel>
+                        <Button x:Name="RestoreButton" Classes="secondary" Content="Restore Sober's original settings" Margin="0,0,8,8" Click="OnRestore" />
+                        <Button Classes="secondary" Content="Reset Sober to defaults" Margin="0,0,8,8" Click="OnReset" />
+                        <Button Classes="danger" Content="Take Blox Code's mods out of Sober" Margin="0,0,8,8" Click="OnClearOverlay" />
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Classes="card">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Content="Open Sober's settings" VerticalAlignment="Center" Click="OnOpenSoberSettings" />
+                    <StackPanel>
+                        <TextBlock Text="Everything else" Classes="h2" />
+                        <TextBlock x:Name="ConfigPath" Classes="mono" Margin="0,4,0,0" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <TextBlock x:Name="SavedText" Classes="muted ok" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

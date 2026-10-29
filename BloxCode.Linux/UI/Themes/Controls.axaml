@@ -1,0 +1,264 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="clr-namespace:BloxCode.Linux.UI">
+
+    <!-- Typography: a bookish serif for headings, Inter for UI, and whatever monospace the distro ships -->
+    <FontFamily x:Key="Font.Serif">Georgia, Noto Serif, DejaVu Serif, Liberation Serif, Times New Roman</FontFamily>
+    <FontFamily x:Key="Font.Sans">fonts:Inter#Inter, Noto Sans, DejaVu Sans, Segoe UI</FontFamily>
+    <FontFamily x:Key="Font.Mono">JetBrains Mono, Cascadia Mono, DejaVu Sans Mono, Noto Sans Mono, Liberation Mono, Consolas</FontFamily>
+
+    <CornerRadius x:Key="Radius.Small">6</CornerRadius>
+    <CornerRadius x:Key="Radius.Medium">8</CornerRadius>
+    <CornerRadius x:Key="Radius.Large">14</CornerRadius>
+
+    <!-- Line icons on a 20 x 20 grid, drawn by ui:IconView in the current text colour -->
+    <StreamGeometry x:Key="Icon.Home">M3.5,9.5 L10,3.5 L16.5,9.5 M5.5,8 L5.5,16.5 L14.5,16.5 L14.5,8 M8.5,16.5 L8.5,12 L11.5,12 L11.5,16.5</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Flag">M5,17.5 L5,3 M5,3.5 L15,3.5 L12.5,7.25 L15,11 L5,11</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Box">M10,2.8 L16.5,6.4 L16.5,13.6 L10,17.2 L3.5,13.6 L3.5,6.4 Z M3.5,6.4 L10,10 L16.5,6.4 M10,10 L10,17.2</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Sober">M4,3.5 L16,3.5 L16,16.5 L4,16.5 Z M8.5,7 L13.5,10 L8.5,13 Z</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Palette">M10,3 A7,7 0 1 0 10,17 A7,7 0 1 0 10,3 Z M10,3 L10,17 M10,6.5 L13.5,6.5 M10,10 L16.5,10 M10,13.5 L13.5,13.5</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Sliders">M3.5,6 L16.5,6 M3.5,14 L16.5,14 M7,3.8 L7,8.2 M13,11.8 L13,16.2</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Info">M10,3 A7,7 0 1 0 10,17 A7,7 0 1 0 10,3 Z M10,9 L10,14 M10,6.2 L10,6.6</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Play">M7,4.5 L15.5,10 L7,15.5 Z</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Minimize">M5,10 L15,10</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Maximize">M5.5,5.5 L14.5,5.5 L14.5,14.5 L5.5,14.5 Z</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Restore">M5.5,8 L12,8 L12,14.5 L5.5,14.5 Z M8,8 L8,5.5 L14.5,5.5 L14.5,12 L12,12</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Close">M5.5,5.5 L14.5,14.5 M14.5,5.5 L5.5,14.5</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Check">M5,10.5 L8.5,14 L15,6.5</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Dash">M5.5,10 L14.5,10</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Up">M10,15.5 L10,4.5 M5.5,9 L10,4.5 L14.5,9</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Back">M15.5,10 L4.5,10 M9,5.5 L4.5,10 L9,14.5</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Plus">M10,4.5 L10,15.5 M4.5,10 L15.5,10</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Trash">M4,6 L16,6 M8,6 L8,4 L12,4 L12,6 M5.5,6 L6.5,16.5 L13.5,16.5 L14.5,6 M8.5,9 L8.5,13.5 M11.5,9 L11.5,13.5</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Copy">M7.5,7.5 L16,7.5 L16,16 L7.5,16 Z M4,12.5 L4,4 L12.5,4</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Folder">M3,5.5 L8,5.5 L9.5,7.5 L17,7.5 L17,15.5 L3,15.5 Z</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Refresh">M15.5,10 A5.5,5.5 0 1 1 13.9,6.1 M14,3 L14,6.3 L10.7,6.3</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Download">M10,3.5 L10,12.5 M6,8.5 L10,12.5 L14,8.5 M4,16 L16,16</StreamGeometry>
+    <StreamGeometry x:Key="Icon.File">M5,3 L11.5,3 L15,6.5 L15,17 L5,17 Z M11.5,3 L11.5,6.5 L15,6.5</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Warning">M10,3.5 L17,16 L3,16 Z M10,8 L10,11.5 M10,13.6 L10,14</StreamGeometry>
+
+    <!-- ===== Buttons: one template, looks picked by class (primary, secondary, ghost, danger, chip, caption) ===== -->
+    <ControlTheme x:Key="{x:Type Button}" TargetType="Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+        <Setter Property="FontSize" Value="13.5" />
+        <Setter Property="Padding" Value="14,7" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Medium}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ContentPresenter x:Name="PART_ContentPresenter"
+                                  Background="{TemplateBinding Background}"
+                                  BorderBrush="{TemplateBinding BorderBrush}"
+                                  BorderThickness="{TemplateBinding BorderThickness}"
+                                  CornerRadius="{TemplateBinding CornerRadius}"
+                                  Content="{TemplateBinding Content}"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                  Padding="{TemplateBinding Padding}"
+                                  Foreground="{TemplateBinding Foreground}"
+                                  RecognizesAccessKey="True"
+                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Brush.Hover}" />
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="Opacity" Value="0.85" />
+        </Style>
+        <Style Selector="^:focus-visible /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+        </Style>
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.45" />
+        </Style>
+
+        <Style Selector="^.primary">
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.OnAccent}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="^.primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Brush.AccentHover}" />
+        </Style>
+
+        <Style Selector="^.secondary">
+            <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.BorderStrong}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
+        </Style>
+
+        <Style Selector="^.danger">
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Danger}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
+        </Style>
+        <Style Selector="^.danger-fill">
+            <Setter Property="Background" Value="{DynamicResource Brush.Danger}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="^.danger-fill:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Brush.Danger}" />
+            <Setter Property="Opacity" Value="0.9" />
+        </Style>
+
+        <!-- Suggestion chip under the composer, like Claude's "Write / Learn / Code" pills -->
+        <Style Selector="^.chip">
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="Margin" Value="4" />
+            <Setter Property="FontSize" Value="13" />
+        </Style>
+
+        <Style Selector="^.link">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        </Style>
+        <Style Selector="^.link:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+
+        <!-- Square send button with the up-arrow, as in the Claude composer -->
+        <Style Selector="^.send">
+            <Setter Property="Width" Value="34" />
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+
+        <Style Selector="^.caption">
+            <Setter Property="Width" Value="46" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="Cursor" Value="Arrow" />
+        </Style>
+        <Style Selector="^.caption.close:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#C42B1C" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+    </ControlTheme>
+
+    <!-- ===== Sidebar navigation ===== -->
+    <ControlTheme x:Key="NavItem" TargetType="RadioButton">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+        <Setter Property="FontSize" Value="13.5" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Margin" Value="0,1" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="GroupName" Value="Nav" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border x:Name="Chrome" Background="Transparent" CornerRadius="{StaticResource Radius.Medium}" Padding="12,0">
+                    <ContentPresenter VerticalAlignment="Center" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover /template/ Border#Chrome">
+            <Setter Property="Background" Value="{DynamicResource Brush.Hover}" />
+        </Style>
+        <Style Selector="^:checked /template/ Border#Chrome">
+            <Setter Property="Background" Value="{DynamicResource Brush.Selected}" />
+        </Style>
+        <Style Selector="^:checked">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </ControlTheme>
+
+    <!-- ===== Segmented control (RadioButtons inside a Border.segmented) ===== -->
+    <ControlTheme x:Key="Segment" TargetType="RadioButton">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.TextSecondary}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border x:Name="Chrome" Background="Transparent" CornerRadius="{StaticResource Radius.Small}" Padding="12,5">
+                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover /template/ Border#Chrome">
+            <Setter Property="Background" Value="{DynamicResource Brush.Hover}" />
+        </Style>
+        <Style Selector="^:checked /template/ Border#Chrome">
+            <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
+        </Style>
+        <Style Selector="^:checked">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </ControlTheme>
+
+    <!-- ===== Toggle switch ===== -->
+    <ControlTheme x:Key="Toggle" TargetType="CheckBox">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel Background="Transparent">
+                    <Border x:Name="Track" Width="38" Height="22" CornerRadius="11" BorderThickness="1"
+                            Background="{DynamicResource Brush.SurfaceAlt}" BorderBrush="{DynamicResource Brush.BorderStrong}" />
+                    <Ellipse x:Name="Knob" Width="14" Height="14" Margin="4,0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                             Fill="{DynamicResource Brush.TextMuted}" RenderTransform="translateX(0px)">
+                        <Ellipse.Transitions>
+                            <Transitions>
+                                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.12" />
+                            </Transitions>
+                        </Ellipse.Transitions>
+                    </Ellipse>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:checked /template/ Border#Track">
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+        </Style>
+        <Style Selector="^:checked /template/ Ellipse#Knob">
+            <Setter Property="Fill" Value="White" />
+            <Setter Property="RenderTransform" Value="translateX(16px)" />
+        </Style>
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.45" />
+        </Style>
+    </ControlTheme>
+
+    <!-- ===== Checkbox (row selection) ===== -->
+    <ControlTheme x:Key="Check" TargetType="CheckBox">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border x:Name="Box" Width="18" Height="18" CornerRadius="5" BorderThickness="1.5"
+                        Background="{DynamicResource Brush.Surface}" BorderBrush="{DynamicResource Brush.BorderStrong}">
+                    <ui:IconView x:Name="Tick" Data="{StaticResource Icon.Check}" Width="12" Height="12" StrokeThickness="2.4"
+                                 Foreground="White" IsVisible="False" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover /template/ Border#Box">
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+        </Style>
+        <Style Selector="^:checked /template/ Border#Box">
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+        </Style>
+        <Style Selector="^:checked /template/ ui|IconView#Tick">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="^:indeterminate /template/ Border#Box">
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+        </Style>
+        <Style Selector="^:indeterminate /template/ ui|IconView#Tick">
+            <Setter Property="IsVisible" Value="True" />
+            <Setter Property="Data" Value="{StaticResource Icon.Dash}" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

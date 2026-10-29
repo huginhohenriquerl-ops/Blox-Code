@@ -1,0 +1,5 @@
+# Linux scripts and desktop entries must keep LF line endings.
+*.sh text eol=lf
+packaging/linux/AppRun text eol=lf
+*.desktop text eol=lf
+*.yml text eol=lf

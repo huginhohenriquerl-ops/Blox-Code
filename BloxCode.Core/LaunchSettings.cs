@@ -34,8 +34,7 @@ public sealed class LaunchSettings
         {
             string arg = args[i];
 
-            if (arg.StartsWith("roblox:", StringComparison.OrdinalIgnoreCase) ||
-                arg.StartsWith("roblox-player:", StringComparison.OrdinalIgnoreCase))
+            if (RobloxLink.IsRobloxUri(arg))
             {
                 s.Mode = LaunchMode.Player;
                 s.RobloxArgs = arg;
