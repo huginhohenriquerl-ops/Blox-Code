@@ -4,25 +4,25 @@ using System.Windows.Threading;
 
 namespace BloxCode.UI;
 
-/// <summary>The twinkling asterisk Claude Code shows while it is working (· ✢ ✳ ✶ ✻ ✽).</summary>
-public sealed class ClaudeSpinner : TextBlock
+/// <summary>Blox Code's working indicator: a block circling a square (▖ ▌ ▘ ▀ ▝ ▐ ▗ ▄).</summary>
+public sealed class BlockSpinner : TextBlock
 {
-    private static readonly string[] Frames = { "·", "✢", "✳", "✶", "✻", "✽", "✻", "✶", "✳", "✢" };
-    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(120) };
+    private static readonly string[] Frames = { "▖", "▌", "▘", "▀", "▝", "▐", "▗", "▄" };
+    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(110) };
     private int _frame;
 
-    public ClaudeSpinner()
+    public BlockSpinner()
     {
-        Text = Frames[4];
-        FontFamily = new System.Windows.Media.FontFamily("Segoe UI Symbol");
+        Text = "■";
+        FontFamily = new System.Windows.Media.FontFamily("Cascadia Mono, Consolas");
         _timer.Tick += (_, _) => Text = Frames[++_frame % Frames.Length];
         Loaded += (_, _) => Sync();
         Unloaded += (_, _) => _timer.Stop();
     }
 
     public static readonly DependencyProperty IsSpinningProperty = DependencyProperty.Register(
-        nameof(IsSpinning), typeof(bool), typeof(ClaudeSpinner),
-        new PropertyMetadata(true, (d, _) => ((ClaudeSpinner)d).Sync()));
+        nameof(IsSpinning), typeof(bool), typeof(BlockSpinner),
+        new PropertyMetadata(true, (d, _) => ((BlockSpinner)d).Sync()));
 
     public bool IsSpinning
     {
@@ -39,7 +39,7 @@ public sealed class ClaudeSpinner : TextBlock
         else
         {
             _timer.Stop();
-            Text = "✻";
+            Text = "■";
         }
     }
 }

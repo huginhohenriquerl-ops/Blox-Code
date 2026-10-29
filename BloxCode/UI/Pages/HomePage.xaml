@@ -30,7 +30,7 @@
             <StackPanel Grid.Row="2">
                 <!-- Greeting -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,26">
-                    <ui:ClawdMascot x:Name="Mascot" Unit="3.4" VerticalAlignment="Center" Margin="0,0,18,4"
+                    <ui:BitMascot x:Name="Mascot" Unit="2.6" VerticalAlignment="Center" Margin="0,0,18,4"
                                     Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" />
                     <TextBlock x:Name="Greeting" Style="{StaticResource Text.Display}" VerticalAlignment="Center" />
                 </StackPanel>

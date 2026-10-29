@@ -20,7 +20,7 @@
             <DockPanel Margin="12,0,12,12">
                 <!-- Brand -->
                 <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="56" Margin="6,0,0,0">
-                    <ui:ClawdMascot x:Name="BrandMascot" Unit="2" VerticalAlignment="Center" Margin="0,0,10,0"
+                    <ui:BitMascot x:Name="BrandMascot" Unit="1.5" VerticalAlignment="Center" Margin="0,0,10,0"
                                     Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" />
                     <TextBlock Text="Blox Code" FontFamily="{StaticResource Font.Serif}" FontSize="20" VerticalAlignment="Center" />
                 </StackPanel>

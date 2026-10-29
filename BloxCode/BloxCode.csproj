@@ -11,7 +11,7 @@
     <Product>Blox Code</Product>
     <Company>Blox Code</Company>
     <Description>A Claude-themed Roblox bootstrapper</Description>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <ApplicationIcon>Resources\BloxCode.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>

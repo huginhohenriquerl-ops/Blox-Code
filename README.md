@@ -1,9 +1,9 @@
-<p align="center"><img src="docs/icon.png" width="96" alt="Clawd"></p>
+<p align="center"><img src="docs/icon.png" width="96" alt="Bit, o mascote do Blox Code"></p>
 
 # Blox Code
 
-Um bootstrapper de Roblox com a cara do **Claude desktop** e estrelando o **Clawd**, o mascote
-do Claude Code. O fluxo de atualização/launch foi obtido por engenharia reversa do Bloxstrap 2.11.4
+Um bootstrapper de Roblox com a cara do **Claude desktop** e estrelando o **Bit**, nosso mascote:
+um bloco de montar com um terminal no lugar do rosto. O fluxo de atualização/launch foi obtido por engenharia reversa do Bloxstrap 2.11.4
 com o REA MCP e reescrito do zero em C#/WPF — veja [docs/REVERSE_ENGINEERING.md](docs/REVERSE_ENGINEERING.md).
 
 ## O que ele faz
@@ -23,8 +23,8 @@ com o REA MCP e reescrito do zero em C#/WPF — veja [docs/REVERSE_ENGINEERING.m
 
 - Paleta do Claude (papel marfim / carvão, acento argila `#D97757`), títulos serifados, sidebar e
   "composer" iguais aos do app: cole um link de jogo ou um place ID e aperte Enter.
-- Tela de launch no estilo do Claude Code: `✻ Downloading RobloxApp.zip… (12s · esc to cancel)`,
-  com o Clawd andando em cima da barra de progresso, trabalhando ao extrair e pulando no final.
+- Tela de launch com status ao vivo: `▖ Downloading RobloxApp.zip… (12s · esc to cancel)`,
+  com o Bit andando em cima da barra de progresso, digitando código na tela ao extrair e pulando no final.
 - Tema Sistema / Claro / Escuro.
 
 O que mudou em cada versão está no [log de atualizações](CHANGELOG.md).
@@ -65,14 +65,15 @@ Para publicar uma atualização:
 ```
 BloxCode/
   Core/      Deployment, PackageManifest, Bootstrapper, Installer, Settings, FastFlagPresets…
-  UI/        MainWindow (estilo Claude desktop), BootstrapperWindow, ClawdMascot, ClaudeSpinner
+  UI/        MainWindow (estilo Claude desktop), BootstrapperWindow, BitMascot, BlockSpinner
   UI/Pages/  Home, Fast Flags, Mods, Appearance, Behaviour, About
   UI/Themes/ Light.xaml, Dark.xaml, Styles.xaml
 tools/
   extract-bundle.js  extrai um .NET single-file bundle (usado no Bloxstrap.exe)
-  make-icon.js       gera Resources/BloxCode.ico a partir do pixel art do Clawd
+  make-icon.js       gera Resources/BloxCode.ico a partir do pixel art do Bit
 ```
 
-Fora do escopo por enquanto: Roblox Studio, Discord Rich Presence, auto-update do próprio Blox Code.
+Fora do escopo por enquanto: Roblox Studio e Discord Rich Presence. A versão para Linux está
+planejada (via Sober).
 
 Projeto de fã — sem afiliação com Roblox Corporation, Anthropic ou a equipe do Bloxstrap (MIT).

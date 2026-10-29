@@ -11,7 +11,7 @@
     <Border Padding="24,22,24,18" MouseLeftButtonDown="OnDrag" Background="{DynamicResource Brush.Bg}">
         <StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                <ui:ClawdMascot x:Name="Mascot" Unit="2" VerticalAlignment="Center" Margin="0,0,12,0"
+                <ui:BitMascot x:Name="Mascot" Unit="1.6" VerticalAlignment="Center" Margin="0,0,12,0"
                                 Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" />
                 <TextBlock x:Name="TitleText" Style="{StaticResource Text.H1}" FontSize="21" Margin="0" VerticalAlignment="Center" TextWrapping="Wrap" />
             </StackPanel>

@@ -27,7 +27,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" Margin="0,3">
-                                    <TextBlock Text="✻" FontFamily="{StaticResource Font.Symbols}" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,8,0" />
+                                    <TextBlock Text="■" FontSize="9" VerticalAlignment="Center" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,8,0" />
                                     <TextBlock Text="{Binding}" FontFamily="{StaticResource Font.Mono}" FontSize="12.5" />
                                 </StackPanel>
                             </DataTemplate>

@@ -48,7 +48,7 @@ public partial class HomePage : UserControl
         if (_updatedNotice is not null)
         {
             Banner.Visibility = Visibility.Visible;
-            BannerTitle.Text = $"✻ Updated to v{_updatedNotice}";
+            BannerTitle.Text = $"Updated to v{_updatedNotice}";
             BannerText.Text = "Blox Code reinstalled itself with the latest release.";
             BannerButton.Content = Updater.Repository is null ? "Got it" : "What's new";
             DesktopShortcut.Visibility = DesktopShortcutLabel.Visibility = Visibility.Collapsed;

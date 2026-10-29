@@ -162,7 +162,7 @@
 
                 <!-- Empty state -->
                 <StackPanel x:Name="EmptyState" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,40">
-                    <ui:ClawdMascot x:Name="EmptyMascot" Unit="4" HorizontalAlignment="Center"
+                    <ui:BitMascot x:Name="EmptyMascot" Unit="3" HorizontalAlignment="Center"
                                     Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" />
                     <TextBlock x:Name="EmptyTitle" Text="No custom flags yet" Style="{StaticResource Text.H2}" HorizontalAlignment="Center" Margin="0,14,0,4" />
                     <TextBlock x:Name="EmptyText" Style="{StaticResource Text.Muted}" HorizontalAlignment="Center" TextAlignment="Center"

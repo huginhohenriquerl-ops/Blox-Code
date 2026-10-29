@@ -19,7 +19,7 @@ public partial class AboutPage : UserControl
     {
         Mascot.Celebrate();
         await Task.Delay(1050);
-        Mascot.Mood = ClawdMood.Idle;
+        Mascot.Mood = MascotMood.Idle;
     }
 
     private void Open(string target) => Shell.Open(target, Window.GetWindow(this));

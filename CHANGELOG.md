@@ -3,6 +3,29 @@
 Todas as versões do Blox Code, da mais nova para a mais antiga. Quem tem o Blox Code instalado
 recebe cada versão automaticamente na próxima vez que abrir.
 
+## 1.0.3 — Conheça o Bit
+
+O Blox Code ganhou um mascote próprio. O **Bit** substitui o Clawd, que era o mascote do Claude Code
+(da Anthropic). Agora a identidade visual do Blox Code é nossa, e a versão para Linux já nasce com ela.
+
+- **Quem é o Bit:** um bloco de montar, como o "Blox" do nome, com um terminal no lugar do rosto,
+  como o "Code". Na cabeça, uma antena com uma faísca que pisca como sinal. É pixel art, igual ao
+  estilo do resto do app.
+- **Animações:**
+  - **Parado:** respira, pisca, e a boca é um cursor de terminal piscando.
+  - **Baixando o Roblox:** anda em cima da barra de progresso.
+  - **Extraindo:** digita com os bracinhos enquanto a tela rola linhas de código.
+  - **Terminou:** dá um pulinho com os olhos em ^ ^ e a antena acesa.
+  - **Deu erro:** antena apagada, olhar baixo e boca triste.
+  - Clicar nele na tela About também faz ele pular.
+- **Ícone novo:** o Bit no lugar do Clawd, na barra de tarefas, no menu Iniciar e nos atalhos. Os
+  atalhos que já existem passam a mostrar o ícone novo depois da atualização (o Windows pode demorar
+  um pouco para atualizar o cache de ícones).
+- **Indicador de carregamento novo:** o asterisco que piscava na tela de launch (que também vinha do
+  Claude Code) virou um bloco girando em volta de um quadrado (▖ ▌ ▘ ▀ ▝ ▐ ▗ ▄). O ✻ da barra de título
+  e da lista de mods também saiu.
+- O tema continua o mesmo: as cores e a tipografia no estilo do Claude desktop não mudam.
+
 ## 1.0.2 — Robustez antes do port para Linux
 
 Última varredura no código antes de começar a versão para Linux. Nada muda na aparência; o foco é

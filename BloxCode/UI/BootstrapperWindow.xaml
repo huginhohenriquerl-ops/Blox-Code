@@ -21,15 +21,16 @@
         <DockPanel Margin="18,0,0,0">
             <Button DockPanel.Dock="Right" Style="{StaticResource Button.CaptionClose}" Content="&#xE8BB;" Click="OnCancel" ToolTip="Cancel" />
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <TextBlock Text="✻" FontFamily="{StaticResource Font.Symbols}" FontSize="15" Foreground="{DynamicResource Brush.Accent}" Margin="0,0,7,0" VerticalAlignment="Center" />
+                <ui:BitMascot Unit="0.9" IsAnimated="False" Margin="0,0,8,2" VerticalAlignment="Center"
+                              Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" />
                 <TextBlock Text="Blox Code" FontFamily="{StaticResource Font.Serif}" FontSize="15" VerticalAlignment="Center" />
             </StackPanel>
         </DockPanel>
 
-        <!-- Stage: Clawd walks along the progress bar -->
+        <!-- Stage: Bit walks along the progress bar -->
         <Grid Grid.Row="1" Margin="36,0,36,0" VerticalAlignment="Bottom">
             <Canvas x:Name="Stage" Height="78" ClipToBounds="False" SizeChanged="OnStageSizeChanged">
-                <ui:ClawdMascot x:Name="Mascot" Unit="5" Mood="Walk" Canvas.Bottom="0" Canvas.Left="0"
+                <ui:BitMascot x:Name="Mascot" Unit="3.5" Mood="Walk" Canvas.Bottom="0" Canvas.Left="0"
                                 Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" />
             </Canvas>
         </Grid>
@@ -37,13 +38,13 @@
         <StackPanel Grid.Row="2" Margin="36,6,36,0">
             <ProgressBar x:Name="Progress" Style="{StaticResource Progress}" Minimum="0" Maximum="1" Value="0" />
 
-            <!-- Status line in the style of Claude Code: "✻ Doing the thing… (12s · esc to cancel)" -->
+            <!-- Status line: "▖ Doing the thing… (12s · esc to cancel)" -->
             <DockPanel Margin="0,16,0,0">
                 <Grid DockPanel.Dock="Left" Width="20" VerticalAlignment="Center">
-                    <ui:ClaudeSpinner x:Name="Spinner" FontSize="16" Foreground="{DynamicResource Brush.Accent}" />
+                    <ui:BlockSpinner x:Name="Spinner" FontSize="16" Foreground="{DynamicResource Brush.Accent}" />
                     <TextBlock x:Name="ResultGlyph" FontSize="15" FontFamily="{StaticResource Font.Symbols}" Visibility="Collapsed" />
                 </Grid>
-                <TextBlock x:Name="StatusText" FontSize="15" Text="Waking up Clawd…" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                <TextBlock x:Name="StatusText" FontSize="15" Text="Waking up Bit…" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
             </DockPanel>
             <TextBlock x:Name="DetailText" Style="{StaticResource Text.Mono}" Margin="20,5,0,0" Text="(0s · esc to cancel)" />
         </StackPanel>

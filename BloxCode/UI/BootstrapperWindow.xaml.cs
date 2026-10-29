@@ -15,7 +15,7 @@ public partial class BootstrapperWindow : Window
     private readonly Stopwatch _elapsed = Stopwatch.StartNew();
     private readonly DispatcherTimer _ticker = new() { Interval = TimeSpan.FromMilliseconds(130) };
 
-    private double? _fraction;      // null = indeterminate, Clawd paces back and forth
+    private double? _fraction;      // null = indeterminate, Bit paces back and forth
     private double _paceX;
     private int _paceDir = 1;
     private string _sizeText = "";
@@ -190,10 +190,10 @@ public partial class BootstrapperWindow : Window
 
         Mascot.Mood = p.Phase switch
         {
-            BootstrapPhase.Downloading => ClawdMood.Walk,
-            BootstrapPhase.Installing => ClawdMood.Work,
-            BootstrapPhase.Launching => ClawdMood.Happy,
-            _ => ClawdMood.Walk,
+            BootstrapPhase.Downloading => MascotMood.Walk,
+            BootstrapPhase.Installing => MascotMood.Work,
+            BootstrapPhase.Launching => MascotMood.Happy,
+            _ => MascotMood.Walk,
         };
 
         TaskbarItemInfo ??= new System.Windows.Shell.TaskbarItemInfo();
@@ -262,10 +262,10 @@ public partial class BootstrapperWindow : Window
         StatusText.Text = message;
         StatusText.TextWrapping = TextWrapping.Wrap;
         StatusText.TextTrimming = TextTrimming.None;
-        DetailText.Text = "(Clawd tripped — the log has the details)";
+        DetailText.Text = "(Bit tripped — the log has the details)";
         ShowGlyph("✗", "Brush.Danger");
         Progress.SetResourceReference(ForegroundProperty, "Brush.Danger");
-        Mascot.Mood = ClawdMood.Sad;
+        Mascot.Mood = MascotMood.Sad;
         CancelButton.Content = "Close";
         LogButton.Visibility = Visibility.Visible;
         if (TaskbarItemInfo is not null)

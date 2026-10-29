@@ -5,8 +5,8 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel MaxWidth="720" Margin="40,8,40,40">
             <StackPanel HorizontalAlignment="Center" Margin="0,24,0,28">
-                <ui:ClawdMascot x:Name="Mascot" Unit="9" HorizontalAlignment="Center" Cursor="Hand" MouseLeftButtonUp="OnPoke"
-                                Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" ToolTip="Hi, I'm Clawd" />
+                <ui:BitMascot x:Name="Mascot" Unit="6.5" HorizontalAlignment="Center" Cursor="Hand" MouseLeftButtonUp="OnPoke"
+                                Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" ToolTip="Hi, I'm Bit" />
                 <TextBlock Text="Blox Code" Style="{StaticResource Text.Display}" HorizontalAlignment="Center" Margin="0,16,0,2" />
                 <TextBlock x:Name="VersionText" Style="{StaticResource Text.Mono}" HorizontalAlignment="Center" />
             </StackPanel>
@@ -14,7 +14,7 @@
             <Border Style="{StaticResource Card}">
                 <StackPanel>
                     <TextBlock Style="{StaticResource Text.Body}">
-                        A Roblox bootstrapper dressed like the Claude desktop app, starring Clawd from Claude Code.
+                        A Roblox bootstrapper dressed like the Claude desktop app, starring Bit — a building block with a terminal for a face.
                         Its update and launch flow was reverse-engineered from Bloxstrap with REA and rewritten from scratch.
                     </TextBlock>
                     <TextBlock Style="{StaticResource Text.Muted}" Margin="0,12,0,0">

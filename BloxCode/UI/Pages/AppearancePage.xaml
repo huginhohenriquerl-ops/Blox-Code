@@ -26,7 +26,7 @@
                     <DockPanel Margin="0,4">
                         <CheckBox x:Name="Animate" DockPanel.Dock="Right" Style="{StaticResource Toggle}" Click="OnAnimateChanged" />
                         <StackPanel>
-                            <TextBlock Text="Animate Clawd" />
+                            <TextBlock Text="Animate Bit" />
                             <TextBlock Style="{StaticResource Text.Muted}" Text="Walking, blinking and the little victory hop. Turn off for a calmer screen." />
                         </StackPanel>
                     </DockPanel>
@@ -36,11 +36,11 @@
             <Border Style="{StaticResource Card}">
                 <DockPanel>
                     <Button DockPanel.Dock="Right" Style="{StaticResource Button.Secondary}" Content="Preview launch screen" VerticalAlignment="Center" Click="OnPreview" />
-                    <ui:ClawdMascot x:Name="Mascot" DockPanel.Dock="Left" Unit="4" Mood="Walk" Margin="0,0,20,0" VerticalAlignment="Center"
+                    <ui:BitMascot x:Name="Mascot" DockPanel.Dock="Left" Unit="3" Mood="Walk" Margin="0,0,20,0" VerticalAlignment="Center"
                                     Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" />
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="Launch screen" Style="{StaticResource Text.H2}" />
-                        <TextBlock Style="{StaticResource Text.Muted}" Text="Clawd walks the progress bar while Roblox downloads. The preview fakes a download and launches nothing." />
+                        <TextBlock Style="{StaticResource Text.Muted}" Text="Bit walks the progress bar while Roblox downloads and types away while it unpacks. The preview fakes a download and launches nothing." />
                     </StackPanel>
                 </DockPanel>
             </Border>

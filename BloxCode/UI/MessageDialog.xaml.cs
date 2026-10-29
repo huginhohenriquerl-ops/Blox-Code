@@ -19,7 +19,7 @@ public partial class MessageDialog : Window
         TitleText.Text = title;
         MessageText.Text = message;
         PrimaryButton.Content = primary;
-        Mascot.Mood = danger ? ClawdMood.Sad : ClawdMood.Idle;
+        Mascot.Mood = danger ? MascotMood.Sad : MascotMood.Idle;
         if (danger)
         {
             PrimaryButton.SetResourceReference(BackgroundProperty, "Brush.Danger");
