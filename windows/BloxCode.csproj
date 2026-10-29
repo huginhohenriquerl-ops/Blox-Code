@@ -13,7 +13,7 @@
 
   <!-- Version and UpdateRepository come from Directory.Build.props at the repository root. -->
   <ItemGroup>
-    <ProjectReference Include="..\BloxCode.Core\BloxCode.Core.csproj" />
+    <ProjectReference Include="..\shared\BloxCode.Core.csproj" />
   </ItemGroup>
 
   <!-- `dotnet publish -c Release` -> one self-contained BloxCode.exe, no .NET install needed -->

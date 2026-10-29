@@ -11,7 +11,7 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <!-- No libicu dependency: the AppImage then runs on any glibc distro without extra packages. -->
     <InvariantGlobalization>true</InvariantGlobalization>
-    <ApplicationIcon>..\BloxCode\Resources\BloxCode.ico</ApplicationIcon>
+    <ApplicationIcon>..\windows\Resources\BloxCode.ico</ApplicationIcon>
     <!-- Pages take their window in the constructor; nothing loads them by URI. -->
     <NoWarn>$(NoWarn);AVLN3001</NoWarn>
   </PropertyGroup>
@@ -24,14 +24,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BloxCode.Core\BloxCode.Core.csproj" />
+    <ProjectReference Include="..\shared\BloxCode.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
 
-  <!-- `dotnet publish -c Release` -> a self-contained folder that packaging/linux/build-appimage.sh
+  <!-- `dotnet publish -c Release` -> a self-contained folder that linux/packaging/build-appimage.sh
        turns into BloxCode-x86_64.AppImage. A folder, not a single file: nothing to extract at start. -->
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>

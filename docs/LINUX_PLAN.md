@@ -59,13 +59,13 @@ então a duplicação fica só no XAML e no code-behind.
 
 ```
 BloxCode.sln
-├─ BloxCode.Core/      net10.0, sem APIs do Windows (compartilhado)
+├─ shared/ (BloxCode.Core) net10.0, sem APIs do Windows (compartilhado)
 │   FastFlagValidator, FastFlagPresets, Settings/Store, Logger, Updater, LaunchSettings,
 │   IPlatform (pastas, instalação, abrir pasta), IRobloxRuntime
-├─ BloxCode/           net10.0-windows, WPF (o app atual)
+├─ windows/ (BloxCode)     net10.0-windows, WPF (o app atual)
 │   Deployment, PackageManifest, Bootstrapper → WindowsPlayerRuntime
 │   Installer (registro, atalhos .lnk), ShellLink, ThemeManager (DWM)
-└─ BloxCode.Linux/     net10.0, Avalonia, linux-x64
+└─ linux/ (BloxCode.Linux) net10.0, Avalonia, linux-x64
     SoberRuntime, LinuxPlatform (.desktop, xdg-mime, pastas XDG), UI em Avalonia
 ```
 

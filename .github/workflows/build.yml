@@ -25,7 +25,7 @@ jobs:
         with:
           global-json-file: global.json
       - name: Publish BloxCode.exe
-        run: dotnet publish BloxCode/BloxCode.csproj -c Release -o dist
+        run: dotnet publish windows/BloxCode.csproj -c Release -o dist
       - uses: actions/upload-artifact@v4
         with:
           name: windows
@@ -50,7 +50,7 @@ jobs:
         with:
           global-json-file: global.json
       - name: Build the AppImage
-        run: bash packaging/linux/build-appimage.sh
+        run: bash linux/packaging/build-appimage.sh
       - name: Self-test (headless)
         run: APPIMAGE_EXTRACT_AND_RUN=1 dist/BloxCode-x86_64.AppImage --self-test
       - name: UI smoke test
@@ -109,8 +109,22 @@ jobs:
             $0 ~ "^## " v "( |$)" { found = 1; title = $0; sub(/^## [^ ]+ *(— )?/, "", title); print title > "title.txt"; next }
             found && /^## / { exit }
             found { print }
-          ' CHANGELOG.md > notes.md
-          test -s notes.md || { echo "CHANGELOG.md has no section for $version"; exit 1; }
+          ' CHANGELOG.md > changes.md
+          test -s changes.md || { echo "CHANGELOG.md has no section for $version"; exit 1; }
+          base="https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}"
+          {
+            echo "### Baixar"
+            echo
+            echo "| Sistema | Arquivo |"
+            echo "| --- | --- |"
+            echo "| **Windows** 10/11 | [BloxCode.exe]($base/BloxCode.exe) |"
+            echo "| **Linux** (Arch, CachyOS, Ubuntu, Mint, Debian…) | [BloxCode-x86_64.AppImage]($base/BloxCode-x86_64.AppImage) |"
+            echo
+            echo "Quem já tem o Blox Code instalado recebe esta versão sozinho, com o arquivo do próprio sistema."
+            echo
+            echo "### O que mudou"
+            cat changes.md
+          } > notes.md
       - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
