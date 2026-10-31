@@ -23,7 +23,7 @@ public static class SelfTest
         // Must happen before anything reads Paths: every location below is derived from these.
         Environment.SetEnvironmentVariable("HOME", sandbox);
         Environment.SetEnvironmentVariable("BLOXCODE_LAYOUT", "xdg");
-        foreach (string variable in new[] { "XDG_DATA_HOME", "XDG_STATE_HOME", "XDG_CACHE_HOME", "APPIMAGE" })
+        foreach (string variable in new[] { "XDG_DATA_HOME", "XDG_STATE_HOME", "XDG_CACHE_HOME", "APPIMAGE", "APPDIR", "APPIMAGE_EXTRACT_AND_RUN" })
             Environment.SetEnvironmentVariable(variable, null);
         string configHome = Path.Combine(sandbox, "custom-config");
         Environment.SetEnvironmentVariable("XDG_CONFIG_HOME", OperatingSystem.IsWindows() ? null : configHome);
@@ -255,7 +255,11 @@ public static class SelfTest
                 try
                 {
                     Environment.SetEnvironmentVariable("APPIMAGE", Path.Combine(sandbox, "BloxCode-x86_64.AppImage"));
-                    Expect(!Paths.IsExtractedAppImage && !Updater.StartInfo("bloxcode").Environment.ContainsKey("APPIMAGE_EXTRACT_AND_RUN"), "mounted: nothing added");
+                    // CI runs this very test unpacked (no FUSE in containers), which the program path gives away.
+                    bool selfUnpacked = (Environment.ProcessPath ?? "").Contains("/appimage_extracted", StringComparison.Ordinal);
+                    Expect(Paths.IsExtractedAppImage == selfUnpacked
+                           && Updater.StartInfo("bloxcode").Environment.ContainsKey("APPIMAGE_EXTRACT_AND_RUN") == selfUnpacked,
+                        selfUnpacked ? "unpacked run detected from the program path" : "mounted: nothing added");
                     Environment.SetEnvironmentVariable("APPDIR", "/tmp/appimage_extracted_0123abcd");
                     Expect(Paths.IsExtractedAppImage, "detected from APPDIR");
                     Expect(Updater.StartInfo("bloxcode").Environment.TryGetValue("APPIMAGE_EXTRACT_AND_RUN", out var flag) && flag == "1", "passed to the next copy");
@@ -279,7 +283,8 @@ public static class SelfTest
                     DesktopIntegration.InstallAsync(size => new byte[] { (byte)(size / 4) }).GetAwaiter().GetResult();
                     Expect(File.ReadAllText(Paths.Application) == "#!/bin/sh\n", "AppImage copied to ~/.local/bin/bloxcode");
                     Expect(DesktopIntegration.IsInstalled, "installed");
-                    Expect(File.ReadAllText(DesktopIntegration.DesktopFile).Contains($"Exec={DesktopIntegration.QuoteExec(Paths.Application)} %u"), "menu entry runs the installed copy");
+                    string unpack = Paths.IsExtractedAppImage ? "env APPIMAGE_EXTRACT_AND_RUN=1 " : "";
+                    Expect(File.ReadAllText(DesktopIntegration.DesktopFile).Contains($"Exec={unpack}{DesktopIntegration.QuoteExec(Paths.Application)} %u"), "menu entry runs the installed copy");
                     Expect(File.Exists(DesktopIntegration.IconFile(256)) && File.Exists(DesktopIntegration.IconFile(48)), "icons");
                     Expect(File.Exists(Path.Combine(Paths.Modifications, "README.txt")), "mods readme");
                     Expect(DesktopIntegration.IsDefaultAsync().GetAwaiter().GetResult(), "roblox:// links open Blox Code");
