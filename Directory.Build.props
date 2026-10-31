@@ -5,6 +5,10 @@
     <Version>1.1.2</Version>
     <Product>Blox Code</Product>
     <Company>Blox Code</Company>
+    <!-- Shown in the exe's Properties → Details, and checked when the exe is code-signed. -->
+    <AssemblyTitle>Blox Code</AssemblyTitle>
+    <Copyright>Copyright (c) 2026 Blox Code contributors</Copyright>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>

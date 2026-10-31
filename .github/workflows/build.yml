@@ -19,6 +19,10 @@ env:
 jobs:
   windows:
     runs-on: windows-latest
+    env:
+      # Releases are signed through SignPath Foundation once the repository variable
+      # SIGNPATH_ORGANIZATION_ID and the secret SIGNPATH_API_TOKEN exist; until then, unsigned.
+      SIGN: ${{ startsWith(github.ref, 'refs/tags/v') && vars.SIGNPATH_ORGANIZATION_ID != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
@@ -26,6 +30,41 @@ jobs:
           global-json-file: global.json
       - name: Publish BloxCode.exe
         run: dotnet publish windows/BloxCode.csproj -c Release -o dist
+      - name: Version being released
+        if: env.SIGN == 'true'
+        id: version
+        shell: bash
+        run: echo "value=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+      - name: Upload the unsigned exe for signing
+        if: env.SIGN == 'true'
+        id: unsigned
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-unsigned
+          path: dist/BloxCode.exe
+          if-no-files-found: error
+      - name: Sign with SignPath (a maintainer approves each release on app.signpath.io)
+        if: env.SIGN == 'true'
+        uses: signpath/github-action-submit-signing-request@v3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG || 'blox-code' }}
+          signing-policy-slug: ${{ vars.SIGNPATH_POLICY_SLUG || 'release-signing' }}
+          github-artifact-id: ${{ steps.unsigned.outputs.artifact-id }}
+          parameters: |
+            version: "${{ steps.version.outputs.value }}"
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 7200
+          output-artifact-directory: signed
+      - name: Use the signed exe
+        if: env.SIGN == 'true'
+        shell: pwsh
+        run: |
+          $signature = Get-AuthenticodeSignature signed/BloxCode.exe
+          if ($signature.Status -ne 'Valid') { throw "BloxCode.exe isn't validly signed: $($signature.Status) $($signature.StatusMessage)" }
+          "Signed by $($signature.SignerCertificate.Subject)"
+          Copy-Item signed/BloxCode.exe dist/BloxCode.exe -Force
       - uses: actions/upload-artifact@v4
         with:
           name: windows
@@ -121,6 +160,8 @@ jobs:
             echo "| **Linux** (Arch, CachyOS, Ubuntu, Mint, Debian…) | [BloxCode-x86_64.AppImage]($base/BloxCode-x86_64.AppImage) |"
             echo
             echo "Quem já tem o Blox Code instalado recebe esta versão sozinho, com o arquivo do próprio sistema."
+            echo
+            echo "[Code signing policy](https://github.com/${GITHUB_REPOSITORY}#code-signing-policy) · [Privacy](https://github.com/${GITHUB_REPOSITORY}#privacy)"
             echo
             echo "### O que mudou"
             cat changes.md

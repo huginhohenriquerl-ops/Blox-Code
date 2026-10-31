@@ -17,6 +17,11 @@ Os dois arquivos saem juntos em cada [release](https://github.com/huginhohenriqu
 e têm o mesmo número de versão. Cada um se atualiza sozinho, sempre com o arquivo do próprio sistema.
 O que mudou em cada versão está no [log de atualizações](CHANGELOG.md).
 
+**Aviso do Windows na primeira vez:** o `BloxCode.exe` ainda não é assinado, então o SmartScreen
+pode mostrar "O Windows protegeu o computador". Clique em **Mais informações → Executar mesmo
+assim**. A Microsoft analisou o arquivo e confirmou que é só falta de reputação, não um problema. As
+atualizações automáticas não mostram esse aviso. Veja a [política de assinatura](#code-signing-policy).
+
 ## Nos dois sistemas
 
 - Paleta do Claude (papel marfim / carvão, acento argila `#D97757`), títulos serifados, sidebar e
@@ -141,6 +146,41 @@ tools/
 ```
 
 Fora do escopo por enquanto: Roblox Studio, e Discord Rich Presence no Windows.
+
+## Code signing policy
+
+*(Em inglês, como pede o programa de assinatura gratuita da SignPath Foundation.)*
+
+Blox Code has applied for free code signing from the [SignPath Foundation](https://signpath.org).
+Once approved, Windows releases (`BloxCode.exe`) will carry this signature:
+free code signing provided by [SignPath.io](https://signpath.io), certificate by
+[SignPath Foundation](https://signpath.org).
+
+- **What gets signed:** only `BloxCode.exe`, built by [GitHub Actions](.github/workflows/build.yml)
+  from the source in this repository, for releases tagged `vX.Y.Z`. Nothing built elsewhere is signed.
+- **Committers and reviewers:** [huginhohenriquerl-ops](https://github.com/huginhohenriquerl-ops)
+- **Approvers:** [huginhohenriquerl-ops](https://github.com/huginhohenriquerl-ops). Every release is
+  approved by hand before it is signed.
+- **System changes:** the installer says what it does before doing it (per-user folder in
+  `%LocalAppData%\BloxCode`, Start menu and desktop shortcuts, `roblox://` link handler, an Apps &
+  Features entry) and Blox Code uninstalls from Settings → Apps or from its Behaviour page.
+
+## Privacy
+
+Blox Code has no accounts, ads, analytics or telemetry, and sends no personal data anywhere. It only
+connects to these services, to do what you ask it to:
+
+- **GitHub** (`api.github.com`, `github.com` and GitHub's download servers): to check for and
+  download Blox Code updates. You can turn this off in Behaviour.
+- **Roblox**, on Windows: `clientsettingscdn.roblox.com` / `clientsettings.roblox.com` to find the
+  current Roblox version, and Roblox's download mirrors (`setup.rbxcdn.com`, `setup-aws.rbxcdn.com`,
+  `setup-ak.rbxcdn.com`, `roblox-setup.cachefly.net`, `s3.amazonaws.com/setup.roblox.com`) to
+  download the Roblox player.
+- **Flathub** (`dl.flathub.org`), on Linux: only when you click Install Sober, through Flatpak.
+
+These requests carry nothing about you beyond what any download does (your IP address and a
+`BloxCode/<version>` user agent). Roblox and Sober, once started, are separate programs with their
+own privacy policies. Logs and the Linux diagnostics zip stay on your computer unless you share them.
 
 Projeto de fã — sem afiliação com Roblox Corporation, Anthropic, a equipe do Bloxstrap ou a
 VinegarHQ (Sober) (MIT).

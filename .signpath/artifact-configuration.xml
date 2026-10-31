@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Artifact configuration for the SignPath project "blox-code" (paste it into the project on
+  app.signpath.io). The Build workflow uploads dist/BloxCode.exe as a GitHub artifact, which arrives
+  as a zip; only that one exe is signed, and only if its metadata says it is Blox Code at the version
+  being released (the workflow passes the tag's version as the "version" parameter).
+-->
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <parameters>
+    <parameter name="version" required="true" />
+  </parameters>
+  <zip-file>
+    <pe-file path="BloxCode.exe" product-name="Blox Code" product-version="${version}">
+      <authenticode-sign />
+    </pe-file>
+  </zip-file>
+</artifact-configuration>
