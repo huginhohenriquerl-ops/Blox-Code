@@ -142,6 +142,8 @@ jobs:
           path: dist
           merge-multiple: true
       - name: Release notes from CHANGELOG.md
+        env:
+          SIGNPATH_ORGANIZATION_ID: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
         run: |
           version="${GITHUB_REF_NAME#v}"
           awk -v v="$version" '
@@ -161,6 +163,11 @@ jobs:
             echo
             echo "Quem já tem o Blox Code instalado recebe esta versão sozinho, com o arquivo do próprio sistema."
             echo
+            # Signed releases must credit SignPath (a condition of the free certificate).
+            if [ -n "$SIGNPATH_ORGANIZATION_ID" ]; then
+              echo "\`BloxCode.exe\` is signed. Free code signing provided by [SignPath.io](https://signpath.io), certificate by [SignPath Foundation](https://signpath.org)."
+              echo
+            fi
             echo "[Code signing policy](https://github.com/${GITHUB_REPOSITORY}#code-signing-policy) · [Privacy](https://github.com/${GITHUB_REPOSITORY}#privacy)"
             echo
             echo "### O que mudou"
