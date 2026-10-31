@@ -16,12 +16,23 @@ public partial class ModsPage : UserControl
 
     private void Refresh()
     {
-        Directory.CreateDirectory(Paths.Modifications);
-        var mods = Directory.EnumerateFiles(Paths.Modifications, "*", SearchOption.AllDirectories)
-            .Select(f => Path.GetRelativePath(Paths.Modifications, f))
-            .Where(r => !r.Equals("README.txt", StringComparison.OrdinalIgnoreCase))
-            .OrderBy(r => r)
-            .ToList();
+        List<string> mods;
+        try
+        {
+            Directory.CreateDirectory(Paths.Modifications);
+            // A folder that can't be read (permissions, a file in use) is skipped, not fatal to the page.
+            var options = new EnumerationOptions { RecurseSubdirectories = true, IgnoreInaccessible = true };
+            mods = Directory.EnumerateFiles(Paths.Modifications, "*", options)
+                .Select(f => Path.GetRelativePath(Paths.Modifications, f))
+                .Where(r => !r.Equals("README.txt", StringComparison.OrdinalIgnoreCase))
+                .OrderBy(r => r)
+                .ToList();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Logger.Warn("ModsPage::Refresh", ex.Message);
+            mods = new();
+        }
 
         ModList.ItemsSource = mods;
         CountText.Text = mods.Count == 1 ? "1 file" : $"{mods.Count} files";

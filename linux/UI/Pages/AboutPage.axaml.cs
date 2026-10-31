@@ -15,7 +15,13 @@ public partial class AboutPage : UserControl
         VersionText.Text = $"v{Updater.Current} · {Distro.Current.Name}";
     }
 
-    private void OnPoke(object? sender, PointerPressedEventArgs e) => Mascot.Celebrate();
+    private async void OnPoke(object? sender, PointerPressedEventArgs e)
+    {
+        // One hop, then back to idle, like the Windows About page.
+        Mascot.Celebrate();
+        await Task.Delay(1050);
+        Mascot.Mood = MascotMood.Idle;
+    }
 
     private Window? Owner => TopLevel.GetTopLevel(this) as Window;
 

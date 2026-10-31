@@ -66,6 +66,7 @@ public static class Installer
         TryShortcut(PlayShortcut, "-player", "Play Roblox with Blox Code");
         if (desktopShortcut)
             TryShortcut(DesktopShortcut, "", "Blox Code");
+        RefreshIcons();
 
         File.WriteAllText(Path.Combine(Paths.Modifications, "README.txt"),
             "Files placed here are copied over the Roblox installation every launch.\r\n" +
@@ -87,11 +88,45 @@ public static class Installer
         }
     }
 
-    /// <summary>After a self-update: keep Apps &amp; Features showing the right version.</summary>
+    /// <summary>
+    /// After a self-update: keep Apps &amp; Features showing the right version, and make the
+    /// shortcuts show the new exe's icon (Explorer keeps the old one cached per path otherwise).
+    /// </summary>
     public static void RefreshAfterUpgrade()
     {
-        using var key = Registry.CurrentUser.OpenSubKey(UninstallKey, writable: true);
-        key?.SetValue("DisplayVersion", Updater.Current.ToString());
+        using (var key = Registry.CurrentUser.OpenSubKey(UninstallKey, writable: true))
+            key?.SetValue("DisplayVersion", Updater.Current.ToString());
+        RefreshIcons();
+    }
+
+    /// <summary>
+    /// Rewrites the shortcuts that exist (a deleted desktop icon stays deleted) and tells the shell
+    /// the exe, the shortcuts and the icon associations changed, so it extracts the icon again.
+    /// </summary>
+    public static void RefreshIcons()
+    {
+        var shortcuts = new (string Path, string Arguments, string Description)[]
+        {
+            (StartMenuShortcut, "", "Blox Code settings"),
+            (PlayShortcut, "-player", "Play Roblox with Blox Code"),
+            (DesktopShortcut, "", "Blox Code"),
+        };
+        foreach (var (lnk, arguments, description) in shortcuts)
+            if (File.Exists(lnk))
+                TryShortcut(lnk, arguments, description);
+
+        try
+        {
+            ShellLink.NotifyChanged(Paths.Application);
+            foreach (var (lnk, _, _) in shortcuts)
+                if (File.Exists(lnk))
+                    ShellLink.NotifyChanged(lnk);
+            ShellLink.NotifyAssociationsChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.Warn("Installer::RefreshIcons", ex.Message);
+        }
     }
 
     public static void RegisterProtocols()

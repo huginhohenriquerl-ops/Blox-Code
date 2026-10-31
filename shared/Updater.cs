@@ -16,7 +16,7 @@ public static class Updater
 {
     private const string MutexName = "BloxCode-AutoUpdater";
 
-    /// <summary>GitHub "owner/repo" baked in at build time (see UpdateRepository in BloxCode.csproj).</summary>
+    /// <summary>GitHub "owner/repo" baked in at build time (see UpdateRepository in Directory.Build.props).</summary>
     public static string? Repository { get; } = typeof(Updater).Assembly
         .GetCustomAttributes<AssemblyMetadataAttribute>()
         .FirstOrDefault(a => a.Key == "UpdateRepository")?.Value is { Length: > 0 } repo ? repo : null;
@@ -155,11 +155,23 @@ public static class Updater
     /// <summary>Starts the downloaded exe in upgrade mode, forwarding the original launch arguments.</summary>
     public static void LaunchUpgrade(string exe, IEnumerable<string> forwardArgs)
     {
-        var psi = new ProcessStartInfo(exe) { UseShellExecute = false };
+        var psi = StartInfo(exe);
         psi.ArgumentList.Add("-upgrade");
         foreach (string arg in forwardArgs)
             psi.ArgumentList.Add(arg);
-        Process.Start(psi);
+        Process.Start(psi)?.Dispose();
+    }
+
+    /// <summary>
+    /// How to start a copy of Blox Code. An AppImage that had to be unpacked (no FUSE) passes that
+    /// on, otherwise the next copy would fail to open.
+    /// </summary>
+    public static ProcessStartInfo StartInfo(string exe)
+    {
+        var psi = new ProcessStartInfo(exe) { UseShellExecute = false };
+        if (Paths.IsExtractedAppImage)
+            psi.Environment["APPIMAGE_EXTRACT_AND_RUN"] = "1";
+        return psi;
     }
 
     /// <summary>
@@ -197,7 +209,10 @@ public static class Updater
                 }
             }
 
-            AfterUpgrade?.Invoke();
+            // The new copy is in place; a shortcut or registry hiccup must not turn that into a failure.
+            try { AfterUpgrade?.Invoke(); }
+            catch (Exception ex) { Logger.Error(ident, ex); }
+
             Store.State.JustUpdatedTo = Current.ToString();
             Store.SaveState();
             Logger.Info(ident, $"Upgraded installed copy to {Current}");
@@ -218,15 +233,28 @@ public static class Updater
     }
 
     /// <summary>Starts the installed copy with the original arguments, skipping its update check.</summary>
-    public static void RunInstalled(IEnumerable<string> forwardArgs)
+    public static bool RunInstalled(IEnumerable<string> forwardArgs) => RunCopy(Paths.Application, forwardArgs);
+
+    /// <summary>Starts a copy of Blox Code with -noupdate and the given arguments; false (logged) if it can't.</summary>
+    public static bool RunCopy(string exe, IEnumerable<string> forwardArgs)
     {
-        if (!File.Exists(Paths.Application))
-            return;
-        var psi = new ProcessStartInfo(Paths.Application) { UseShellExecute = false, WorkingDirectory = Paths.Base };
-        psi.ArgumentList.Add("-noupdate");
-        foreach (string arg in forwardArgs)
-            psi.ArgumentList.Add(arg);
-        Process.Start(psi);
+        if (!File.Exists(exe))
+            return false;
+        try
+        {
+            var psi = StartInfo(exe);
+            psi.WorkingDirectory = Path.GetDirectoryName(exe)!;
+            psi.ArgumentList.Add("-noupdate");
+            foreach (string arg in forwardArgs)
+                psi.ArgumentList.Add(arg);
+            Process.Start(psi)?.Dispose();
+            return true;
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
+        {
+            Logger.Error("Updater::RunCopy", ex);
+            return false;
+        }
     }
 
     /// <summary>Deletes leftover downloads once we're no longer running from that folder.</summary>

@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using BloxCode.Core;
 using BloxCode.Linux.Runtime;
 
@@ -13,13 +14,21 @@ public partial class ModsPage : UserControl
     private readonly MainWindow _window;
     private List<AssetEntry> _assets = new();
     private Func<AssetEntry, bool> _category = _ => true;
-    private string? _apk;
+
+    // Roblox's package has tens of thousands of files: filter once typing pauses, not on every key.
+    private readonly DispatcherTimer _searchDelay = new() { Interval = TimeSpan.FromMilliseconds(220) };
 
     public ModsPage(MainWindow window)
     {
         _window = window;
         InitializeComponent();
         FolderPath.Text = Paths.Modifications;
+        _searchDelay.Tick += (_, _) =>
+        {
+            _searchDelay.Stop();
+            ShowAssets();
+        };
+        DetachedFromVisualTree += (_, _) => _searchDelay.Stop();
 
         foreach (var (label, match) in ApkAssets.Categories)
         {
@@ -50,7 +59,6 @@ public partial class ModsPage : UserControl
                 string? found = ApkAssets.FindApk();
                 return (found, found is null ? new List<AssetEntry>() : ApkAssets.List(found));
             });
-            _apk = apk;
             _assets = assets;
             AssetStatus.Text = apk is null
                 ? "Roblox's files show up here after Sober has run once (it downloads Roblox on first start)."
@@ -95,8 +103,8 @@ public partial class ModsPage : UserControl
 
     private void OnAssetSearch(object? sender, TextChangedEventArgs e)
     {
-        if (AssetList is not null)
-            ShowAssets();
+        _searchDelay.Stop();
+        _searchDelay.Start();
     }
 
     private async void OnReloadAssets(object? sender, RoutedEventArgs e) => await LoadAssetsAsync();

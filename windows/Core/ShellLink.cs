@@ -18,6 +18,27 @@ public static class ShellLink
         Marshal.FinalReleaseComObject(link);
     }
 
+    private const int SHCNE_UPDATEITEM = 0x00002000;
+    private const int SHCNE_ASSOCCHANGED = 0x08000000;
+    private const uint SHCNF_IDLIST = 0x0000;
+    private const uint SHCNF_PATHW = 0x0005;
+    private const uint SHCNF_FLUSHNOWAIT = 0x3000;
+
+    /// <summary>Tells Explorer a file changed, so it re-reads it (and its icon).</summary>
+    public static void NotifyChanged(string path)
+    {
+        IntPtr text = Marshal.StringToHGlobalUni(path);
+        try { SHChangeNotify(SHCNE_UPDATEITEM, SHCNF_PATHW | SHCNF_FLUSHNOWAIT, text, IntPtr.Zero); }
+        finally { Marshal.FreeHGlobal(text); }
+    }
+
+    /// <summary>Makes Explorer drop its cached icons for associations and executables.</summary>
+    public static void NotifyAssociationsChanged() =>
+        SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST | SHCNF_FLUSHNOWAIT, IntPtr.Zero, IntPtr.Zero);
+
+    [DllImport("shell32.dll")]
+    private static extern void SHChangeNotify(int wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);
+
     [ComImport, Guid("00021401-0000-0000-C000-000000000046")]
     private class CShellLink;
 

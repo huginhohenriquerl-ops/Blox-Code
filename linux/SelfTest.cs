@@ -169,6 +169,8 @@ public static class SelfTest
                 Expect(DesktopIntegration.QuoteExec("/home/my user/bin/blox$code") == "\"/home/my user/bin/blox\\\\$code\"", "quoted and escaped");
                 string entry = DesktopIntegration.DesktopEntry("/home/u/.local/bin/bloxcode");
                 Expect(entry.Contains("Exec=/home/u/.local/bin/bloxcode %u\n") && entry.Contains("MimeType=x-scheme-handler/roblox;x-scheme-handler/roblox-player;"), "Exec and MimeType");
+                Expect(DesktopIntegration.DesktopEntry("/home/u/.local/bin/bloxcode", extractAndRun: true)
+                    .Contains("Exec=env APPIMAGE_EXTRACT_AND_RUN=1 /home/u/.local/bin/bloxcode %u\n"), "no-FUSE entry unpacks the AppImage");
 
                 string list = Path.Combine(sandbox, "mimeapps.list");
                 File.WriteAllText(list, "[Added Associations]\ntext/html=firefox.desktop;\n\n[Default Applications]\nx-scheme-handler/roblox=org.vinegarhq.Sober.desktop;\ntext/plain=gedit.desktop;\n");
@@ -246,6 +248,23 @@ public static class SelfTest
                 }
                 Expect(File.ReadAllText(installed) == "new", "new copy in place");
                 Expect(!File.Exists(installed + ".new"), "no temp file left");
+            });
+
+            Check("an unpacked AppImage (no FUSE) starts its next copy unpacked too", () =>
+            {
+                try
+                {
+                    Environment.SetEnvironmentVariable("APPIMAGE", Path.Combine(sandbox, "BloxCode-x86_64.AppImage"));
+                    Expect(!Paths.IsExtractedAppImage && !Updater.StartInfo("bloxcode").Environment.ContainsKey("APPIMAGE_EXTRACT_AND_RUN"), "mounted: nothing added");
+                    Environment.SetEnvironmentVariable("APPDIR", "/tmp/appimage_extracted_0123abcd");
+                    Expect(Paths.IsExtractedAppImage, "detected from APPDIR");
+                    Expect(Updater.StartInfo("bloxcode").Environment.TryGetValue("APPIMAGE_EXTRACT_AND_RUN", out var flag) && flag == "1", "passed to the next copy");
+                }
+                finally
+                {
+                    Environment.SetEnvironmentVariable("APPIMAGE", null);
+                    Environment.SetEnvironmentVariable("APPDIR", null);
+                }
             });
 
             Check("install and uninstall on the desktop", () =>

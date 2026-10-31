@@ -314,8 +314,9 @@ public sealed partial class Bootstrapper(HttpClient http, LaunchSettings launch,
         var state = Store.State;
         string originals = Path.Combine(versionDir, OriginalsFolder);
 
+        // A subfolder that can't be read is skipped rather than stopping Roblox from launching.
         var mods = Directory.Exists(Paths.Modifications)
-            ? Directory.EnumerateFiles(Paths.Modifications, "*", SearchOption.AllDirectories)
+            ? Directory.EnumerateFiles(Paths.Modifications, "*", new EnumerationOptions { RecurseSubdirectories = true, IgnoreInaccessible = true })
                 .Select(f => Path.GetRelativePath(Paths.Modifications, f))
                 .Where(r => !r.Equals("README.txt", StringComparison.OrdinalIgnoreCase))
                 .ToList()

@@ -58,7 +58,7 @@ public partial class BehaviourPage : UserControl
         AutoUpdate.IsEnabled = Updater.IsConfigured;
         CheckUpdatesButton.IsEnabled = usable;
         UpdateText.Text = message ?? (!Updater.IsConfigured
-            ? $"v{Updater.Current} · this build has no update source (set UpdateRepository in BloxCode.csproj)."
+            ? $"v{Updater.Current} · this build has no update source (set UpdateRepository in Directory.Build.props)."
             : !Paths.IsRunningInstalled
                 ? $"v{Updater.Current} · install Blox Code from Home to get updates from {Updater.Repository ?? "the release feed"}."
                 : $"v{Updater.Current} · releases come from github.com/{Updater.Repository}.");

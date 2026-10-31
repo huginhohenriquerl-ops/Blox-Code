@@ -3,6 +3,38 @@
 Todas as versões do Blox Code, da mais nova para a mais antiga. Quem tem o Blox Code instalado
 recebe cada versão automaticamente na próxima vez que abrir.
 
+## 1.1.2 — Só o Bit, e mais estabilidade
+
+### O Bit em todo lugar
+
+- **Atalhos do Windows:** quem tinha o Blox Code desde a 1.0.x ainda via o Clawd no atalho da área
+  de trabalho e do menu Iniciar. O programa já tinha o ícone do Bit, mas o Windows guardava a imagem
+  antiga. Agora, depois de cada atualização (e ao instalar), o Blox Code regrava os próprios atalhos
+  e avisa o Windows para buscar o ícone de novo. Atalhos que você apagou continuam apagados.
+
+### Linux
+
+- **Sem FUSE:** quem abre o AppImage com `--appimage-extract-and-run` (porque o sistema não tem
+  FUSE) perderia o Blox Code na primeira atualização: a versão nova era aberta sem esse modo e
+  fechava na hora. O atalho do menu de aplicativos tinha o mesmo problema. Agora os dois usam o
+  mesmo modo da cópia atual.
+- **Busca nos arquivos do Roblox (Mods):** a lista tem dezenas de milhares de arquivos e era
+  refiltrada a cada tecla. Agora filtra quando você para de digitar, sem travar a digitação.
+- **About:** clicar no Bit fazia ele pular para sempre. Agora é um pulo só, como no Windows.
+
+### Windows
+
+- **Mods:** uma pasta dentro de `Modifications` que não pudesse ser lida (permissão, arquivo em uso)
+  fazia a tela Mods dar erro e impedia o Roblox de abrir. Agora ela é pulada.
+- A tela Behaviour apontava para o lugar antigo da configuração de atualização.
+
+### Atualização automática (Windows e Linux)
+
+- Se um passo depois da troca do arquivo falhasse (atalhos, registro, menu do Linux), a atualização
+  inteira era tratada como falha, mesmo com a versão nova já instalada. Agora isso fica só no log.
+- Se a cópia nova não conseguisse abrir, o Blox Code mostrava um erro genérico de inicialização.
+  Agora registra o problema e segue, como já fazia nos outros casos.
+
 ## 1.1.1 — Versão certa em Aplicativos
 
 - **Windows:** depois de se atualizar sozinho para a 1.1.0, o Blox Code continuava aparecendo como

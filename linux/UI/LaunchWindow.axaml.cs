@@ -309,18 +309,7 @@ public partial class LaunchWindow : Window
         // A failed self-update shouldn't block the user: carry on with what they originally asked for.
         if (_continueArgs is { } args)
         {
-            try
-            {
-                var psi = new ProcessStartInfo(Paths.Process) { UseShellExecute = false };
-                psi.ArgumentList.Add("-noupdate");
-                foreach (string arg in args)
-                    psi.ArgumentList.Add(arg);
-                Process.Start(psi)?.Dispose();
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("LaunchWindow::Continue", ex);
-            }
+            Updater.RunCopy(Paths.Process, args);
             _continueArgs = null;
         }
 

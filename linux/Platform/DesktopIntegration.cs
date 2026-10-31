@@ -71,9 +71,10 @@ public static class DesktopIntegration
         }
     }
 
-    public static string DesktopEntry(string exe)
+    /// <param name="extractAndRun">No FUSE here: the menu entry must unpack the AppImage too, or it won't open.</param>
+    public static string DesktopEntry(string exe, bool extractAndRun = false)
     {
-        string command = QuoteExec(exe);
+        string command = (extractAndRun ? "env APPIMAGE_EXTRACT_AND_RUN=1 " : "") + QuoteExec(exe);
         return new StringBuilder()
             .Append("[Desktop Entry]\n")
             .Append("Type=Application\n")
@@ -101,7 +102,7 @@ public static class DesktopIntegration
     public static void WriteDesktopFile()
     {
         Directory.CreateDirectory(ApplicationsDir);
-        WriteAtomic(DesktopFile, Encoding.UTF8.GetBytes(DesktopEntry(Paths.Application)));
+        WriteAtomic(DesktopFile, Encoding.UTF8.GetBytes(DesktopEntry(Paths.Application, Paths.IsExtractedAppImage)));
         Paths.MakeExecutable(DesktopFile);
     }
 

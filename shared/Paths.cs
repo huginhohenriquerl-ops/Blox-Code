@@ -38,13 +38,23 @@ public static class Paths
     /// <summary>Where the installed copy of Blox Code lives.</summary>
     public static string Application { get; } = IsXdg ? Path.Combine(Home, ".local", "bin", "bloxcode") : Path.Combine(Base, "BloxCode.exe");
 
+    /// <summary>Running from an AppImage, the only form of the Linux build that can install itself.</summary>
+    public static bool IsAppImage => IsXdg && Environment.GetEnvironmentVariable("APPIMAGE") is { Length: > 0 };
+
+    /// <summary>
+    /// The AppImage was unpacked to a temporary folder instead of mounted (started with
+    /// --appimage-extract-and-run, usually because the system has no FUSE). Anything we start from
+    /// it, like the updated copy, has to be started the same way or it won't open at all.
+    /// </summary>
+    public static bool IsExtractedAppImage => IsAppImage &&
+        (Environment.GetEnvironmentVariable("APPIMAGE_EXTRACT_AND_RUN") == "1"
+         || (Environment.GetEnvironmentVariable("APPDIR") ?? "").Contains("appimage_extracted", StringComparison.Ordinal)
+         || (Environment.ProcessPath ?? "").Contains("/appimage_extracted", StringComparison.Ordinal));
+
     /// <summary>
     /// The executable that is currently running. Inside an AppImage that is the .AppImage file
     /// (the runtime exports it as APPIMAGE), not the binary in the temporary mount.
     /// </summary>
-    /// <summary>Running from an AppImage, the only form of the Linux build that can install itself.</summary>
-    public static bool IsAppImage => IsXdg && Environment.GetEnvironmentVariable("APPIMAGE") is { Length: > 0 };
-
     public static string Process => IsXdg && Environment.GetEnvironmentVariable("APPIMAGE") is { Length: > 0 } appImage
         ? appImage
         : Environment.ProcessPath ?? Application;
