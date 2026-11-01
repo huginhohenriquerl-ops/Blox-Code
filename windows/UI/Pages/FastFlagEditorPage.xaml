@@ -139,6 +139,8 @@
 
                                     <TextBlock x:Name="ErrorText" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" Text="{Binding Error}" Style="{StaticResource Text.Muted}"
                                                Foreground="{DynamicResource Brush.Danger}" Margin="2,4,0,0" Visibility="Collapsed" />
+                                    <TextBlock x:Name="IgnoredText" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" Style="{StaticResource Text.Muted}" Margin="2,4,0,0" Visibility="Collapsed"
+                                               Text="Not on Roblox's allow-list, so Roblox ignores this flag." />
                                 </Grid>
                             </Border>
                             <DataTemplate.Triggers>
@@ -148,6 +150,9 @@
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding HasError}" Value="True">
                                     <Setter TargetName="ErrorText" Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsIgnored}" Value="True">
+                                    <Setter TargetName="IgnoredText" Property="Visibility" Value="Visible" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding IsChecked}" Value="True">
                                     <Setter TargetName="Row" Property="Background" Value="{DynamicResource Brush.AccentSoft}" />

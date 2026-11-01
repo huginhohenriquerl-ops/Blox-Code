@@ -22,7 +22,7 @@
                 <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="56" Margin="6,0,0,0">
                     <ui:BitMascot x:Name="BrandMascot" Unit="1.5" VerticalAlignment="Center" Margin="0,0,10,0"
                                     Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" />
-                    <TextBlock Text="Blox Code" FontFamily="{StaticResource Font.Serif}" FontSize="20" VerticalAlignment="Center" />
+                    <TextBlock FontFamily="{StaticResource Font.Display}" FontWeight="SemiBold" FontSize="18" VerticalAlignment="Center"><Run Text="blox code" /><Run Text="_" Foreground="{DynamicResource Brush.Accent}" /></TextBlock>
                 </StackPanel>
 
                 <!-- "New chat" -> "Play Roblox" -->
@@ -30,7 +30,7 @@
                         WindowChrome.IsHitTestVisibleInChrome="True">
                     <StackPanel Orientation="Horizontal">
                         <Border Width="26" Height="26" CornerRadius="13" Background="{DynamicResource Brush.Accent}" Margin="0,0,10,0">
-                            <TextBlock Text="&#xE768;" Style="{StaticResource Text.Icon}" FontSize="11" Foreground="White" HorizontalAlignment="Center" Margin="2,0,0,0" />
+                            <TextBlock Text="&#xE768;" Style="{StaticResource Text.Icon}" FontSize="11" Foreground="{DynamicResource Brush.OnAccent}" HorizontalAlignment="Center" Margin="2,0,0,0" />
                         </Border>
                         <TextBlock Text="Play Roblox" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Accent}" VerticalAlignment="Center" FontSize="14" />
                     </StackPanel>
@@ -41,7 +41,7 @@
                         BorderBrush="{DynamicResource Brush.Border}" Background="{DynamicResource Brush.Bg}">
                     <DockPanel>
                         <Border Width="32" Height="32" CornerRadius="16" Background="{DynamicResource Brush.Selected}" Margin="0,0,10,0">
-                            <TextBlock Text="B" FontFamily="{StaticResource Font.Serif}" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <TextBlock Text="B" FontFamily="{StaticResource Font.Display}" FontWeight="SemiBold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock x:Name="FooterTitle" Text="Blox Code" FontWeight="SemiBold" FontSize="13" />

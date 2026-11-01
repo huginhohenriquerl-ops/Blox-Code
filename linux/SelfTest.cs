@@ -55,6 +55,31 @@ public static class SelfTest
                 Store.SaveSettings();
             });
 
+            Check("graphics presets use only allow-listed flags and read back", () =>
+            {
+                Store.Settings.FastFlags.Clear();
+                Expect(FastFlagPresets.PresetFlags.All(FastFlagPresets.IsAllowlisted), "every preset flag is allow-listed");
+                Expect(FastFlagPresets.CurrentGraphicsPreset == GraphicsPreset.Auto, "no flags is Auto");
+                foreach (var preset in Enum.GetValues<GraphicsPreset>())
+                {
+                    FastFlagPresets.ApplyGraphicsPreset(preset);
+                    Expect(FastFlagPresets.CurrentGraphicsPreset == preset, $"{preset} reads back");
+                    Expect(Store.Settings.FastFlags.Keys.All(FastFlagPresets.IsAllowlisted), $"{preset} writes allow-listed flags");
+                }
+                FastFlagPresets.MsaaSamples = "2";
+                Expect(FastFlagPresets.CurrentGraphicsPreset is null, "a hand-changed flag is Custom");
+                FastFlagPresets.ApplyGraphicsPreset(GraphicsPreset.Auto);
+                FastFlagPresets.MsaaSamples = null;
+                Expect(Store.Settings.FastFlags.Count == 0, "Auto clears everything");
+
+                FastFlagPresets.Renderer = RenderingMode.Vulkan;
+                Expect(FastFlagPresets.Renderer == RenderingMode.Vulkan && Store.Settings.FastFlags.Count == 1, "one renderer at a time");
+                FastFlagPresets.Renderer = RenderingMode.OpenGL;
+                Expect(FastFlagPresets.Get("FFlagDebugGraphicsPreferOpenGL") == "True" && FastFlagPresets.Get("FFlagDebugGraphicsPreferVulkan") is null, "switching clears the old one");
+                FastFlagPresets.Renderer = RenderingMode.Default;
+                Expect(Store.Settings.FastFlags.Count == 0, "Default clears it");
+            });
+
             Check("flag values become JSON types", () =>
             {
                 Expect(SoberConfig.ToJson("FFlagX", "True").GetValueKind() == System.Text.Json.JsonValueKind.True, "bool");

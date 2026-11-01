@@ -10,7 +10,7 @@
                 <Button DockPanel.Dock="Right" Classes="caption close" Click="OnCancel" VerticalAlignment="Top">
                     <ui:IconView Data="{StaticResource Icon.Close}" Width="14" Height="14" StrokeThickness="1.4" />
                 </Button>
-                <TextBlock Text="Add Fast Flag" FontFamily="{StaticResource Font.Serif}" FontSize="20" VerticalAlignment="Center" />
+                <TextBlock Text="Add Fast Flag" FontFamily="{StaticResource Font.Display}" FontWeight="SemiBold" FontSize="18" VerticalAlignment="Center" />
             </DockPanel>
 
             <StackPanel Margin="24,4,24,20">

@@ -6,6 +6,9 @@ namespace BloxCode.UI.Pages;
 
 public partial class FastFlagsPage : UserControl
 {
+    private static readonly (string Label, string? Value)[] RendererOptions =
+        { ("Auto", nameof(RenderingMode.Default)), ("D3D11", nameof(RenderingMode.D3D11)), ("Vulkan", nameof(RenderingMode.Vulkan)), ("OpenGL", nameof(RenderingMode.OpenGL)) };
+
     private readonly MainWindow _window;
     private bool _syncing;
 
@@ -13,6 +16,8 @@ public partial class FastFlagsPage : UserControl
     {
         _window = window;
         InitializeComponent();
+        BuildSegments(GraphicsSegments, "graphics", GraphicsPresetText.Options, v => FastFlagPresets.ApplyGraphicsPreset(Enum.Parse<GraphicsPreset>(v!)));
+        BuildSegments(RendererSegments, "renderer", RendererOptions, v => FastFlagPresets.Renderer = Enum.Parse<RenderingMode>(v!));
         BuildSegments(MsaaSegments, "msaa", FastFlagPresets.MsaaModes, v => FastFlagPresets.MsaaSamples = v);
         BuildSegments(TextureSegments, "texture", FastFlagPresets.TextureLevels, v => FastFlagPresets.TextureLevel = v);
         Sync();
@@ -39,8 +44,12 @@ public partial class FastFlagsPage : UserControl
     private void Sync()
     {
         _syncing = true;
+        var graphics = FastFlagPresets.CurrentGraphicsPreset;
+        SelectSegment(GraphicsSegments, graphics?.ToString(), fallbackToFirst: false);
+        GraphicsHint.Text = GraphicsPresetText.Describe(graphics);
         ExclusiveFullscreen.IsChecked = FastFlagPresets.UseExclusiveFullscreen;
         DisableScaling.IsChecked = FastFlagPresets.DisableScaling;
+        SelectSegment(RendererSegments, FastFlagPresets.Renderer.ToString());
         SelectSegment(MsaaSegments, FastFlagPresets.MsaaSamples);
         SelectSegment(TextureSegments, FastFlagPresets.TextureLevel);
         _syncing = false;
@@ -54,11 +63,13 @@ public partial class FastFlagsPage : UserControl
         };
     }
 
-    private static void SelectSegment(Panel host, string? value)
+    /// <summary>Checks the segment for the value; with no match, the first one, or none at all for a hand-mixed preset.</summary>
+    private static void SelectSegment(Panel host, string? value, bool fallbackToFirst = true)
     {
-        var match = host.Children.OfType<RadioButton>().FirstOrDefault(r => (string?)r.Tag == value)
-                    ?? host.Children.OfType<RadioButton>().First();
-        match.IsChecked = true;
+        var segments = host.Children.OfType<RadioButton>().ToList();
+        var match = segments.FirstOrDefault(r => (string?)r.Tag == value) ?? (fallbackToFirst ? segments.First() : null);
+        foreach (var segment in segments)
+            segment.IsChecked = segment == match;
     }
 
     private void OnPresetChanged(object sender, RoutedEventArgs e)

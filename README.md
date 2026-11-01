@@ -2,9 +2,9 @@
 
 # Blox Code
 
-Um launcher de Roblox com a cara do **Claude desktop** e estrelando o **Bit**, nosso mascote: um
-bloco de montar com um terminal no lugar do rosto. Fast Flags com editor, mods e links `roblox://`,
-no **Windows** e no **Linux**.
+Um launcher de Roblox com o layout do **Claude desktop**, um tema próprio e estrelando o **Bit**,
+nosso mascote: um bloco de montar com um terminal no lugar do rosto. Presets gráficos, Fast Flags
+com editor, mods e links `roblox://`, no **Windows** e no **Linux**.
 
 ## Baixar
 
@@ -24,12 +24,16 @@ atualizações automáticas não mostram esse aviso. Veja a [política de assina
 
 ## Nos dois sistemas
 
-- Paleta do Claude (papel marfim / carvão, acento argila `#D97757`), títulos serifados, sidebar e
-  "composer" iguais aos do app: cole um link de jogo ou um place ID e aperte Enter.
+- Tema próprio: **Midnight** (azul-marinho com acento menta `#3EE6B0`) e **Daylight** (papel
+  azulado com menta `#077257`), títulos em fonte de terminal e uma barra de cursor na página aberta.
+  Sidebar e "composer" no estilo do Claude desktop: cole um link de jogo ou um place ID e aperte Enter.
+- **Preset gráfico** Auto / Lowest / Low / Medium / High, feito só com flags da
+  [allowlist do Roblox](https://devforum.roblox.com/t/allowlist-for-local-client-configuration-via-fast-flags/3966569).
 - Tela de launch com status ao vivo (`▖ … (12s · esc to cancel)`) e o Bit andando em cima da barra
   de progresso, digitando código e pulando quando o Roblox abre.
 - **Fast Flag Editor** no estilo do Bloxstrap: Add new (nome único ou Import JSON colado/de arquivo),
-  Delete selected, Export JSON, busca, validação de prefixo/valor e chave liga/desliga para booleanas.
+  Delete selected, Export JSON, busca, validação de prefixo/valor, chave liga/desliga para booleanas
+  e aviso nas flags que o Roblox ignora por estarem fora da allowlist.
 - **Mods** que voltam ao original quando você apaga o arquivo.
 - Abre os links `roblox://` do navegador, instala sem pedir senha/admin e se atualiza sozinho pelo
   GitHub Releases.
@@ -44,8 +48,8 @@ atalhos e uma entrada em Aplicativos, e passa a abrir os links do Roblox.
   `rbxPkgManifest`, com cache por MD5 (reaproveita o cache do Bloxstrap quando o hash bate).
 - Extrai no mesmo layout do Bloxstrap em `%LocalAppData%\BloxCode\Versions\<versão>`, instala o
   WebView2 se faltar e limpa versões antigas.
-- Presets de Fast Flags: fullscreen exclusivo, DPI, MSAA, texturas. As flags vão para o
-  `ClientAppSettings.json` do Roblox.
+- Presets de Fast Flags: fullscreen exclusivo, DPI, Rendering API (Direct3D 11 / Vulkan / OpenGL),
+  MSAA, texturas. As flags vão para o `ClientAppSettings.json` do Roblox.
 - Mods: tudo em `Modifications\` é copiado por cima do Roblox; os originais ficam guardados.
 
 O fluxo de atualização e launch foi obtido por engenharia reversa do Bloxstrap 2.11.4 com o REA MCP e

@@ -77,6 +77,34 @@ Tipos-chave inspecionados (`ev_e8a9f740…`): `Bootstrapper`, `RobloxInterfaces.
 | `Rendering.MSAA` | `FIntDebugForceMSAASamples` |
 | `Rendering.TextureQuality.*` | `DFFlagTextureQualityOverrideEnabled`, `DFIntTextureQualityOverride` |
 
+### Como o `FastFlagManager` funciona
+
+Lido com REA no `Bloxstrap.dll` extraído (SHA-256 `5509838e…5b34`; evidência
+`ev_44559692…31d3`, tipo `Bloxstrap.FastFlagManager`, 17 métodos, 30 literais):
+
+* **`PresetFlags`** (`.cctor`): dicionário estático *nome do preset → flag*, com só as 5 entradas
+  da tabela acima. Na 2.11.4 os presets antigos (FPS, iluminação, modo de renderização…) já
+  tinham saído, por causa da allowlist do Roblox.
+* **`SetValue(key, value)`**: `null` remove a flag e loga *"Deletion of 'X' is pending"*; se a flag
+  já existe com outro valor, loga *"Changing of 'X' from 'a' to 'b' is pending"*; senão, *"Setting
+  of 'X' to 'v' is pending"*. O valor é guardado como `value.ToString()`.
+* **`SetPreset(prefix, value)`**: chama `SetValue` para todo preset cujo nome começa com o prefixo.
+* **`SetPresetEnum(prefix, target, value)`**: para os presets do prefixo, `prefix + "." + target`
+  recebe o valor e os outros recebem `null`, então só uma opção fica ligada.
+* **`GetPreset(name)`**: nome desconhecido loga *"Could not find preset"* e retorna `null`.
+* **`GetPresetEnum<T>(mapping, prefix, value)`**: a primeira opção (exceto `"None"`) cujo preset tem
+  o valor; se nenhuma tiver, a primeira do mapa.
+* **`MSAAModes`** = Default→`null`, 1x→`1`, 2x→`2`, 4x→`4`. **`TextureQualityLevels`** =
+  Default→`null`, níveis 0–3.
+* **`Load`**: depois de ler o arquivo, força `Rendering.ManualFullscreen` = `False` (fullscreen
+  exclusivo ligado por padrão). O Blox Code **não** copia esse padrão: deixa a escolha com o usuário.
+
+O Blox Code reimplementa esse modelo em `shared/FastFlagPresets.cs` e acrescenta presets para as
+outras flags da
+[allowlist](https://devforum.roblox.com/t/allowlist-for-local-client-configuration-via-fast-flags/3966569)
+(qualidade FRM, grama, LOD de CSG e `FFlagDebugGraphicsPrefer*`), que alimentam o preset gráfico
+Lowest/Low/Medium/High.
+
 ## 5. O que o Blox Code reimplementa / não reimplementa
 
 Reimplementado do zero (sem copiar código do Bloxstrap): itens 1–9 da seção 2, integração

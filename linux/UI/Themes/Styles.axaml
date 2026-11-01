@@ -20,13 +20,15 @@
 
     <!-- ===== Text ===== -->
     <Style Selector="TextBlock.display">
-        <Setter Property="FontFamily" Value="{StaticResource Font.Serif}" />
-        <Setter Property="FontSize" Value="36" />
+        <Setter Property="FontFamily" Value="{StaticResource Font.Display}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontSize" Value="32" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
     </Style>
     <Style Selector="TextBlock.h1">
-        <Setter Property="FontFamily" Value="{StaticResource Font.Serif}" />
-        <Setter Property="FontSize" Value="26" />
+        <Setter Property="FontFamily" Value="{StaticResource Font.Display}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontSize" Value="24" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
         <Setter Property="Margin" Value="0,0,0,6" />
     </Style>

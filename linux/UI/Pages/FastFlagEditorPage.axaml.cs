@@ -66,6 +66,8 @@ public sealed class FlagEntry(string name, string value, Action<FlagEntry> chang
     public string? ValueError { get; set; }
     public string? Error => NameError is not null ? $"Not saved — {NameError}" : ValueError;
     public bool HasError => Error is not null;
+    /// <summary>Valid but pointless: Roblox drops local flags that aren't on its allow-list.</summary>
+    public bool IsIgnored => !HasError && !FastFlagPresets.IsAllowlisted(Name);
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

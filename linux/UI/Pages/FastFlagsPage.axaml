@@ -6,7 +6,21 @@
         <StackPanel MaxWidth="720" Margin="40,8,40,40">
             <TextBlock Text="Fast Flags" Classes="h1" />
             <TextBlock Classes="muted" Margin="0,0,0,20"
-                       Text="Fast Flags tweak how Roblox renders. Blox Code writes them into Sober's config.json as soon as you change them, so they apply however you start Roblox." />
+                       Text="Fast Flags tweak how Roblox renders. Blox Code writes them into Sober's config.json as soon as you change them, so they apply however you start Roblox. Roblox only honours flags on its allow-list; the presets here use nothing else." />
+
+            <!-- One-click graphics presets, built only from allow-listed flags -->
+            <Border Classes="card">
+                <StackPanel>
+                    <TextBlock Text="Graphics preset" Classes="h2" />
+                    <TextBlock Classes="muted" Margin="0,3,0,10" Text="Quality, textures, grass and detail in one go." />
+                    <Border Classes="segmented">
+                        <StackPanel x:Name="GraphicsSegments" Orientation="Horizontal" />
+                    </Border>
+                    <Border Background="{DynamicResource Brush.SurfaceAlt}" CornerRadius="{StaticResource Radius.Medium}" Padding="12,9" Margin="0,12,0,0">
+                        <TextBlock x:Name="GraphicsHint" Classes="muted" Foreground="{DynamicResource Brush.TextSecondary}" />
+                    </Border>
+                </StackPanel>
+            </Border>
 
             <Border Classes="card">
                 <StackPanel>

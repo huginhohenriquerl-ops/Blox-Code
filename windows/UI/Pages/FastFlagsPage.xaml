@@ -5,7 +5,25 @@
         <StackPanel MaxWidth="720" Margin="40,8,40,40">
             <TextBlock Text="Fast Flags" Style="{StaticResource Text.H1}" />
             <TextBlock Style="{StaticResource Text.Muted}" Margin="0,0,0,20"
-                       Text="Engine switches written to ClientSettings\ClientAppSettings.json on every launch. Roblox only honours flags on its allow-list; anything else is silently ignored." />
+                       Text="Engine switches written to ClientSettings\ClientAppSettings.json on every launch. Roblox only honours flags on its allow-list; the presets here use nothing else." />
+
+            <!-- One-click graphics presets, built only from allow-listed flags -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <DockPanel>
+                        <Border DockPanel.Dock="Right" Style="{StaticResource Segmented}" VerticalAlignment="Center">
+                            <StackPanel x:Name="GraphicsSegments" Orientation="Horizontal" />
+                        </Border>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                            <TextBlock Text="Graphics preset" Style="{StaticResource Text.H2}" />
+                            <TextBlock Style="{StaticResource Text.Muted}" Margin="0,2,0,0" Text="Quality, textures, grass and detail in one go." />
+                        </StackPanel>
+                    </DockPanel>
+                    <Border Background="{DynamicResource Brush.SurfaceAlt}" CornerRadius="{StaticResource Radius.Medium}" Padding="12,9" Margin="0,14,0,0">
+                        <TextBlock x:Name="GraphicsHint" Style="{StaticResource Text.Muted}" Foreground="{DynamicResource Brush.TextSecondary}" />
+                    </Border>
+                </StackPanel>
+            </Border>
 
             <!-- Fast Flag editor entry, like Bloxstrap's "Fast Flag Editor" card -->
             <Button Style="{StaticResource Button.Base}" Background="{DynamicResource Brush.Surface}" BorderBrush="{DynamicResource Brush.Border}"
@@ -40,6 +58,17 @@
                         <StackPanel>
                             <TextBlock Text="Disable DPI scaling" />
                             <TextBlock Style="{StaticResource Text.Muted}" Text="Render at native resolution on high-DPI displays (sharper, smaller UI)." />
+                        </StackPanel>
+                    </DockPanel>
+                    <Border Style="{StaticResource Divider}" />
+
+                    <DockPanel Margin="0,4">
+                        <Border DockPanel.Dock="Right" Style="{StaticResource Segmented}" VerticalAlignment="Center">
+                            <StackPanel x:Name="RendererSegments" Orientation="Horizontal" />
+                        </Border>
+                        <StackPanel>
+                            <TextBlock Text="Rendering API" />
+                            <TextBlock Style="{StaticResource Text.Muted}" Text="Ask Roblox for Direct3D 11, Vulkan or OpenGL." />
                         </StackPanel>
                     </DockPanel>
                     <Border Style="{StaticResource Divider}" />

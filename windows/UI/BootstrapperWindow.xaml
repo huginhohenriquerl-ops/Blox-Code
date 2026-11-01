@@ -23,7 +23,7 @@
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <ui:BitMascot Unit="0.9" IsAnimated="False" Margin="0,0,8,2" VerticalAlignment="Center"
                               Body="{DynamicResource Brush.Mascot}" Eye="{DynamicResource Brush.MascotEye}" />
-                <TextBlock Text="Blox Code" FontFamily="{StaticResource Font.Serif}" FontSize="15" VerticalAlignment="Center" />
+                <TextBlock FontFamily="{StaticResource Font.Display}" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"><Run Text="blox code" /><Run Text="_" Foreground="{DynamicResource Brush.Accent}" /></TextBlock>
             </StackPanel>
         </DockPanel>
 

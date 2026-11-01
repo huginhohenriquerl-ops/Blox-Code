@@ -3,6 +3,27 @@
 Todas as versões do Blox Code, da mais nova para a mais antiga. Quem tem o Blox Code instalado
 recebe cada versão automaticamente na próxima vez que abrir.
 
+## 1.2.0 — Tema próprio e presets gráficos
+
+### Visual novo
+
+- **Tema próprio do Blox Code:** o layout continua o mesmo (sidebar, composer, cartões), mas as
+  cores agora são nossas. **Midnight** (escuro) é um azul-marinho profundo, como a tela do Bit, com
+  um acento verde-menta; **Daylight** (claro) é um papel azulado com menta escura. O Bit continua
+  cor de argila.
+- Títulos e o nome `blox code_` em fonte de terminal, e a página aberta na sidebar ganha uma barra
+  de cursor menta.
+
+### Fast Flags
+
+- **Preset gráfico:** Auto, Lowest, Low, Medium e High mudam qualidade, texturas, grama e detalhe
+  de uma vez. Usam só flags da allowlist do Roblox (as outras o Roblox ignora). Se você mexer numa
+  das flags à mão, o preset aparece como personalizado.
+- **Rendering API (Windows):** escolha Direct3D 11, Vulkan ou OpenGL.
+- Os presets seguem o modelo do gerenciador de Fast Flags do Bloxstrap: cada preset é dono de uma
+  flag, opções que se excluem nunca ficam ligadas juntas e toda mudança vai para o log.
+- **Editor:** flags fora da allowlist ganham o aviso "Roblox ignora esta flag".
+
 ## 1.1.2 — Só o Bit, e mais estabilidade
 
 ### O Bit em todo lugar

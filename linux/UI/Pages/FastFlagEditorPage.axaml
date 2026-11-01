@@ -99,6 +99,8 @@
 
                                         <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" Text="{Binding Error}" Classes="muted error"
                                                    Margin="2,4,0,0" IsVisible="{Binding HasError}" />
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" Classes="muted" Margin="2,4,0,0" IsVisible="{Binding IsIgnored}"
+                                                   Text="Not on Roblox's allow-list, so Roblox ignores this flag." />
                                     </Grid>
                                 </Border>
                             </DataTemplate>

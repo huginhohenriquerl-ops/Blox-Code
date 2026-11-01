@@ -11,7 +11,7 @@
     <StackPanel>
         <DockPanel Height="48" Margin="24,0,0,0">
             <Button DockPanel.Dock="Right" Style="{StaticResource Button.CaptionClose}" Content="&#xE8BB;" IsCancel="True" Click="OnCancel" VerticalAlignment="Top" />
-            <TextBlock Text="Add Fast Flag" FontFamily="{StaticResource Font.Serif}" FontSize="20" VerticalAlignment="Center" />
+            <TextBlock Text="Add Fast Flag" FontFamily="{StaticResource Font.Display}" FontWeight="SemiBold" FontSize="18" VerticalAlignment="Center" />
         </DockPanel>
 
         <StackPanel Margin="24,4,24,20">
