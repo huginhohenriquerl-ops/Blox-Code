@@ -96,7 +96,15 @@ public static class FastFlagPresets
         if (value is null)
         {
             if (old is not null)
+            {
                 Logger.Info($"{LogIdent}::SetValue", $"Deletion of '{flag}' is pending");
+                // While the quality was pinned, Roblox remembered that level for every game it ran.
+                if (flag == QualityLevel && !Paths.IsXdg)
+                {
+                    Store.State.ResetQualityCache = true;
+                    Store.SaveState();
+                }
+            }
             Flags.Remove(flag);
         }
         else if (old != value)

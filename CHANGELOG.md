@@ -3,6 +3,14 @@
 Todas as versões do Blox Code, da mais nova para a mais antiga. Quem tem o Blox Code instalado
 recebe cada versão automaticamente na próxima vez que abrir.
 
+## 1.3.1 — Roblox nítido de novo depois de um preset
+
+- **Windows:** enquanto um preset gráfico fixa a qualidade, o Roblox guarda esse nível para cada jogo
+  em `%LocalAppData%\Roblox\frm.cfg`. Depois de voltar para o Auto, os jogos continuavam começando na
+  qualidade antiga (no Lowest antigo, a 1, borrada), até no Roblox aberto sem o Blox Code. Agora,
+  quando a qualidade fixa sai, o Blox Code apaga esse arquivo antes do próximo jogo e o Roblox o
+  recria do zero.
+
 ## 1.3.0 — Mods sem fuçar pasta, layout novo
 
 ### Mods

@@ -33,6 +33,11 @@ public sealed class State
     public string? JustUpdatedTo { get; set; }
     /// <summary>Linux: Sober's own fflags were pulled into FastFlags once, so the first sync can't drop them.</summary>
     public bool SoberFlagsImported { get; set; }
+    /// <summary>
+    /// Windows: a fixed graphics quality was just removed, so Roblox's per-game quality cache
+    /// (frm.cfg, filled at that fixed level while it was on) is cleared before the next launch.
+    /// </summary>
+    public bool ResetQualityCache { get; set; }
 }
 
 public static class Store

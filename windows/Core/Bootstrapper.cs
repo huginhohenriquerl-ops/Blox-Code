@@ -66,6 +66,7 @@ public sealed partial class Bootstrapper(HttpClient http, LaunchSettings launch,
         Report(BootstrapPhase.Installing, "Applying your tweaks");
         ApplyModifications(versionDir);
         WriteFastFlags(versionDir);
+        ResetQualityCacheIfAsked();
         Store.SaveState();
 
         if (!upToDate && Store.Settings.CleanupOldVersions)
@@ -405,6 +406,29 @@ public sealed partial class Bootstrapper(HttpClient http, LaunchSettings launch,
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             Logger.Warn("Bootstrapper::RefreshCustomFont", ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Roblox keeps its automatic graphics level per game in %LocalAppData%\Roblox\frm.cfg. After a
+    /// pinned quality is removed, every game would start from that pinned level (quality 1 looks
+    /// blurry), so the file goes and Roblox rebuilds it. Retried next launch if Roblox holds it.
+    /// </summary>
+    private static void ResetQualityCacheIfAsked()
+    {
+        if (!Store.State.ResetQualityCache)
+            return;
+        string cache = Path.Combine(Paths.LocalAppData, "Roblox", "frm.cfg");
+        try
+        {
+            if (File.Exists(cache))
+                File.Delete(cache);
+            Store.State.ResetQualityCache = false;
+            Logger.Info("Bootstrapper::ResetQualityCache", "Cleared Roblox's per-game graphics level cache");
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Logger.Warn("Bootstrapper::ResetQualityCache", ex.Message);
         }
     }
 
