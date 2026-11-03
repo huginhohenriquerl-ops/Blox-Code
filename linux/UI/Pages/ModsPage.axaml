@@ -7,7 +7,10 @@
         <StackPanel MaxWidth="760" Margin="40,8,40,40">
             <TextBlock Text="Mods" Classes="h1" />
             <TextBlock Classes="muted" Margin="0,0,0,20"
-                       Text="Replace Roblox's cursors, sounds, fonts and textures. Pick a file below and give Blox Code your version; it goes into Sober's asset overlay right away. Removing a mod brings the original back." />
+                       Text="Pick a file for anything you want to change, or drop one onto its row. It goes into Sober's asset overlay right away, and Reset brings Roblox's original back." />
+
+            <!-- One card per group (Cursor, Sounds, Font), built from ModCatalog -->
+            <StackPanel x:Name="Groups" />
 
             <!-- Roblox's own files, from the APK Sober downloaded -->
             <Border Classes="card">
@@ -17,7 +20,7 @@
                             <ui:IconView Data="{StaticResource Icon.Refresh}" Width="14" Height="14" />
                         </Button>
                         <StackPanel>
-                            <TextBlock Text="Roblox's files" Classes="h2" />
+                            <TextBlock Text="Advanced: any of Roblox's files" Classes="h2" />
                             <TextBlock x:Name="AssetStatus" Classes="muted" Margin="0,3,0,0" Text="Reading Roblox's files…" />
                         </StackPanel>
                     </DockPanel>

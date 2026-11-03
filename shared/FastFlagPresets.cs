@@ -179,13 +179,15 @@ public static class FastFlagPresets
     /// <summary>
     /// Every flag a graphics preset writes, with its value per level (null = Roblox's default). The
     /// quality level is Roblox's 1-21 FRM scale, the one the in-game graphics slider moves along.
+    /// Lowest stays at quality 4 and texture level 1: quality 1-3 and texture level 0 make the
+    /// whole picture blurry, which costs more than the few frames they win back.
     /// </summary>
     private static readonly (string Flag, string? Lowest, string? Low, string? Medium, string? High)[] GraphicsTable =
     {
-        (QualityLevel,           "1",    "5",    "11",   "21"),
+        (QualityLevel,           "4",    "6",    "11",   "21"),
         (Msaa,                   "1",    "1",    null,   "4"),
         (TextureOverrideEnabled, "True", "True", "True", "True"),
-        (TextureQuality,         "0",    "1",    "2",    "3"),
+        (TextureQuality,         "1",    "2",    "2",    "3"),
         (GrassMaxDistance,       "0",    "0",    null,   null),
         (GrassMinDistance,       "0",    "0",    null,   null),
         (GrassMotion,            "0",    "0",    null,   null),
@@ -210,6 +212,25 @@ public static class FastFlagPresets
             Set(row.Flag, ValueFor(preset, row));
     }
 
+    /// <summary>
+    /// 1.2.0's Lowest and Low used quality 1/5 with texture level 0/1 and blurred the picture. Flags
+    /// that still spell exactly one of those get the fixed preset; anything else is left alone.
+    /// </summary>
+    public static bool UpgradeBlurryPresets()
+    {
+        foreach (var (preset, quality, texture) in new[] { (GraphicsPreset.Lowest, "1", "0"), (GraphicsPreset.Low, "5", "1") })
+        {
+            if (Get(QualityLevel) == quality && Get(TextureQuality) == texture &&
+                GraphicsTable.Where(row => row.Flag is not QualityLevel and not TextureQuality).All(row => Get(row.Flag) == ValueFor(preset, row)))
+            {
+                Logger.Info($"{LogIdent}::UpgradeBlurryPresets", $"Moving the old {preset} preset to the sharper one");
+                ApplyGraphicsPreset(preset);
+                return true;
+            }
+        }
+        return false;
+    }
+
     /// <summary>The preset the current flags spell exactly, or null when they've been mixed by hand.</summary>
     public static GraphicsPreset? CurrentGraphicsPreset =>
         Enum.GetValues<GraphicsPreset>().Cast<GraphicsPreset?>()
@@ -222,11 +243,22 @@ public static class GraphicsPresetText
     public static readonly (string Label, string? Value)[] Options =
         Enum.GetValues<GraphicsPreset>().Select(p => (p.ToString(), (string?)p.ToString())).ToArray();
 
+    /// <summary>A few words for the Home page.</summary>
+    public static string Short(GraphicsPreset? preset) => preset switch
+    {
+        GraphicsPreset.Auto => "Roblox decides",
+        GraphicsPreset.Lowest => "Most FPS",
+        GraphicsPreset.Low => "For older PCs",
+        GraphicsPreset.Medium => "Balanced",
+        GraphicsPreset.High => "Best looks",
+        _ => "Custom flags",
+    };
+
     public static string Describe(GraphicsPreset? preset) => preset switch
     {
         GraphicsPreset.Auto => "Roblox picks the quality itself and the in-game graphics slider works as usual.",
-        GraphicsPreset.Lowest => "Everything at the minimum for the most FPS: quality 1 of 21, lowest textures, no grass and simplified distant parts. The in-game slider stops having an effect.",
-        GraphicsPreset.Low => "Quality 5 of 21, low textures and no grass. Good for older laptops and integrated graphics. The in-game slider stops having an effect.",
+        GraphicsPreset.Lowest => "The most FPS without a blurry picture: quality 4 of 21, low textures, no grass and simplified distant parts. The in-game slider stops having an effect.",
+        GraphicsPreset.Low => "Quality 6 of 21, medium textures and no grass. Good for older laptops and integrated graphics. The in-game slider stops having an effect.",
         GraphicsPreset.Medium => "Balanced: quality 11 of 21 with medium textures. The in-game slider stops having an effect.",
         GraphicsPreset.High => "Quality 21 of 21, high textures and 4x anti-aliasing. Needs a strong graphics card. The in-game slider stops having an effect.",
         _ => "Custom: some of these flags were changed by hand. Pick a preset to set them all again.",

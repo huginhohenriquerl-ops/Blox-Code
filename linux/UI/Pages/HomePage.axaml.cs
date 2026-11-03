@@ -16,6 +16,23 @@ public partial class HomePage : UserControl
     private SoberStatus? _sober;
     private string? _nvidiaWarning;
     private bool _isDefault = true;
+    private bool _syncing;
+
+    /// <summary>The graphics preset, which mods are swapped and how many flags are set.</summary>
+    private void RefreshQuickSettings()
+    {
+        _syncing = true;
+        var preset = FastFlagPresets.CurrentGraphicsPreset;
+        foreach (var segment in GraphicsSegments.Children.OfType<RadioButton>())
+            segment.IsChecked = (string?)segment.Tag == preset?.ToString();
+        GraphicsSummary.Text = GraphicsPresetText.Short(preset);
+        _syncing = false;
+
+        var swapped = ModCatalog.Slots.Where(s => ModCatalog.CurrentFile(s) is not null).Select(s => s.Title.ToLowerInvariant()).ToList();
+        ModsSummary.Text = swapped.Count == 0 ? "Cursor, sounds and font" : "Custom " + string.Join(", ", swapped);
+        int custom = Store.Settings.FastFlags.Keys.Count(k => !FastFlagPresets.PresetFlags.Contains(k));
+        FlagsSummary.Text = custom switch { 0 => "Presets and the editor", 1 => "1 custom flag", _ => $"{custom} custom flags" };
+    }
 
     public HomePage(MainWindow window)
     {
@@ -42,6 +59,20 @@ public partial class HomePage : UserControl
 
         // Keep the composer centred: the layout grid is at least as tall as the visible area.
         Scroller.GetObservable(ScrollViewer.ViewportProperty).Subscribe(new SizeObserver(size => Layout.MinHeight = size.Height));
+
+        foreach (var (label, value) in GraphicsPresetText.Options)
+        {
+            var segment = new RadioButton { Content = label, GroupName = "homeGraphics" + GetHashCode(), Tag = value, Theme = Res.Theme("Segment") };
+            segment.IsCheckedChanged += (_, _) =>
+            {
+                if (_syncing || segment.IsChecked != true) return;
+                FastFlagPresets.ApplyGraphicsPreset(Enum.Parse<GraphicsPreset>(value!));
+                Store.SaveSettings();
+                RefreshQuickSettings();
+            };
+            GraphicsSegments.Children.Add(segment);
+        }
+        RefreshQuickSettings();
 
         RenderBanners();
         AttachedToVisualTree += async (_, _) =>

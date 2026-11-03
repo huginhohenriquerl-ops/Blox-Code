@@ -62,6 +62,36 @@ public static class ApkAssets
         Logger.Info("ApkAssets::Extract", $"{assetPath} -> {destination}");
     }
 
+    /// <summary>Roblox's own font family files (name, JSON), for the custom game font.</summary>
+    public static List<(string Name, string Json)> FontFamilies(string apk)
+    {
+        const string folder = Prefix + ModCatalog.FamiliesFolder + "/";
+        using var zip = ZipFile.OpenRead(apk);
+        var families = new List<(string, string)>();
+        foreach (var entry in zip.Entries.Where(e => e.FullName.StartsWith(folder, StringComparison.Ordinal) && e.FullName.EndsWith(".json", StringComparison.OrdinalIgnoreCase)))
+        {
+            using var reader = new StreamReader(entry.Open());
+            families.Add((entry.Name, reader.ReadToEnd()));
+        }
+        return families;
+    }
+
+    /// <summary>Rewrites the font families for the custom game font (or drops them when there's none).</summary>
+    public static void RefreshCustomFont()
+    {
+        try
+        {
+            var families = FindApk() is { } apk ? FontFamilies(apk) : new List<(string, string)>();
+            // Without the APK there's nothing to rewrite from; keep what an earlier refresh made.
+            if (families.Count > 0 || ModCatalog.CurrentFile(ModCatalog.Slots.First(s => s.Kind == ModKind.Font)) is null)
+                ModCatalog.RebuildFontFamilies(families);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException)
+        {
+            Logger.Warn("ApkAssets::RefreshCustomFont", ex.Message);
+        }
+    }
+
     /// <summary>Quick filters over the asset list, for the chips above it.</summary>
     public static readonly (string Label, Func<AssetEntry, bool> Match)[] Categories =
     {

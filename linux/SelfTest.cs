@@ -78,6 +78,51 @@ public static class SelfTest
                 Expect(FastFlagPresets.Get("FFlagDebugGraphicsPreferOpenGL") == "True" && FastFlagPresets.Get("FFlagDebugGraphicsPreferVulkan") is null, "switching clears the old one");
                 FastFlagPresets.Renderer = RenderingMode.Default;
                 Expect(Store.Settings.FastFlags.Count == 0, "Default clears it");
+
+                // 1.2.0's blurry Lowest (quality 1, textures 0) is moved to the sharp one.
+                FastFlagPresets.ApplyGraphicsPreset(GraphicsPreset.Lowest);
+                FastFlagPresets.Set(FastFlagPresets.QualityLevel, "1");
+                FastFlagPresets.Set(FastFlagPresets.TextureQuality, "0");
+                Expect(FastFlagPresets.UpgradeBlurryPresets() && FastFlagPresets.CurrentGraphicsPreset == GraphicsPreset.Lowest, "old Lowest upgraded");
+                Expect(!FastFlagPresets.UpgradeBlurryPresets(), "upgrade runs once");
+                FastFlagPresets.ApplyGraphicsPreset(GraphicsPreset.Auto);
+            });
+
+            Check("pick-a-file mods and the custom font", () =>
+            {
+                string mods = Path.Combine(Paths.Cache, "catalog-test");
+                string picked = Path.Combine(Paths.Cache, "picked.ogg");
+                Directory.CreateDirectory(Paths.Cache);
+                File.WriteAllText(picked, "oof");
+                var death = ModCatalog.Slots.Single(s => s.Id == "death");
+                var cursor = ModCatalog.Slots.Single(s => s.Id == "cursor");
+                var font = ModCatalog.Slots.Single(s => s.Kind == ModKind.Font);
+
+                ModCatalog.Apply(death, picked, mods);
+                Expect(ModCatalog.CurrentFile(death, mods) is { } f && File.ReadAllText(f) == "oof", "sound copied into place");
+                Expect(ModSync.ListMods(mods).SequenceEqual(new[] { "content/sounds/ouch.ogg" }), "lands at Roblox's path");
+                bool refused = false;
+                try { ModCatalog.Apply(cursor, picked, mods); } catch (InvalidOperationException) { refused = true; }
+                Expect(refused, "wrong file type refused");
+
+                string png = Path.Combine(Paths.Cache, "cursor.png");
+                File.WriteAllBytes(png, new byte[] { 0x89, 0x50, 0x4E, 0x47 });
+                ModCatalog.Apply(cursor, png, mods);
+                Expect(cursor.Targets.All(t => File.Exists(Path.Combine(mods, t))), "cursor fills both arrow files");
+
+                string ttf = Path.Combine(Paths.Cache, "font.ttf");
+                File.WriteAllText(ttf, "font");
+                ModCatalog.Apply(font, ttf, mods);
+                var families = new[] { ("Arimo.json", "{\"name\":\"Arimo\",\"faces\":[{\"name\":\"Regular\",\"assetId\":\"rbxasset://fonts/Arimo-Regular.ttf\"},{\"name\":\"Bold\",\"assetId\":\"rbxassetid://1\"}]}"), ("../evil.json", "{}") };
+                Expect(ModCatalog.RebuildFontFamilies(families, mods) == 1, "families rewritten, unsafe names skipped");
+                string arimo = File.ReadAllText(Path.Combine(mods, "content", "fonts", "families", "Arimo.json"));
+                Expect(arimo.Split("rbxasset://fonts/CustomFont.ttf").Length == 3, "every face points at the custom font");
+
+                ModCatalog.Reset(font, mods);
+                Expect(!Directory.Exists(Path.Combine(mods, "content", "fonts")), "font reset removes the font and its families");
+                ModCatalog.Reset(death, mods);
+                ModCatalog.Reset(cursor, mods);
+                Expect(!Directory.EnumerateFileSystemEntries(mods).Any(), "resets leave nothing behind");
             });
 
             Check("flag values become JSON types", () =>

@@ -57,16 +57,49 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Suggestion chips -->
-                <WrapPanel HorizontalAlignment="Center" Margin="0,16,0,0">
+                <!-- Quick settings: the graphics preset right here, shortcuts to the rest -->
+                <Border Style="{StaticResource Card}" Margin="0,18,0,10" Padding="16,12">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Right" Style="{StaticResource Segmented}" VerticalAlignment="Center">
+                            <StackPanel x:Name="GraphicsSegments" Orientation="Horizontal" />
+                        </Border>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                            <TextBlock Text="Graphics" Style="{StaticResource Text.H2}" />
+                            <TextBlock x:Name="GraphicsSummary" Style="{StaticResource Text.Muted}" />
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <UniformGrid Columns="2">
+                    <Button Style="{StaticResource Button.Base}" Background="{DynamicResource Brush.Surface}" BorderBrush="{DynamicResource Brush.Border}"
+                            Tag="{DynamicResource Brush.SurfaceAlt}" HorizontalContentAlignment="Stretch" Padding="16,12" Margin="0,0,5,0" Click="OnMods">
+                        <DockPanel>
+                            <Border DockPanel.Dock="Left" Width="36" Height="36" CornerRadius="9" Background="{DynamicResource Brush.AccentSoft}" Margin="0,0,12,0">
+                                <TextBlock Text="&#xEA86;" Style="{StaticResource Text.Icon}" Foreground="{DynamicResource Brush.Accent}" HorizontalAlignment="Center" />
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Mods" Style="{StaticResource Text.H2}" />
+                                <TextBlock x:Name="ModsSummary" Style="{StaticResource Text.Muted}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                            </StackPanel>
+                        </DockPanel>
+                    </Button>
+                    <Button Style="{StaticResource Button.Base}" Background="{DynamicResource Brush.Surface}" BorderBrush="{DynamicResource Brush.Border}"
+                            Tag="{DynamicResource Brush.SurfaceAlt}" HorizontalContentAlignment="Stretch" Padding="16,12" Margin="5,0,0,0" Click="OnFastFlags">
+                        <DockPanel>
+                            <Border DockPanel.Dock="Left" Width="36" Height="36" CornerRadius="9" Background="{DynamicResource Brush.AccentSoft}" Margin="0,0,12,0">
+                                <TextBlock Text="&#xE7C1;" Style="{StaticResource Text.Icon}" Foreground="{DynamicResource Brush.Accent}" HorizontalAlignment="Center" />
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Fast Flags" Style="{StaticResource Text.H2}" />
+                                <TextBlock x:Name="FlagsSummary" Style="{StaticResource Text.Muted}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                            </StackPanel>
+                        </DockPanel>
+                    </Button>
+                </UniformGrid>
+
+                <WrapPanel HorizontalAlignment="Center" Margin="0,14,0,0">
                     <Button Style="{StaticResource Button.Chip}" Click="OnOpenRoblox">
                         <StackPanel Orientation="Horizontal"><TextBlock Text="&#xE768;" Style="{StaticResource Text.Icon}" FontSize="12" Margin="0,0,7,0" /><TextBlock Text="Open Roblox" /></StackPanel>
-                    </Button>
-                    <Button Style="{StaticResource Button.Chip}" Click="OnFastFlags">
-                        <StackPanel Orientation="Horizontal"><TextBlock Text="&#xE7C1;" Style="{StaticResource Text.Icon}" FontSize="12" Margin="0,0,7,0" /><TextBlock Text="Fast Flags" /></StackPanel>
-                    </Button>
-                    <Button Style="{StaticResource Button.Chip}" Click="OnModsFolder">
-                        <StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8B7;" Style="{StaticResource Text.Icon}" FontSize="12" Margin="0,0,7,0" /><TextBlock Text="Mods folder" /></StackPanel>
                     </Button>
                     <Button Style="{StaticResource Button.Chip}" Click="OnReinstall">
                         <StackPanel Orientation="Horizontal"><TextBlock Text="&#xE72C;" Style="{StaticResource Text.Icon}" FontSize="12" Margin="0,0,7,0" /><TextBlock Text="Reinstall Roblox" /></StackPanel>

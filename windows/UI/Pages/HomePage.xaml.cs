@@ -29,11 +29,43 @@ public partial class HomePage : UserControl
             ? $"roblox {v} · {Store.Settings.FastFlags.Count} fast flags · {Store.State.ModManifest.Count} mods"
             : "Roblox will be downloaded on first launch";
 
+        foreach (var (label, value) in GraphicsPresetText.Options)
+        {
+            var segment = new RadioButton { Content = label, GroupName = "homeGraphics" + GetHashCode(), Tag = value };
+            segment.SetResourceReference(StyleProperty, "Segment");
+            segment.Checked += (_, _) =>
+            {
+                if (_syncing) return;
+                FastFlagPresets.ApplyGraphicsPreset(Enum.Parse<GraphicsPreset>(value!));
+                Store.SaveSettings();
+                RefreshQuickSettings();
+            };
+            GraphicsSegments.Children.Add(segment);
+        }
+        RefreshQuickSettings();
+
         RefreshBanner();
         Loaded += (_, _) => Composer.Focus();
     }
 
     private string? _updatedNotice;
+    private bool _syncing;
+
+    /// <summary>The graphics preset, which mods are swapped and how many flags are set.</summary>
+    private void RefreshQuickSettings()
+    {
+        _syncing = true;
+        var preset = FastFlagPresets.CurrentGraphicsPreset;
+        foreach (var segment in GraphicsSegments.Children.OfType<RadioButton>())
+            segment.IsChecked = (string?)segment.Tag == preset?.ToString();
+        GraphicsSummary.Text = GraphicsPresetText.Short(preset);
+        _syncing = false;
+
+        var swapped = ModCatalog.Slots.Where(s => ModCatalog.CurrentFile(s) is not null).Select(s => s.Title.ToLowerInvariant()).ToList();
+        ModsSummary.Text = swapped.Count == 0 ? "Cursor, sounds and font" : "Custom " + string.Join(", ", swapped);
+        int custom = Store.Settings.FastFlags.Keys.Count(k => !FastFlagPresets.PresetFlags.Contains(k));
+        FlagsSummary.Text = custom switch { 0 => "Presets and the editor", 1 => "1 custom flag", _ => $"{custom} custom flags" };
+    }
 
     private void RefreshBanner()
     {
@@ -141,8 +173,7 @@ public partial class HomePage : UserControl
 
     private void OnFastFlags(object sender, RoutedEventArgs e) => _window.Navigate("FastFlags");
 
-    private void OnModsFolder(object sender, RoutedEventArgs e) =>
-        Shell.Open(Paths.Modifications, _window);
+    private void OnMods(object sender, RoutedEventArgs e) => _window.Navigate("Mods");
 
     private void OnReinstall(object sender, RoutedEventArgs e)
     {

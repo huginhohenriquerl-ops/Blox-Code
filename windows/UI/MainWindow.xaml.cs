@@ -15,7 +15,7 @@ public partial class MainWindow : Window
         {
             ["Home"] = () => new HomePage(this),
             ["FastFlags"] = () => new FastFlagsPage(this),
-            ["Mods"] = () => new ModsPage(),
+            ["Mods"] = () => new ModsPage(this),
             ["Appearance"] = () => new AppearancePage(this),
             ["Behaviour"] = () => new BehaviourPage(this),
             ["About"] = () => new AboutPage(),

@@ -18,12 +18,10 @@
                         </StackPanel>
 
                         <!-- "New chat" -> "Play Roblox" -->
-                        <Button DockPanel.Dock="Top" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="8,7" Click="OnPlay">
-                            <StackPanel Orientation="Horizontal">
-                                <Border Width="26" Height="26" CornerRadius="13" Background="{DynamicResource Brush.Accent}" Margin="0,0,10,0">
-                                    <ui:IconView Data="{StaticResource Icon.Play}" Filled="True" Width="12" Height="12" Foreground="{DynamicResource Brush.OnAccent}" Margin="2,0,0,0" />
-                                </Border>
-                                <TextBlock Text="Play Roblox" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Accent}" VerticalAlignment="Center" FontSize="14" />
+                        <Button DockPanel.Dock="Top" Classes="primary" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="12,10" Margin="0,2,0,6" Click="OnPlay">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <ui:IconView Data="{StaticResource Icon.Play}" Filled="True" Width="13" Height="13" VerticalAlignment="Center" />
+                                <TextBlock Text="Play Roblox" FontWeight="SemiBold" VerticalAlignment="Center" FontSize="14" />
                             </StackPanel>
                         </Button>
 
@@ -42,10 +40,10 @@
                         </Border>
 
                         <StackPanel x:Name="Nav">
-                            <TextBlock Text="Settings" Classes="section" />
-                            <RadioButton x:Name="NavHome" Theme="{StaticResource NavItem}" Tag="Home" IsCheckedChanged="OnNavigate">
+                            <RadioButton x:Name="NavHome" Theme="{StaticResource NavItem}" Tag="Home" IsCheckedChanged="OnNavigate" Margin="0,8,0,1">
                                 <StackPanel Orientation="Horizontal" Spacing="12"><ui:IconView Data="{StaticResource Icon.Home}" /><TextBlock Text="Home" /></StackPanel>
                             </RadioButton>
+                            <TextBlock Text="Customize" Classes="section" />
                             <RadioButton Theme="{StaticResource NavItem}" Tag="FastFlags" IsCheckedChanged="OnNavigate">
                                 <StackPanel Orientation="Horizontal" Spacing="12"><ui:IconView Data="{StaticResource Icon.Flag}" /><TextBlock Text="Fast Flags" /></StackPanel>
                             </RadioButton>
@@ -58,6 +56,7 @@
                             <RadioButton Theme="{StaticResource NavItem}" Tag="Appearance" IsCheckedChanged="OnNavigate">
                                 <StackPanel Orientation="Horizontal" Spacing="12"><ui:IconView Data="{StaticResource Icon.Palette}" /><TextBlock Text="Appearance" /></StackPanel>
                             </RadioButton>
+                            <TextBlock Text="App" Classes="section" />
                             <RadioButton Theme="{StaticResource NavItem}" Tag="Behaviour" IsCheckedChanged="OnNavigate">
                                 <StackPanel Orientation="Horizontal" Spacing="12"><ui:IconView Data="{StaticResource Icon.Sliders}" /><TextBlock Text="Behaviour" /></StackPanel>
                             </RadioButton>

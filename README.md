@@ -34,7 +34,8 @@ atualizações automáticas não mostram esse aviso. Veja a [política de assina
 - **Fast Flag Editor** no estilo do Bloxstrap: Add new (nome único ou Import JSON colado/de arquivo),
   Delete selected, Export JSON, busca, validação de prefixo/valor, chave liga/desliga para booleanas
   e aviso nas flags que o Roblox ignora por estarem fora da allowlist.
-- **Mods** que voltam ao original quando você apaga o arquivo.
+- **Mods** sem fuçar pasta: escolha (ou arraste) um arquivo para o cursor, os sons do personagem ou
+  a fonte do jogo, e **Reset** traz o original de volta. Para o resto, a pasta `Modifications`.
 - Abre os links `roblox://` do navegador, instala sem pedir senha/admin e se atualiza sozinho pelo
   GitHub Releases.
 - Tema Sistema / Claro / Escuro.

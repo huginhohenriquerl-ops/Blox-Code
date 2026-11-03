@@ -1,5 +1,10 @@
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using BloxCode.Core;
@@ -47,6 +52,185 @@ public partial class ModsPage : UserControl
         AttachedToVisualTree += async (_, _) => await LoadAssetsAsync();
     }
 
+    // ===== Pick-a-file slots =====
+
+    private void BuildSlots()
+    {
+        Groups.Children.Clear();
+        foreach (var group in ModCatalog.Groups)
+        {
+            var rows = new StackPanel();
+            rows.Children.Add(new TextBlock { Text = group.Key, Classes = { "h2" }, Margin = new Thickness(0, 0, 0, 6) });
+            bool first = true;
+            foreach (var slot in group)
+            {
+                if (!first)
+                    rows.Children.Add(new Border { Classes = { "divider" } });
+                rows.Children.Add(SlotRow(slot));
+                first = false;
+            }
+            Groups.Children.Add(new Border { Classes = { "card" }, Child = rows });
+        }
+    }
+
+    private Control SlotRow(ModSlot slot)
+    {
+        string? current = ModCatalog.CurrentFile(slot);
+
+        var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, VerticalAlignment = VerticalAlignment.Center };
+        if (current is not null)
+        {
+            var reset = new Button { Content = "Reset" };
+            reset.Click += (_, _) => Change(() => ModCatalog.Reset(slot), slot);
+            buttons.Children.Add(reset);
+        }
+        var choose = new Button { Content = current is null ? "Choose file…" : "Change…", Classes = { "secondary" } };
+        choose.Click += async (_, _) => await PickAsync(slot);
+        buttons.Children.Add(choose);
+        DockPanel.SetDock(buttons, Dock.Right);
+
+        // Sober runs the Android client: say so when its package doesn't have this file at all.
+        bool missing = _assets.Count > 0 && !_assets.Any(a => a.Path == slot.Targets[0]);
+        var status = new TextBlock { FontSize = 12, Margin = new Thickness(0, 3, 0, 0), TextWrapping = TextWrapping.Wrap };
+        if (current is null)
+        {
+            status.Text = missing ? "Roblox default · not in Roblox's Android files, so this may not change anything" : "Roblox default";
+            Res.BindBrush(status, TextBlock.ForegroundProperty, missing ? "Brush.Warning" : "Brush.TextMuted");
+        }
+        else
+        {
+            var info = new FileInfo(current);
+            status.Text = $"Custom · {FormatSize(info.Length)} · changed {info.LastWriteTime:d MMM}";
+            Res.BindBrush(status, TextBlock.ForegroundProperty, "Brush.Accent");
+        }
+
+        var text = new StackPanel { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 12, 0) };
+        text.Children.Add(new TextBlock { Text = slot.Title, FontWeight = FontWeight.SemiBold });
+        text.Children.Add(new TextBlock { Text = slot.Description, Classes = { "muted" }, TextWrapping = TextWrapping.Wrap });
+        text.Children.Add(status);
+
+        var preview = Preview(slot, current);
+        DockPanel.SetDock(preview, Dock.Left);
+
+        var row = new DockPanel { Margin = new Thickness(0, 4), Background = Brushes.Transparent };
+        ToolTip.SetTip(row, $"{slot.FileTypes} · drop a file here");
+        row.Children.Add(buttons);
+        row.Children.Add(preview);
+        row.Children.Add(text);
+
+        // Drag a file from the file manager straight onto the row.
+        DragDrop.SetAllowDrop(row, true);
+        row.AddHandler(DragDrop.DragOverEvent, (_, e) =>
+        {
+            e.DragEffects = DroppedFile(e) is { } f && ModCatalog.Accepts(slot, f) ? DragDropEffects.Copy : DragDropEffects.None;
+        });
+        row.AddHandler(DragDrop.DropEvent, (_, e) =>
+        {
+            if (DroppedFile(e) is { } file)
+                Change(() => ModCatalog.Apply(slot, file), slot);
+        });
+        return row;
+    }
+
+    /// <summary>A 44 px tile: the chosen cursor image, "Aa" for the font, a speaker for sounds.</summary>
+    private static Control Preview(ModSlot slot, string? current)
+    {
+        var tile = new Border { Width = 44, Height = 44, CornerRadius = new CornerRadius(10), Margin = new Thickness(0, 0, 14, 0), VerticalAlignment = VerticalAlignment.Center };
+        Res.BindBrush(tile, Border.BackgroundProperty, current is null ? "Brush.SurfaceAlt" : "Brush.AccentSoft");
+        string tint = current is null ? "Brush.TextMuted" : "Brush.Accent";
+
+        Control content;
+        if (slot.Kind == ModKind.Image && current is not null && LoadBitmap(current) is { } bitmap)
+        {
+            content = new Image { Source = bitmap, Width = 32, Height = 32, Stretch = Stretch.Uniform };
+        }
+        else if (slot.Kind == ModKind.Font)
+        {
+            var sample = new TextBlock { Text = "Aa", FontSize = 18, FontWeight = FontWeight.SemiBold };
+            Res.BindBrush(sample, TextBlock.ForegroundProperty, tint);
+            content = sample;
+        }
+        else
+        {
+            var icon = new IconView { Data = Res.Get<Geometry>(slot.Kind == ModKind.Sound ? "Icon.Sound" : "Icon.File"), Width = 20, Height = 20 };
+            Res.BindBrush(icon, IconView.ForegroundProperty, tint);
+            content = icon;
+        }
+        content.HorizontalAlignment = HorizontalAlignment.Center;
+        content.VerticalAlignment = VerticalAlignment.Center;
+        tile.Child = content;
+        return tile;
+    }
+
+    private static Bitmap? LoadBitmap(string path)
+    {
+        try
+        {
+            // Read into memory first so the mod file isn't held open.
+            using var stream = new MemoryStream(File.ReadAllBytes(path));
+            return new Bitmap(stream);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or InvalidOperationException or NotSupportedException)
+        {
+            return null;
+        }
+    }
+
+    private static string? DroppedFile(DragEventArgs e) =>
+        e.DataTransfer.TryGetFiles() is [var item] && item.TryGetLocalPath() is { } path && File.Exists(path) ? path : null;
+
+    private async Task PickAsync(ModSlot slot)
+    {
+        var storage = TopLevel.GetTopLevel(this)?.StorageProvider;
+        if (storage is null || !storage.CanOpen)
+        {
+            await MessageDialog.ShowAsync(_window, "No file picker here",
+                $"Copy your file to this path instead, then come back:\n\n{Path.Combine(Paths.Modifications, slot.Targets[0])}");
+            return;
+        }
+
+        var files = await storage.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = $"Choose a file for {slot.Title}",
+            AllowMultiple = false,
+            FileTypeFilter = new[] { new FilePickerFileType(slot.FileTypes) { Patterns = slot.Extensions.Select(x => "*" + x).ToArray() } },
+        });
+        if (files.Count == 0)
+            return;
+
+        // Portals can hand back a document without a local path: copy it out first.
+        string? local = files[0].TryGetLocalPath();
+        string? temp = null;
+        if (local is null)
+        {
+            temp = Path.Combine(Paths.Cache, "picked" + Path.GetExtension(files[0].Name));
+            Directory.CreateDirectory(Paths.Cache);
+            await using (var source = await files[0].OpenReadAsync())
+            await using (var output = File.Create(temp))
+                await source.CopyToAsync(output);
+            local = temp;
+        }
+        Change(() => ModCatalog.Apply(slot, local), slot);
+        if (temp is not null)
+            try { File.Delete(temp); } catch (IOException) { }
+    }
+
+    private async void Change(Action change, ModSlot slot)
+    {
+        try
+        {
+            change();
+            if (slot.Kind == ModKind.Font)
+                ApkAssets.RefreshCustomFont();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException)
+        {
+            Logger.Warn("ModsPage::Change", ex.Message);
+            await MessageDialog.ShowAsync(_window, "Couldn't change that mod", ex.Message);
+        }
+        ApplyToSober();
+    }
+
     // ===== Roblox's files =====
 
     private async Task LoadAssetsAsync()
@@ -71,6 +255,7 @@ public partial class ModsPage : UserControl
             AssetStatus.Text = $"Couldn't read Roblox's package: {ex.Message}";
         }
         ShowAssets();
+        BuildSlots();
     }
 
     private void ShowAssets()
@@ -196,6 +381,7 @@ public partial class ModsPage : UserControl
         }
         RefreshMods();
         ShowAssets();
+        BuildSlots();
     }
 
     private async Task RemoveModAsync(string rel)

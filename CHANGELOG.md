@@ -3,6 +3,32 @@
 Todas as versões do Blox Code, da mais nova para a mais antiga. Quem tem o Blox Code instalado
 recebe cada versão automaticamente na próxima vez que abrir.
 
+## 1.3.0 — Mods sem fuçar pasta, layout novo
+
+### Mods
+
+- **Escolha um arquivo e pronto:** a tela Mods agora lista o que dá para trocar (cursor do mouse,
+  cursor de texto, sons de morte, pulo, aterrissagem, passos, queda, natação, mergulho, levantar e
+  explosão, e a fonte do jogo). Clique em **Choose file…** ou arraste o arquivo para a linha, e o
+  Blox Code coloca no lugar certo. **Reset** traz o original do Roblox de volta.
+- **Fonte do jogo:** troca todas as fontes do Roblox pela sua (TTF ou OTF), do jeito que o Bloxstrap
+  faz: cada família de fonte do Roblox passa a apontar para ela, e isso é refeito a cada versão nova
+  do Roblox.
+- A pasta `Modifications` e (no Linux) a lista de todos os arquivos do Roblox continuam lá, como
+  opção avançada.
+
+### Layout
+
+- **Home:** o preset gráfico fica direto na tela inicial, com atalhos para Mods e Fast Flags que
+  mostram o que você já mudou.
+- **Sidebar:** botão **Play Roblox** destacado e páginas separadas em *Customize* e *App*.
+
+### Fast Flags
+
+- **Lowest sem borrão:** o Lowest usava qualidade 1 e texturas no nível 0, o que deixava a imagem
+  toda borrada. Agora usa qualidade 4 e texturas no nível 1 (o Low foi para qualidade 6 e texturas
+  2). Quem estava no Lowest ou Low antigo passa para o novo sozinho.
+
 ## 1.2.0 — Tema próprio e presets gráficos
 
 ### Visual novo

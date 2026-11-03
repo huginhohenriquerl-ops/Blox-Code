@@ -62,6 +62,9 @@ public static class Store
         Settings.Channel = string.IsNullOrWhiteSpace(Settings.Channel) ? Settings.DefaultChannel : Settings.Channel.Trim();
         State.PackageHashes ??= new();
         State.ModManifest ??= new();
+
+        if (FastFlagPresets.UpgradeBlurryPresets())
+            SaveSettings();
     }
 
     public static void SaveSettings()

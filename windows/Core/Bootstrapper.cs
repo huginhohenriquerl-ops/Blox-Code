@@ -314,6 +314,8 @@ public sealed partial class Bootstrapper(HttpClient http, LaunchSettings launch,
         var state = Store.State;
         string originals = Path.Combine(versionDir, OriginalsFolder);
 
+        RefreshCustomFont(versionDir, originals);
+
         // A subfolder that can't be read is skipped rather than stopping Roblox from launching.
         var mods = Directory.Exists(Paths.Modifications)
             ? Directory.EnumerateFiles(Paths.Modifications, "*", new EnumerationOptions { RecurseSubdirectories = true, IgnoreInaccessible = true })
@@ -379,6 +381,31 @@ public sealed partial class Bootstrapper(HttpClient http, LaunchSettings launch,
         }
 
         state.ModManifest = applied;
+    }
+
+    /// <summary>
+    /// Points every font family at the custom game font (or drops those rewrites when it's gone),
+    /// reading Roblox's own family files: the backed-up original when a mod already replaced one.
+    /// </summary>
+    private static void RefreshCustomFont(string versionDir, string originals)
+    {
+        try
+        {
+            string families = Path.Combine(versionDir, ModCatalog.FamiliesFolder.Replace('/', '\\'));
+            var files = Directory.Exists(families)
+                ? Directory.EnumerateFiles(families, "*.json").Select(file =>
+                {
+                    string name = Path.GetFileName(file);
+                    string backup = Path.Combine(originals, ModCatalog.FamiliesFolder.Replace('/', '\\'), name);
+                    return (name, File.ReadAllText(File.Exists(backup) ? backup : file));
+                }).ToList()
+                : new List<(string, string)>();
+            ModCatalog.RebuildFontFamilies(files);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Logger.Warn("Bootstrapper::RefreshCustomFont", ex.Message);
+        }
     }
 
     private static void WriteFastFlags(string versionDir)

@@ -37,6 +37,7 @@ public sealed class SoberLauncher(LaunchSettings launch, IProgress<BootstrapProg
 
         Report(BootstrapPhase.Installing, "Syncing mods", 0.7);
         ct.ThrowIfCancellationRequested();
+        ApkAssets.RefreshCustomFont();
         FailedMods = ModSync.Sync().Failed;
 
         if (launch.NoLaunch)

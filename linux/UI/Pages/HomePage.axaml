@@ -35,16 +35,51 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Suggestion chips -->
-                <WrapPanel HorizontalAlignment="Center" Margin="0,16,0,0">
+                <!-- Quick settings: the graphics preset right here, shortcuts to the rest -->
+                <Border Classes="card" Margin="0,18,0,10" Padding="16,12">
+                    <DockPanel>
+                        <Border DockPanel.Dock="Right" Classes="segmented" VerticalAlignment="Center">
+                            <StackPanel x:Name="GraphicsSegments" Orientation="Horizontal" />
+                        </Border>
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                            <TextBlock Text="Graphics" Classes="h2" />
+                            <TextBlock x:Name="GraphicsSummary" Classes="muted" />
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <UniformGrid Columns="2">
+                    <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="0" Margin="0,0,5,0" CornerRadius="14" Click="OnMods">
+                        <Border Classes="card" Margin="0" Padding="16,12">
+                            <DockPanel>
+                                <Border DockPanel.Dock="Left" Width="36" Height="36" CornerRadius="9" Background="{DynamicResource Brush.AccentSoft}" Margin="0,0,12,0">
+                                    <ui:IconView Data="{StaticResource Icon.Box}" Width="18" Height="18" Foreground="{DynamicResource Brush.Accent}" />
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Mods" Classes="h2" />
+                                    <TextBlock x:Name="ModsSummary" Classes="muted" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                    </Button>
+                    <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="0" Margin="5,0,0,0" CornerRadius="14" Click="OnFastFlags">
+                        <Border Classes="card" Margin="0" Padding="16,12">
+                            <DockPanel>
+                                <Border DockPanel.Dock="Left" Width="36" Height="36" CornerRadius="9" Background="{DynamicResource Brush.AccentSoft}" Margin="0,0,12,0">
+                                    <ui:IconView Data="{StaticResource Icon.Flag}" Width="18" Height="18" Foreground="{DynamicResource Brush.Accent}" />
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Fast Flags" Classes="h2" />
+                                    <TextBlock x:Name="FlagsSummary" Classes="muted" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                    </Button>
+                </UniformGrid>
+
+                <WrapPanel HorizontalAlignment="Center" Margin="0,14,0,0">
                     <Button Classes="chip" Click="OnOpenRoblox">
                         <StackPanel Orientation="Horizontal" Spacing="7"><ui:IconView Data="{StaticResource Icon.Play}" Width="13" Height="13" /><TextBlock Text="Open Roblox" /></StackPanel>
-                    </Button>
-                    <Button Classes="chip" Click="OnFastFlags">
-                        <StackPanel Orientation="Horizontal" Spacing="7"><ui:IconView Data="{StaticResource Icon.Flag}" Width="13" Height="13" /><TextBlock Text="Fast Flags" /></StackPanel>
-                    </Button>
-                    <Button Classes="chip" Click="OnMods">
-                        <StackPanel Orientation="Horizontal" Spacing="7"><ui:IconView Data="{StaticResource Icon.Box}" Width="13" Height="13" /><TextBlock Text="Mods" /></StackPanel>
                     </Button>
                     <Button Classes="chip" Click="OnSober">
                         <StackPanel Orientation="Horizontal" Spacing="7"><ui:IconView Data="{StaticResource Icon.Sober}" Width="13" Height="13" /><TextBlock Text="Sober settings" /></StackPanel>
