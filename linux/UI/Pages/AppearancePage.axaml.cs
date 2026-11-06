@@ -17,8 +17,17 @@ public partial class AppearancePage : UserControl
         ThemeLight.IsChecked = Store.Settings.Theme == AppTheme.Light;
         ThemeDark.IsChecked = Store.Settings.Theme == AppTheme.Dark;
         AnimateMascot.IsChecked = Store.Settings.AnimateMascot;
+        Animations.IsChecked = Store.Settings.Animations;
         Mascot.IsAnimated = Store.Settings.AnimateMascot;
         _syncing = false;
+    }
+
+    private void OnAnimationsChanged(object? sender, RoutedEventArgs e)
+    {
+        if (_syncing)
+            return;
+        Store.Settings.Animations = Animations.IsChecked == true;
+        Store.SaveSettings();
     }
 
     private void OnThemeChanged(object? sender, RoutedEventArgs e)

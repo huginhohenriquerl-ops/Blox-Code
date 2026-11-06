@@ -12,6 +12,8 @@ public sealed class Settings
     public AppTheme Theme { get; set; } = AppTheme.System;
     public string Channel { get; set; } = DefaultChannel;
     public bool AnimateMascot { get; set; } = true;
+    /// <summary>Page transitions and the other small interface animations.</summary>
+    public bool Animations { get; set; } = true;
     public bool CleanupOldVersions { get; set; } = true;
     public bool ConfirmLaunches { get; set; }
     public bool AutoUpdate { get; set; } = true;

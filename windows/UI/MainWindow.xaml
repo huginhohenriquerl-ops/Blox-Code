@@ -38,9 +38,14 @@
                 <Border DockPanel.Dock="Bottom" CornerRadius="10" Padding="10,8" Margin="0,8,0,0" BorderThickness="1"
                         BorderBrush="{DynamicResource Brush.Border}" Background="{DynamicResource Brush.Bg}">
                     <DockPanel>
-                        <Border Width="32" Height="32" CornerRadius="16" Background="{DynamicResource Brush.Selected}" Margin="0,0,10,0">
-                            <TextBlock Text="B" FontFamily="{StaticResource Font.Display}" FontWeight="SemiBold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
+                        <Grid Width="32" Height="32" Margin="0,0,10,0">
+                            <Border CornerRadius="16" Background="{DynamicResource Brush.Selected}">
+                                <TextBlock Text="B" FontFamily="{StaticResource Font.Display}" FontWeight="SemiBold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <!-- Green when installed, amber while running portable -->
+                            <Ellipse x:Name="FooterDot" Width="10" Height="10" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,-1,-1"
+                                     Stroke="{DynamicResource Brush.Bg}" StrokeThickness="2" Fill="{DynamicResource Brush.Success}" />
+                        </Grid>
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock x:Name="FooterTitle" Text="Blox Code" FontWeight="SemiBold" FontSize="13" />
                             <TextBlock x:Name="FooterSubtitle" Style="{StaticResource Text.Muted}" FontSize="11.5" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />

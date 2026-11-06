@@ -8,6 +8,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using BloxCode.Core;
+using BloxCode.Linux.Platform;
 using BloxCode.Linux.Runtime;
 
 namespace BloxCode.Linux.UI.Pages;
@@ -48,16 +49,35 @@ public partial class ModsPage : UserControl
             CategoryChips.Children.Add(chip);
         }
 
+        foreach (string tab in ModCatalog.Groups.Select(g => g.Key).Prepend(AllTab).Append(AdvancedTab))
+        {
+            var segment = new RadioButton { Content = tab, GroupName = "modTabs" + GetHashCode(), IsChecked = tab == _tab, Theme = Res.Theme("Segment") };
+            segment.IsCheckedChanged += (_, _) =>
+            {
+                if (segment.IsChecked != true) return;
+                _tab = tab;
+                BuildSlots();
+            };
+            Tabs.Children.Add(segment);
+        }
+
         RefreshMods();
         AttachedToVisualTree += async (_, _) => await LoadAssetsAsync();
     }
 
     // ===== Pick-a-file slots =====
 
+    private const string AllTab = "All", AdvancedTab = "Advanced";
+    private string _tab = AllTab;
+
     private void BuildSlots()
     {
+        Groups.IsVisible = _tab != AdvancedTab;
+        AssetsCard.IsVisible = AppliedCard.IsVisible = _tab is AllTab or AdvancedTab;
+        ResetAllButton.IsVisible = ModCatalog.Slots.Any(s => ModCatalog.CurrentFile(s) is not null);
+
         Groups.Children.Clear();
-        foreach (var group in ModCatalog.Groups)
+        foreach (var group in ModCatalog.Groups.Where(g => _tab == AllTab || g.Key == _tab))
         {
             var rows = new StackPanel();
             rows.Children.Add(new TextBlock { Text = group.Key, Classes = { "h2" }, Margin = new Thickness(0, 0, 0, 6) });
@@ -78,6 +98,13 @@ public partial class ModsPage : UserControl
         string? current = ModCatalog.CurrentFile(slot);
 
         var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, VerticalAlignment = VerticalAlignment.Center };
+        if (slot.Kind == ModKind.Sound)
+        {
+            var play = new Button { Padding = new Thickness(10, 8), Content = new IconView { Data = Res.Get<Geometry>("Icon.Play"), Filled = true, Width = 12, Height = 12 } };
+            ToolTip.SetTip(play, current is null ? "Play Roblox's sound" : "Play your sound");
+            play.Click += async (_, _) => await PlaySoundAsync(slot, current);
+            buttons.Children.Add(play);
+        }
         if (current is not null)
         {
             var reset = new Button { Content = "Reset" };
@@ -174,6 +201,46 @@ public partial class ModsPage : UserControl
         {
             return null;
         }
+    }
+
+    /// <summary>
+    /// Plays the slot's sound (the custom one, or Roblox's own out of the APK) with whatever player
+    /// the desktop has: PipeWire, PulseAudio or ffplay.
+    /// </summary>
+    private async Task PlaySoundAsync(ModSlot slot, string? current)
+    {
+        string? file = current;
+        if (file is null)
+        {
+            if (ApkAssets.FindApk() is not { } apk)
+            {
+                await MessageDialog.ShowAsync(_window, "Nothing to play yet", "Roblox's own sounds show up here after Sober has run once.");
+                return;
+            }
+            file = Path.Combine(Paths.Cache, "sound-preview", Path.GetFileName(slot.Targets[0]));
+            try { await Task.Run(() => ApkAssets.Extract(apk, slot.Targets[0], file)); }
+            catch (Exception ex) when (ex is IOException or InvalidDataException or UnauthorizedAccessException)
+            {
+                await MessageDialog.ShowAsync(_window, "Couldn't read Roblox's sound", ex.Message);
+                return;
+            }
+        }
+
+        bool started = Proc.Which("pw-play") is { } pw ? Proc.Detach(pw, file)
+            : Proc.Which("paplay") is { } pa ? Proc.Detach(pa, file)
+            : Proc.Which("ffplay") is { } ff && Proc.Detach(ff, "-nodisp", "-autoexit", "-loglevel", "quiet", file);
+        if (!started)
+            await MessageDialog.ShowAsync(_window, "No sound player found", "Blox Code plays previews with pw-play, paplay or ffplay; none of them is installed.");
+    }
+
+    private async void OnResetAll(object? sender, RoutedEventArgs e)
+    {
+        var swapped = ModCatalog.Slots.Where(s => ModCatalog.CurrentFile(s) is not null).ToList();
+        if (swapped.Count == 0 || !await MessageDialog.AskAsync(_window, $"Reset {swapped.Count} mod(s)?",
+                "Roblox's own cursor, sounds and font come back. Files you added in the advanced list stay.", "Reset all", "Cancel"))
+            return;
+        // Passing the font slot (when it's among them) makes Change refresh the font families too.
+        Change(() => swapped.ForEach(s => ModCatalog.Reset(s)), swapped.FirstOrDefault(s => s.Kind == ModKind.Font) ?? swapped[0]);
     }
 
     private static string? DroppedFile(DragEventArgs e) =>

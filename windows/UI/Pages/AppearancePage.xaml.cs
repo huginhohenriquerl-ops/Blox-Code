@@ -21,8 +21,15 @@ public partial class AppearancePage : UserControl
             _ => ThemeSystem,
         }).IsChecked = true;
         Animate.IsChecked = Store.Settings.AnimateMascot;
+        Animations.IsChecked = Store.Settings.Animations;
         Mascot.IsAnimated = Store.Settings.AnimateMascot;
         _ready = true;
+    }
+
+    private void OnAnimationsChanged(object sender, RoutedEventArgs e)
+    {
+        Store.Settings.Animations = Animations.IsChecked == true;
+        Store.SaveSettings();
     }
 
     private void OnThemeChanged(object sender, RoutedEventArgs e)

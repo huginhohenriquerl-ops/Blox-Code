@@ -28,6 +28,8 @@
 
   <ItemGroup>
     <Resource Include="Resources\BloxCode.ico" />
+    <!-- Inter for the UI, JetBrains Mono for headings and code: the same look on every PC (both OFL). -->
+    <Resource Include="..\shared\Fonts\*.ttf" Link="Fonts\%(Filename)%(Extension)" />
   </ItemGroup>
 
 </Project>

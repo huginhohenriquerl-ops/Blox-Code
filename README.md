@@ -25,7 +25,8 @@ atualizações automáticas não mostram esse aviso. Veja a [política de assina
 ## Nos dois sistemas
 
 - Tema próprio: **Midnight** (azul-marinho com acento menta `#3EE6B0`) e **Daylight** (papel
-  azulado com menta `#077257`), títulos em fonte de terminal e uma barra de cursor na página aberta.
+  azulado com menta `#077257`), Inter no texto e JetBrains Mono nos títulos (as duas vêm dentro do
+  programa) e uma barra de cursor na página aberta. Animações suaves, que dá para desligar.
   Sidebar e "composer" no estilo do Claude desktop: cole um link de jogo ou um place ID e aperte Enter.
 - **Preset gráfico** Auto / Lowest / Low / Medium / High, feito só com flags da
   [allowlist do Roblox](https://devforum.roblox.com/t/allowlist-for-local-client-configuration-via-fast-flags/3966569).
@@ -188,4 +189,6 @@ These requests carry nothing about you beyond what any download does (your IP ad
 own privacy policies. Logs and the Linux diagnostics zip stay on your computer unless you share them.
 
 Projeto de fã — sem afiliação com Roblox Corporation, Anthropic, a equipe do Bloxstrap ou a
-VinegarHQ (Sober) (MIT).
+VinegarHQ (Sober) (MIT). As fontes [Inter](https://github.com/rsms/inter) e
+[JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) são distribuídas sob a SIL Open Font
+License 1.1; as licenças estão em [shared/Fonts](shared/Fonts).

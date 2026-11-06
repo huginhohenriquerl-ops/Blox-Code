@@ -41,6 +41,7 @@ public partial class MainWindow : Window
     {
         Store.SaveSettings();
         PageHost.Content = page;
+        Motion.EnterPage(page);
     }
 
     public void RefreshFooter()
@@ -48,6 +49,7 @@ public partial class MainWindow : Window
         string roblox = Store.State.VersionGuid is { } v ? v : "Roblox not downloaded yet";
         FooterTitle.Text = Installer.IsInstalled ? "Blox Code" : "Blox Code · portable";
         FooterSubtitle.Text = $"v{App.Version} · {roblox}";
+        FooterDot.SetResourceReference(System.Windows.Shapes.Shape.FillProperty, Installer.IsInstalled ? "Brush.Success" : "Brush.Warning");
     }
 
     public void RefreshMascots() => BrandMascot.IsAnimated = Store.Settings.AnimateMascot;
@@ -66,8 +68,7 @@ public partial class MainWindow : Window
     {
         if (sender is RadioButton { Tag: string key } && _pages.TryGetValue(key, out var create) && PageHost is not null)
         {
-            Store.SaveSettings();
-            PageHost.Content = create();
+            ShowPage(create());
         }
     }
 

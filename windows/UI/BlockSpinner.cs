@@ -14,7 +14,7 @@ public sealed class BlockSpinner : TextBlock
     public BlockSpinner()
     {
         Text = "■";
-        FontFamily = new System.Windows.Media.FontFamily("Cascadia Mono, Consolas");
+        SetResourceReference(FontFamilyProperty, "Font.Mono");
         _timer.Tick += (_, _) => Text = Frames[++_frame % Frames.Length];
         Loaded += (_, _) => Sync();
         Unloaded += (_, _) => _timer.Stop();

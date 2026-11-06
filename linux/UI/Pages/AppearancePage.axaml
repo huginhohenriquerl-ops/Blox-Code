@@ -17,6 +17,14 @@
                             <RadioButton x:Name="ThemeDark" Theme="{StaticResource Segment}" GroupName="theme" Content="Dark" IsCheckedChanged="OnThemeChanged" />
                         </StackPanel>
                     </Border>
+                    <Border Classes="divider" />
+                    <DockPanel>
+                        <CheckBox x:Name="Animations" DockPanel.Dock="Right" Theme="{StaticResource Toggle}" IsCheckedChanged="OnAnimationsChanged" />
+                        <StackPanel>
+                            <TextBlock Text="Interface animations" Classes="h2" />
+                            <TextBlock Classes="muted" Margin="0,2,0,0" Text="Pages slide in and cards follow one after another." />
+                        </StackPanel>
+                    </DockPanel>
                 </StackPanel>
             </Border>
 

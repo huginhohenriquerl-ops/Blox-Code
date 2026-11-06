@@ -13,19 +13,50 @@ namespace BloxCode.UI.Pages;
 /// </summary>
 public partial class ModsPage : UserControl
 {
+    private const string AllTab = "All", AdvancedTab = "Advanced";
+
     private readonly MainWindow _window;
+    private readonly MediaPlayer _player = new();
+    private string _tab = AllTab;
+    private bool _previewFailed;
 
     public ModsPage(MainWindow window)
     {
         _window = window;
         InitializeComponent();
         FolderPath.Text = Paths.Modifications;
+
+        foreach (string tab in ModCatalog.Groups.Select(g => g.Key).Prepend(AllTab).Append(AdvancedTab))
+        {
+            var segment = new RadioButton { Content = tab, GroupName = "modTabs" + GetHashCode(), IsChecked = tab == _tab };
+            segment.SetResourceReference(StyleProperty, "Segment");
+            segment.Checked += (_, _) =>
+            {
+                _tab = tab;
+                Refresh();
+            };
+            Tabs.Children.Add(segment);
+        }
+
+        // Windows can't always play OGG; say so once instead of failing silently.
+        _player.MediaFailed += (_, e) =>
+        {
+            Logger.Warn("ModsPage::Preview", e.ErrorException.Message);
+            if (_previewFailed) return;
+            _previewFailed = true;
+            MessageDialog.Show(_window, "Windows can't play this one",
+                "This sound's format isn't supported by Windows here (OGG needs Microsoft's Web Media Extensions). Roblox plays it fine in game.");
+        };
+        Unloaded += (_, _) => _player.Close();
         Refresh();
     }
 
     private void Refresh()
     {
         BuildSlots();
+        Groups.Visibility = _tab == AdvancedTab ? Visibility.Collapsed : Visibility.Visible;
+        AdvancedCard.Visibility = _tab is AllTab or AdvancedTab ? Visibility.Visible : Visibility.Collapsed;
+        ResetAllButton.Visibility = ModCatalog.Slots.Any(s => ModCatalog.CurrentFile(s) is not null) ? Visibility.Visible : Visibility.Collapsed;
 
         List<string> mods;
         try
@@ -59,7 +90,7 @@ public partial class ModsPage : UserControl
     private void BuildSlots()
     {
         Groups.Children.Clear();
-        foreach (var group in ModCatalog.Groups)
+        foreach (var group in ModCatalog.Groups.Where(g => _tab == AllTab || g.Key == _tab))
         {
             var rows = new StackPanel();
             rows.Children.Add(new TextBlock { Text = group.Key, Margin = new Thickness(0, 0, 0, 6) }.Styled("Text.H2"));
@@ -82,6 +113,14 @@ public partial class ModsPage : UserControl
         var choose = new Button { Content = current is null ? "Choose file…" : "Change…", Margin = new Thickness(6, 0, 0, 0) }.Styled("Button.Secondary");
         choose.Click += (_, _) => Pick(slot);
         var buttons = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+        if (slot.Kind == ModKind.Sound)
+        {
+            var play = new Button { Content = "", FontSize = 12, Padding = new Thickness(10, 7, 10, 7), Margin = new Thickness(0, 0, 4, 0),
+                ToolTip = current is null ? "Play Roblox's sound" : "Play your sound" }.Styled("Button.Ghost");
+            play.SetResourceReference(Control.FontFamilyProperty, "Font.Icons");
+            play.Click += (_, _) => PlaySound(slot, current);
+            buttons.Children.Add(play);
+        }
         if (current is not null)
         {
             var reset = new Button { Content = "Reset" }.Styled("Button.Ghost");
@@ -211,6 +250,41 @@ public partial class ModsPage : UserControl
             Logger.Warn("ModsPage::FontSample", ex.Message);
         }
         return sample;
+    }
+
+    /// <summary>Plays the slot's sound: the custom one, or Roblox's own from the installed version.</summary>
+    private void PlaySound(ModSlot slot, string? current)
+    {
+        string? file = current ?? RobloxOriginal(slot);
+        if (file is null)
+        {
+            MessageDialog.Show(_window, "Nothing to play yet", "Roblox's own sounds show up here after Blox Code has downloaded Roblox once.");
+            return;
+        }
+        try
+        {
+            // A throwaway copy, so the player never holds the mod file open.
+            string dir = Path.Combine(Paths.Cache, "sound-preview");
+            Directory.CreateDirectory(dir);
+            string copy = Path.Combine(dir, "preview-" + DateTime.UtcNow.Ticks + Path.GetExtension(file));
+            File.Copy(file, copy);
+            _player.Close();
+            _player.Open(new Uri(copy));
+            _player.Play();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Logger.Warn("ModsPage::Preview", ex.Message);
+        }
+    }
+
+    private void OnResetAll(object sender, RoutedEventArgs e)
+    {
+        var swapped = ModCatalog.Slots.Where(s => ModCatalog.CurrentFile(s) is not null).ToList();
+        if (swapped.Count == 0 || !MessageDialog.Ask(_window, $"Reset {swapped.Count} mod(s)?",
+                "Roblox's own cursor, sounds and font come back on the next launch. Files in the Advanced folder stay.", "Reset all", "Cancel"))
+            return;
+        Run(() => swapped.ForEach(s => ModCatalog.Reset(s)));
     }
 
     private static string? DroppedFile(DragEventArgs e) =>

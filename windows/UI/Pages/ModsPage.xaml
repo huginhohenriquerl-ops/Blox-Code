@@ -3,15 +3,23 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel MaxWidth="720" Margin="40,8,40,40">
-            <TextBlock Text="Mods" Style="{StaticResource Text.H1}" />
-            <TextBlock Style="{StaticResource Text.Muted}" Margin="0,0,0,20"
+            <DockPanel>
+                <Button x:Name="ResetAllButton" DockPanel.Dock="Right" Style="{StaticResource Button.Ghost}" Content="Reset all" VerticalAlignment="Center" Click="OnResetAll" />
+                <TextBlock Text="Mods" Style="{StaticResource Text.H1}" />
+            </DockPanel>
+            <TextBlock Style="{StaticResource Text.Muted}" Margin="0,0,0,16"
                        Text="Pick a file for anything you want to change, or drop one onto its row. Blox Code puts it in the right place for the next launch, and Reset brings Roblox's original back." />
+
+            <!-- Tabs: everything, one group, or the raw folder -->
+            <Border Style="{StaticResource Segmented}" HorizontalAlignment="Left" Margin="0,0,0,14">
+                <StackPanel x:Name="Tabs" Orientation="Horizontal" />
+            </Border>
 
             <!-- One card per group (Cursor, Sounds, Font), built from ModCatalog -->
             <StackPanel x:Name="Groups" />
 
             <!-- Everything else: the raw folder, for mods the list above doesn't cover -->
-            <Border Style="{StaticResource Card}">
+            <Border x:Name="AdvancedCard" Style="{StaticResource Card}">
                 <StackPanel>
                     <DockPanel>
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">

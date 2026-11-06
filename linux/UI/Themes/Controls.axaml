@@ -3,9 +3,10 @@
                     xmlns:ui="clr-namespace:BloxCode.Linux.UI">
 
     <!-- Typography: terminal-style monospace for headings and the wordmark (Bit's screen), Inter for UI -->
-    <FontFamily x:Key="Font.Display">JetBrains Mono, Cascadia Code, Cascadia Mono, DejaVu Sans Mono, Noto Sans Mono, Liberation Mono, Consolas</FontFamily>
+    <!-- JetBrains Mono ships inside the app (shared/Fonts), so headings look the same on every distro. -->
+    <FontFamily x:Key="Font.Display">avares://BloxCode/Assets/Fonts#JetBrains Mono, DejaVu Sans Mono</FontFamily>
     <FontFamily x:Key="Font.Sans">fonts:Inter#Inter, Noto Sans, DejaVu Sans, Segoe UI</FontFamily>
-    <FontFamily x:Key="Font.Mono">JetBrains Mono, Cascadia Mono, DejaVu Sans Mono, Noto Sans Mono, Liberation Mono, Consolas</FontFamily>
+    <FontFamily x:Key="Font.Mono">avares://BloxCode/Assets/Fonts#JetBrains Mono, DejaVu Sans Mono</FontFamily>
 
     <CornerRadius x:Key="Radius.Small">6</CornerRadius>
     <CornerRadius x:Key="Radius.Medium">8</CornerRadius>
@@ -50,6 +51,13 @@
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Cursor" Value="Hand" />
+        <!-- A small squeeze on click -->
+        <Setter Property="RenderTransform" Value="scale(1)" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
+            </Transitions>
+        </Setter>
         <Setter Property="Template">
             <ControlTemplate>
                 <ContentPresenter x:Name="PART_ContentPresenter"
@@ -63,7 +71,14 @@
                                   Foreground="{TemplateBinding Foreground}"
                                   RecognizesAccessKey="True"
                                   HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
+                    <!-- The hover colour fades in instead of snapping -->
+                    <ContentPresenter.Transitions>
+                        <Transitions>
+                            <BrushTransition Property="Background" Duration="0:0:0.14" />
+                        </Transitions>
+                    </ContentPresenter.Transitions>
+                </ContentPresenter>
             </ControlTemplate>
         </Setter>
 
@@ -71,7 +86,7 @@
             <Setter Property="Background" Value="{DynamicResource Brush.Hover}" />
         </Style>
         <Style Selector="^:pressed">
-            <Setter Property="Opacity" Value="0.85" />
+            <Setter Property="RenderTransform" Value="scale(0.97)" />
         </Style>
         <Style Selector="^:focus-visible /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
@@ -158,11 +173,23 @@
             <ControlTemplate>
                 <Panel>
                     <Border x:Name="Chrome" Background="Transparent" CornerRadius="{StaticResource Radius.Medium}" Padding="12,0">
+                        <Border.Transitions>
+                            <Transitions>
+                                <BrushTransition Property="Background" Duration="0:0:0.14" />
+                            </Transitions>
+                        </Border.Transitions>
                         <ContentPresenter VerticalAlignment="Center" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" />
                     </Border>
-                    <!-- The open page gets a mint "cursor" bar, Blox Code's signature -->
+                    <!-- The open page gets a mint "cursor" bar, Blox Code's signature; it grows in from the middle -->
                     <Border x:Name="Marker" Width="3" Margin="0,9" CornerRadius="2" HorizontalAlignment="Left"
-                            Background="{DynamicResource Brush.Accent}" IsVisible="False" />
+                            Background="{DynamicResource Brush.Accent}" Opacity="0" RenderTransform="scaleY(0)">
+                        <Border.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.12" />
+                                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.24" Easing="BackEaseOut" />
+                            </Transitions>
+                        </Border.Transitions>
+                    </Border>
                 </Panel>
             </ControlTemplate>
         </Setter>
@@ -173,7 +200,8 @@
             <Setter Property="Background" Value="{DynamicResource Brush.Selected}" />
         </Style>
         <Style Selector="^:checked /template/ Border#Marker">
-            <Setter Property="IsVisible" Value="True" />
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="RenderTransform" Value="scaleY(1)" />
         </Style>
         <Style Selector="^:checked">
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
@@ -189,6 +217,11 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Border x:Name="Chrome" Background="Transparent" CornerRadius="{StaticResource Radius.Small}" Padding="12,5">
+                    <Border.Transitions>
+                        <Transitions>
+                            <BrushTransition Property="Background" Duration="0:0:0.14" />
+                        </Transitions>
+                    </Border.Transitions>
                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" />
                 </Border>
             </ControlTemplate>

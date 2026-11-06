@@ -30,6 +30,14 @@
                             <TextBlock Style="{StaticResource Text.Muted}" Text="Walking, blinking and the little victory hop. Turn off for a calmer screen." />
                         </StackPanel>
                     </DockPanel>
+                    <Border Style="{StaticResource Divider}" />
+                    <DockPanel Margin="0,4">
+                        <CheckBox x:Name="Animations" DockPanel.Dock="Right" Style="{StaticResource Toggle}" Click="OnAnimationsChanged" />
+                        <StackPanel>
+                            <TextBlock Text="Interface animations" />
+                            <TextBlock Style="{StaticResource Text.Muted}" Text="Pages slide in and cards follow one after another. Also off when Windows' animation effects are off." />
+                        </StackPanel>
+                    </DockPanel>
                 </StackPanel>
             </Border>
 

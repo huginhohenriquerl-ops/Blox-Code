@@ -29,6 +29,8 @@
 
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
+    <!-- JetBrains Mono for headings and code, so every distro looks the same (OFL; Inter comes from Avalonia.Fonts.Inter). -->
+    <AvaloniaResource Include="..\shared\Fonts\JetBrainsMono-*.ttf" Link="Assets\Fonts\%(Filename)%(Extension)" />
   </ItemGroup>
 
   <!-- `dotnet publish -c Release` -> a self-contained folder that linux/packaging/build-appimage.sh

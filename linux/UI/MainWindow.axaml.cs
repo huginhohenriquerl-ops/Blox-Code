@@ -49,12 +49,14 @@ public partial class MainWindow : Window
     {
         Store.SaveSettings();
         PageHost.Content = page;
+        Motion.EnterPage(page);
     }
 
     public void RefreshFooter()
     {
         FooterTitle.Text = DesktopIntegration.IsInstalled ? "Blox Code" : "Blox Code · portable";
         FooterSubtitle.Text = $"v{Updater.Current} · Linux · Sober";
+        Res.BindBrush(FooterDot, Avalonia.Controls.Shapes.Shape.FillProperty, DesktopIntegration.IsInstalled ? "Brush.Success" : "Brush.Warning");
     }
 
     public void RefreshMascots() => BrandMascot.IsAnimated = Store.Settings.AnimateMascot;
@@ -71,8 +73,7 @@ public partial class MainWindow : Window
     {
         if (sender is RadioButton { IsChecked: true, Tag: string key } && _pages.TryGetValue(key, out var create))
         {
-            Store.SaveSettings();
-            PageHost.Content = create();
+            ShowPage(create());
         }
     }
 

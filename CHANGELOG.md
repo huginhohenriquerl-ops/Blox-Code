@@ -3,6 +3,25 @@
 Todas as versões do Blox Code, da mais nova para a mais antiga. Quem tem o Blox Code instalado
 recebe cada versão automaticamente na próxima vez que abrir.
 
+## 1.4.0 — Fontes novas, animações e Mods melhores
+
+### Visual
+
+- **Fontes próprias:** o Blox Code agora traz a **Inter** (texto) e a **JetBrains Mono** (títulos e
+  código) dentro do programa, então fica igual em todo PC e em toda distro. Antes dependia das fontes
+  instaladas (Segoe UI, Cascadia, DejaVu…).
+- **Animações:** as páginas entram deslizando e os cartões aparecem um depois do outro; botões,
+  abas e itens da sidebar mudam de cor suavemente; botões dão uma leve "apertada" no clique; a barra
+  menta da página aberta cresce do meio. Dá para desligar em **Appearance → Interface animations**
+  (no Windows também respeita a opção de animações do sistema).
+- O cartão do rodapé da sidebar ganhou uma bolinha: verde instalado, âmbar rodando portátil.
+
+### Mods
+
+- **Abas:** All, Cursor, Sounds, Font e Advanced, para ir direto ao que você quer trocar.
+- **Ouvir antes:** cada som tem um botão ▶ que toca o seu arquivo ou o som original do Roblox.
+- **Reset all** traz de volta o cursor, os sons e a fonte originais de uma vez.
+
 ## 1.3.2 — Atualizações do Roblox mais rápidas
 
 - **Windows:** o Blox Code escolhia o servidor que respondia primeiro a um teste pequeno, e muitas
