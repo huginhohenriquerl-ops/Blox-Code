@@ -21,6 +21,9 @@ public sealed partial class Bootstrapper(HttpClient http, LaunchSettings launch,
     // A download that delivers nothing for this long is treated as dead and retried.
     private static readonly TimeSpan StallTimeout = TimeSpan.FromSeconds(30);
 
+    // One stream already fills a typical home connection; three keep it busy while others hash or unpack.
+    private const int ParallelDownloads = 3;
+
     private const string AppSettingsXml =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
         "<Settings>\r\n" +
@@ -140,21 +143,74 @@ public sealed partial class Bootstrapper(HttpClient http, LaunchSettings launch,
         }
         Directory.CreateDirectory(versionDir);
 
-        long total = Math.Max(1, packages.Sum(p => p.PackedSize)), done = 0;
+        // A few packages download at once, biggest first, and each is unpacked as soon as it lands,
+        // so checksums and unpacking overlap with the downloads still running.
+        long total = Math.Max(1, packages.Sum(p => p.PackedSize));
+        Directory.CreateDirectory(Paths.Downloads);
+        var received = new long[packages.Count];
+        long reported = 0;
+        var progressLock = new object();
+        using var downloads = new SemaphoreSlim(ParallelDownloads);
+        using var unpacking = new SemaphoreSlim(1);
+        using var failed = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
-        foreach (var package in packages)
+        void Progress(int index, long bytes, string status)
         {
-            ct.ThrowIfCancellationRequested();
-            long start = done;
-            await DownloadPackage(versionGuid, package, bytes =>
+            Interlocked.Exchange(ref received[index], bytes);
+            long sum = received.Sum();
+            lock (progressLock)
             {
-                Report(BootstrapPhase.Downloading, $"Downloading {package.Name}",
-                    (double)(start + bytes) / total, $"{Mb(start + bytes)} / {Mb(total)}");
-            }, ct);
-            done += package.PackedSize;
+                // Downloads finish out of order; never let the bar step back.
+                if (sum < reported)
+                    return;
+                reported = sum;
+            }
+            Report(BootstrapPhase.Downloading, status, (double)sum / total, $"{Mb(sum)} / {Mb(total)}");
+        }
 
-            Report(BootstrapPhase.Installing, $"Unpacking {package.Name}", (double)done / total, $"{Mb(done)} / {Mb(total)}");
-            await Task.Run(() => ExtractPackage(package, versionDir), ct);
+        async Task Install(int index)
+        {
+            var package = packages[index];
+            await downloads.WaitAsync(failed.Token);
+            try
+            {
+                await DownloadPackage(versionGuid, package, bytes => Progress(index, bytes, $"Downloading {package.Name}"), failed.Token);
+            }
+            finally
+            {
+                downloads.Release();
+            }
+
+            await unpacking.WaitAsync(failed.Token);
+            try
+            {
+                Progress(index, package.PackedSize, $"Unpacking {package.Name}");
+                await Task.Run(() => ExtractPackage(package, versionDir), failed.Token);
+            }
+            finally
+            {
+                unpacking.Release();
+            }
+        }
+
+        var work = Enumerable.Range(0, packages.Count)
+            .OrderByDescending(i => packages[i].PackedSize)
+            // Task.Run: checking a cached package's MD5 is synchronous and shouldn't hold up the others.
+            .Select(i => Task.Run(async () =>
+            {
+                try { await Install(i); }
+                catch when (!failed.IsCancellationRequested) { failed.Cancel(); throw; }
+            }))
+            .ToList();
+        try
+        {
+            await Task.WhenAll(work);
+        }
+        catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+        {
+            // Another package failed and cancelled this one; surface that failure, not the cancellation.
+            throw work.Select(t => t.Exception?.InnerException).FirstOrDefault(e => e is not null and not OperationCanceledException)
+                  ?? new IOException("Installing Roblox failed");
         }
 
         File.WriteAllText(Path.Combine(versionDir, "AppSettings.xml"), AppSettingsXml);

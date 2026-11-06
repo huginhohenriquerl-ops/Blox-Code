@@ -3,6 +3,17 @@
 Todas as versões do Blox Code, da mais nova para a mais antiga. Quem tem o Blox Code instalado
 recebe cada versão automaticamente na próxima vez que abrir.
 
+## 1.3.2 — Atualizações do Roblox mais rápidas
+
+- **Windows:** o Blox Code escolhia o servidor que respondia primeiro a um teste pequeno, e muitas
+  vezes era o da Amazon S3, que baixa mais devagar. Agora os servidores de CDN do Roblox têm
+  preferência (Akamai primeiro) e o S3 fica de reserva.
+- O servidor `roblox-setup.cachefly.net` saiu da lista: ele passava no teste, mas não entrega mais
+  os arquivos do Roblox.
+- Os pacotes agora baixam 3 de cada vez, o maior primeiro, e cada um é conferido e descompactado
+  enquanto os outros ainda baixam. Na mesma versão do Roblox, a instalação caiu de cerca de 86 s
+  para 45 s.
+
 ## 1.3.1 — Roblox nítido de novo depois de um preset
 
 - **Windows:** enquanto um preset gráfico fixa a qualidade, o Roblox guarda esse nível para cada jogo

@@ -179,7 +179,7 @@ connects to these services, to do what you ask it to:
   download Blox Code updates. You can turn this off in Behaviour.
 - **Roblox**, on Windows: `clientsettingscdn.roblox.com` / `clientsettings.roblox.com` to find the
   current Roblox version, and Roblox's download mirrors (`setup.rbxcdn.com`, `setup-aws.rbxcdn.com`,
-  `setup-ak.rbxcdn.com`, `roblox-setup.cachefly.net`, `s3.amazonaws.com/setup.roblox.com`) to
+  `setup-ak.rbxcdn.com`, `s3.amazonaws.com/setup.roblox.com`) to
   download the Roblox player.
 - **Flathub** (`dl.flathub.org`), on Linux: only when you click Install Sober, through Flatpak.
 

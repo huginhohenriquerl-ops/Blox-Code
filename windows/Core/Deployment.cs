@@ -23,14 +23,18 @@ public static class Deployment
     public const string DefaultChannel = Settings.DefaultChannel;
     public const string BinaryType = "WindowsPlayer";
 
+    // Best first for big downloads (measured Nov 2026: Akamai 5.7 MB/s, Roblox's CDN 4.0-4.6, S3 3.3).
+    // cachefly is gone: it still answers /versionStudio but returns 404 for every package.
     private static readonly string[] Mirrors =
     {
+        "https://setup-ak.rbxcdn.com",
         "https://setup.rbxcdn.com",
         "https://setup-aws.rbxcdn.com",
-        "https://setup-ak.rbxcdn.com",
-        "https://roblox-setup.cachefly.net",
         "https://s3.amazonaws.com/setup.roblox.com",
     };
+
+    // How long a better-ranked mirror may trail the first one to answer and still be picked.
+    private static readonly TimeSpan PreferenceGrace = TimeSpan.FromMilliseconds(750);
 
     // /versionStudio on every mirror returns this frozen value, which makes it a cheap health probe.
     private const string VersionStudioProbe = "version-012732894899482c";
@@ -54,14 +58,26 @@ public static class Deployment
         foreach (var probe in pending)
             _ = probe.ContinueWith(t => _ = t.Exception, TaskContinuationOptions.OnlyOnFaulted);
 
+        var probes = pending.ToArray();
         while (pending.Count > 0)
         {
             var finished = await Task.WhenAny(pending);
             pending.Remove(finished);
             try
             {
-                BaseUrl = await finished;
-                Logger.Info(ident, $"Using mirror {BaseUrl}");
+                string first = await finished;
+
+                // Answering a tiny probe first says little about download speed: S3 often wins the
+                // race and then downloads slowest. Better-ranked mirrors get a short moment to catch up.
+                int rank = Array.IndexOf(probes, finished);
+                if (rank > 0)
+                {
+                    var better = Task.WhenAll(probes.Take(rank).Select(p => p.ContinueWith(_ => { }, TaskScheduler.Default)));
+                    await Task.WhenAny(better, Task.Delay(PreferenceGrace, ct));
+                }
+                BaseUrl = probes.FirstOrDefault(p => p.IsCompletedSuccessfully)?.Result ?? first;
+
+                Logger.Info(ident, BaseUrl == first ? $"Using mirror {BaseUrl}" : $"Using mirror {BaseUrl} (answered after {first})");
                 cts.Cancel();
                 return;
             }
